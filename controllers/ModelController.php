@@ -51,7 +51,7 @@ class ModelController
     {
         $models = [];
 
-        $sql = "SELECT m.id, m.model_name, m.line_area,
+        $sql = "SELECT m.id, m.model_name, m.line_area, m.output_target,
                 u_owner.name AS owner, m.owner_id,
                 GROUP_CONCAT(u_member.name SEPARATOR ', ') AS members,
                 GROUP_CONCAT(mm.member_id) AS member_ids
@@ -145,6 +145,7 @@ class ModelController
 
         $model_name = strtoupper(trim($data['model_name'] ?? ""));
         $line_area = strtoupper(trim($data['line_area'] ?? ""));
+        $output_target = intval($data['output_target'] ?? "");
         $owner_id = intval($data['owner_id'] ?? 0);
         $members = $data['members'] ?? [];
 
@@ -172,8 +173,8 @@ class ModelController
             exit();
         }
 
-        $addModel = $this->conn->prepare("INSERT INTO models (model_name, line_area, owner_id) VALUES (?,?,?)");
-        $addModel->bind_param('ssi', $model_name, $line_area, $owner_id);
+        $addModel = $this->conn->prepare("INSERT INTO models (model_name, line_area, output_target, owner_id) VALUES (?, ?,?,?)");
+        $addModel->bind_param('ssii', $model_name, $line_area, $output_target, $owner_id);
 
         if ($addModel->execute()) {
             $model_id = $addModel->insert_id;
@@ -200,7 +201,7 @@ class ModelController
 
         $id = intval($data['id'] ?? 0); // model_id
         $line_area = strtoupper(trim($data['line_area'] ?? ""));
-        // $owner_id = $data['owner_id'] ?? [];
+        $output_target = $data['output_target'] ?? "";
         $owner_id = strtoupper(trim($data['owner_id'] ?? ''));
         $members = $data['members'] ?? [];
         $stations = $data['stations'] ?? [];
@@ -213,8 +214,8 @@ class ModelController
         }
 
         // --- Update line_area  ---
-        $stmt = $this->conn->prepare("UPDATE models SET line_area = ?, owner_id = ? WHERE id = ?");
-        $stmt->bind_param('sii', $line_area, $owner_id, $id);
+        $stmt = $this->conn->prepare("UPDATE models SET line_area = ?, output_target = ?, owner_id = ? WHERE id = ?");
+        $stmt->bind_param('siii', $line_area, $output_target, $owner_id, $id);
         $stmt->execute();
 
         // --- Update Members ---

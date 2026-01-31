@@ -49,15 +49,20 @@ if ($action == 'getSymptom' && !empty($_POST['error_code'])) {
 
 if ($action == 'getLine' && !empty($_POST['model_id'])) {
     $model_id = $_POST['model_id'];
-    $sql = "SELECT id, line_area FROM models WHERE id = ?";
+    $sql = "SELECT id, line_area, output_target FROM models WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $model_id);
     $stmt->execute();
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();
 
-    $line_area = $row ? $row['line_area'] : '';
-    echo json_encode(['line_area' => $line_area]);
+    // $line_area = $row ? $row['line_area'] : '';
+    // echo json_encode(['line_area' => $line_area]);
+    echo json_encode([
+        'success' => true,
+        'model_id' => $model_id,
+        'data' => $row
+    ]);
     exit;
 }
 

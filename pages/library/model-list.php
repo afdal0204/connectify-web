@@ -168,6 +168,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                                 <th scope="row">No</th>
                                                 <th>Model Name</th>
                                                 <th>Line Area</th>
+                                                <th>Output Target</th>
                                                 <th class="wrap-text">Station & Device</th>
                                                 <th>Owner</th>
                                                 <th>Members</th>
@@ -227,6 +228,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             <label>Line Area</label>
                             <input type="text" id="lineArea" name="lineArea" class="form-control" required>
                         </div>
+                        <div class="col-md-6">
+                            <label>Output Target</label>
+                            <input type="number" id="outputTarget" name="outputTarget" class="form-control" required>
+                        </div>
                         <div class="col-md-6 mt-2">
                             <label for="userOwner" class="form-label">Owner</label>
                             <select id="userOwner" name="userOwner" class="form-select" required>
@@ -238,7 +243,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-6 mt-2">
+                        <div class="col-md-4 mt-2">
                             <label class="form-label">Members</label>
                             <select id="userMembers" name="userMembers[]" class="form-select" required>
                                 <option value="">-----</option>
@@ -249,7 +254,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-12 mt-3">
+                        <div class="col-8 mt-2">
                             <label class="form-label">Selected Members</label>
                             <div id="selectedMembersContainer" class="d-flex flex-wrap gap-2 border p-2" style="min-height: 50px;"></div>
                         </div>
@@ -298,6 +303,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                 <div class="col-md-4">
                                     <label>Line Area</label>
                                     <input type="text" id="editLineArea" name="editLineArea" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Output Target</label>
+                                    <input type="number" id="editOutputTarget" name="editOutputTarget" class="form-control" required>
                                 </div>
                                 <!-- <div class="col-md-4">
                                 <label>Owner</label>
@@ -451,6 +460,20 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         data: 'line_area',
                         className: 'text-center',
                     },
+                    // {
+                    //     data: 'output_target',
+                    //     className: 'text-center',
+                    // },
+                    {
+                        data: null,
+                        render: function(data, type, row){
+                            if (!row.output_target || row.output_target.length === 0) {
+                                return '-';
+                            }else{
+                                return `${data.output_target}`;
+                            }
+                        }
+                    },
                     {
                         data: null,
                         render: function(data, type, row) {
@@ -486,6 +509,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     data-id="${row.id}"
                                     data-model_name="${row.model_name}"
                                     data-line_area="${row.line_area}"
+                                    data-output_target="${row.output_target}"
                                     data-owner="${row.owner}"
                                     data-owner_id="${row.owner_id}"
                                     data-members="${row.members}"
@@ -572,6 +596,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const payload = {
                     model_name: $('#model_name').val().trim(),
                     line_area: $('#lineArea').val().trim(),
+                    output_target: $('#outputTarget').val(),
                     owner_id: $('#userOwner').val(),
                     members: Array.from(selectedMembers.keys())
                 };
@@ -652,6 +677,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const model_id = button.data('id');
                 const model_name = button.data('model_name');
                 const line_area = button.data('line_area');
+                const output_target = button.data('output_target');
                 const owner = button.data('owner');
                 const owner_id = button.data('owner_id');
                 const members = button.data('members') ? button.data('members').split(',') : [];
@@ -663,6 +689,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 modal.find('#editDeviceModelName').val(model_name);
                 modal.find('#editLineArea').val(line_area);
                 modal.find('#editDeviceLineArea').val(line_area);
+                modal.find('#editOutputTarget').val(output_target);
 
                 // modal.find('#editUserOwner').val(owner);
                 modal.find('#editUserOwner').val(owner_id);
@@ -843,6 +870,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
                 const id = $('#edit-id').val().trim();
                 const line_area = $('#editLineArea').val().trim();
+                const output_target = $('#editOutputTarget').val().trim();
                 const owner_id = $('#editUserOwner').val().trim();
                 const membersArray = Array.from(selectedMembers.keys())
                     .map(v => parseInt(v, 10))
@@ -852,6 +880,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const payload = {
                     id,
                     line_area,
+                    output_target,
                     owner_id,
                     members: membersArray,
                     stations

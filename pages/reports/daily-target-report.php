@@ -653,9 +653,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script>
         $('#modelSelect').change(function() {
             const model_id = $(this).val();
-            // console.log(model_id);
             if (!model_id) {
                 $('#lineInput').val('');
+                $('#targetInput').val('');
                 return;
             }
 
@@ -667,8 +667,18 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     model_id
                 },
                 dataType: 'json',
-                success: function(data) {
-                    $('#lineInput').val(data.line_area || '');
+                // success: function(data) {
+                //     $('#lineInput').val(data.line_area || '');
+                //     $('#targetInput').val(data.output_target || '');
+                // },
+                success: function(res) {
+                    if (res.success && res.data) {
+                        $('#lineInput').val(res.data.line_area);
+                        $('#targetInput').val(res.data.output_target);
+                    } else {
+                        $('#lineInput').val('');
+                        $('#targetInput').val('');
+                    }
                 },
                 error: function(xhr) {
                     console.error("Error getting Line Area:", xhr.responseText);

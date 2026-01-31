@@ -1,0 +1,14 @@
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.nxl-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.nxl-content {
+  flex: 1;
+}

@@ -26,34 +26,34 @@
                         <span class="nxl-mtext">Reports</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
-                         <li class="nxl-item nxl-hasmenu">
+                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/report-data-list.php">Abnormal Report</a></li>
+                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/daily-target-report.php">Daily Target Report</a></li>
+                        <li class="nxl-item nxl-hasmenu">
                                 <a href="javascript:void(0);" class="nxl-link">
-                                    <span class="nxl-micon"><i class="feather-file-text"></i></span>
-                                    OP Report
+                                    <!-- <span class="nxl-micon"><i class="feather-file-text"></i></span> -->
+                                    Line Report per Shift
                                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                                 </a>
 
                             <!-- SUBMENU LEVEL 2 -->
                             <ul class="nxl-submenu">
                                 <li class="nxl-item">
-                                    <a class="nxl-link" href="/connectify-web/pages/reports/op/sec1.php">
+                                    <a class="nxl-link" href="/connectify-web/pages/reports/line-report/sec1.php">
                                         Sec 1
                                     </a>
                                 </li>
                                 <li class="nxl-item">
-                                    <a class="nxl-link" href="/connectify-web/pages/reports/op/sec2.php">
+                                    <a class="nxl-link" href="/connectify-web/pages/reports/line-report/sec2.php">
                                         Sec 2
                                     </a>
                                 </li>
                                 <li class="nxl-item">
-                                    <a class="nxl-link" href="/connectify-web/pages/reports/op/sec3.php">
+                                    <a class="nxl-link" href="/connectify-web/pages/reports/line-report/sec3.php">
                                         Sec 3
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/report-data-list.php">Abnormal Report</a></li>
-                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/daily-target-report.php">Daily Target Report</a></li>
                     </ul>
                 </li>
                 <li class="nxl-item nxl-hasmenu">

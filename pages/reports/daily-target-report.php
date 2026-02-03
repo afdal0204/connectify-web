@@ -49,7 +49,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             word-break: break-word !important;
              padding: 8px 12px; */
         }
-
+        .remark-text {
+            white-space: pre-line;
+        }
         /* Opsional: batasi lebar kolom tertentu supaya wrap lebih cepat */
         /* #modelTable td:nth-child(4),
         #modelTable th:nth-child(4) {
@@ -250,7 +252,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         require_once '../layout/footer.php'
         ?>
     </main>
-
 
     <div class="modal fade" id="createTargetReportModal" tabindex="-1" aria-labelledby="createTargetReportModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 40rem;">
@@ -539,6 +540,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     {
                         data: 'remark',
                         className: 'text-center',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
+                        }
                     },
                     // {
                     //     data: 'report_user',

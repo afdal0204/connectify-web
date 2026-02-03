@@ -467,11 +467,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     {
                         data: null,
                         render: function(data, type, row){
-                            if (!row.output_target || row.output_target.length === 0) {
-                                return '-';
-                            }else{
-                                return `${data.output_target}`;
-                            }
+                            if (!row.output_target || row.output_target.length === 0) return '-';
+                           
+                            return `${data.output_target}`;
+                            
                         }
                     },
                     {

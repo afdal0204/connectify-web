@@ -40,6 +40,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             /* word-break: break-word !important; */
              /* padding: 8px 12px; */
         }
+         .remark-text, .action-taken-text, .root-cause-text {
+            white-space: pre-line;
+        }
         /* #reportTable td:nth-child(4),
         #reportTable th:nth-child(4) {
             max-width: 200px;
@@ -503,14 +506,25 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         data: 'symptom'
                     },
                     {
-                        data: 'root_cause'
+                        data: 'root_cause',
+                         render: function (data, type, row) {
+                            if (!data) return '';
+                            return `<div class="root-cause-text">${$('<div>').text(data).html()}</div>`;
+                        }
                     },
                     {
                         data: 'action_taken',
-                        className: 'text-left'
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            return `<div class="action-taken-text">${$('<div>').text(data).html()}</div>`;
+                        }
                     },
                     {
-                        data: 'remark'
+                        data: 'remark',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
+                        }
                     },
                     {
                         data: 'name'
@@ -546,7 +560,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         width: '200px'
                     }
                 ],
-                 autoWidth: false,
+                autoWidth: false,
                 columnDefs: [
                     { targets: -1, orderable: false },
                     // { targets: 1, width: "10%"},

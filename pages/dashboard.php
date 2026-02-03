@@ -104,12 +104,33 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                 <div class="d-flex align-items-start justify-content-between mb-4">
                                     <div class="d-flex gap-4 align-items-center">
                                         <div class="avatar-text avatar-lg bg-gray-200">
-                                            <i class="feather-cast"></i>
+                                            <i class="feather-bar-chart-2"></i>
                                         </div>
                                         <div>
                                             <div id="totalReports" class="fs-1 fw-bold text-dark"><span class="counter">0</span></div>
-                                            <h3 id="mycardreport" class="fs-13 fw-semibold text-truncate-1-line">
-                                                <a class="nxl-link" href="/connectify-web/pages/reports/report-data-list.php">Abnormal Report</a>
+                                            <h3 id="mycardreport1" class="fs-13 fw-semibold text-truncate-1-line">
+                                                <!-- <a class="nxl-link" href="/connectify-web/pages/reports/report-data-list.php">Abnormal Report</a> -->
+                                                Abnormal Reports
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-3 col-md-6">
+                        <div class="card stretch stretch-full">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between mb-4">
+                                    <div class="d-flex gap-4 align-items-center">
+                                        <div class="avatar-text avatar-lg bg-gray-200">
+                                            <i class="feather-clipboard"></i>
+                                        </div>
+                                        <div>
+                                            <div id="totalLineReports" class="fs-1 fw-bold text-dark"><span class="counter">0</span></div>
+                                            <h3 id="mycardreport1" class="fs-13 fw-semibold text-truncate-1-line">
+                                                Line Reports per Shift
+                                                <!-- <a class="nxl-link" href="#">Line Report</a> -->
                                             </h3>
                                         </div>
                                     </div>
@@ -127,8 +148,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                         </div>
                                         <div>
                                             <div id="totalTargetReports" class="fs-1 fw-bold text-dark"><span class="counter">0</span></div>
-                                            <h3 id="mycardreport" class="fs-13 fw-semibold text-truncate-1-line">
-                                                <a class="nxl-link" href="/connectify-web/pages/reports/daily-target-report.php">Daily Target Report</a>
+                                            <h3 id="mycardreport1" class="fs-13 fw-semibold text-truncate-1-line">
+                                                Daily Target Reports
+                                                <!-- <a class="nxl-link" href="#">Daily Target Report</a> -->
                                             </h3>
                                         </div>
                                     </div>
@@ -146,8 +168,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                         </div>
                                         <div>
                                             <div id="totalErrorCode" class="fs-1 fw-bold text-dark"><span class="counter">0</span></div>
-                                            <h3 id="mycardreport" class="fs-13 fw-semibold text-truncate-1-line">
-                                                <a class="nxl-link" href="/connectify-web/pages/library/error-code-list.php">Error Code</a>
+                                            <h3 id="mycardreport1" class="fs-13 fw-semibold text-truncate-1-line">
+                                                Error Code
+                                                <!-- <a class="nxl-link" href="#">Error Code</a> -->
                                             </h3>
                                         </div>
                                     </div>
@@ -155,7 +178,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </div>
                         </div>
                     </div>
-                    <div class="col-xxl-3 col-md-6">
+                    <!-- <div class="col-xxl-3 col-md-6">
                         <div class="card stretch stretch-full">
                             <div class="card-body">
                                 <div class="d-flex align-items-start justify-content-between mb-4">
@@ -168,13 +191,13 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                             <h3 class="fs-13 fw-semibold text-truncate-1-line">Users</h3>
                                         </div>
                                     </div>
-                                    <!-- <a href="javascript:void(0);" class="">
+                                    <a href="javascript:void(0);" class="">
                                         <i class="feather-more-vertical"></i>
-                                    </a> -->
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Chart -->
                     <div class="col-xxl-6">
@@ -278,6 +301,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
             getTotalUsers();
             getTotalReports();
+            getTotalLineReports()
             getTotalTargetReports();
             getTotalErrorCode();
         });
@@ -314,6 +338,23 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 },
                 error: function() {
                     $('#totalReports').text('-');
+                }
+            });
+        }
+        function getTotalLineReports() {
+            $.ajax({
+                url: '/connectify-web/controllers/LineReportController.php?type=total',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#totalLineReports').text(response.total);
+                    } else {
+                        $('#totalLineReports').text('-');
+                    }
+                },
+                error: function() {
+                    $('#totalLineReports').text('-');
                 }
             });
         }

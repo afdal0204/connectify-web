@@ -17,7 +17,7 @@ if ($deptResult->num_rows > 0) {
     }
 }
 
-$role_id = $_SESSION['role_id'] ?? 'Guest'; 
+$role_id = $_SESSION['role_id'] ?? 'Guest';
 ?>
 
 <!DOCTYPE html>
@@ -178,6 +178,24 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </div>
                         </div>
                     </div>
+                    <div class="col-xxl-12">
+                        <div class="card stretch stretch-full">
+                            <div class="card-header">
+                                <h5 class="card-title">Daily Target Report</h5>
+                                <div class="card-header-action">
+                                    <div class="card-header-btn">
+                                        <div data-bs-toggle="tooltip" title="Refresh">
+                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body custom-card-action p-0">
+                                <div id="lineReportsChart"></div>
+                                <div id="chartTooltip"></div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- <div class="col-xxl-3 col-md-6">
                         <div class="card stretch stretch-full">
                             <div class="card-body">
@@ -200,7 +218,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     </div> -->
 
                     <!-- Chart -->
-                    <div class="col-xxl-6">
+                    <!-- <div class="col-xxl-6">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
                                 <h5 class="card-title">Abnormal Report Chart</h5>
@@ -210,26 +228,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                             <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
                                         </div>
                                     </div>
-                                    <!-- <div class="dropdown">
-                                        <a href="javascript:void(0);" class="avatar-text avatar-sm" data-bs-toggle="dropdown" data-bs-offset="25, 25">
-                                            <div data-bs-toggle="tooltip" title="Options">
-                                                <i class="feather-more-vertical"></i>
-                                            </div>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end">
-                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-at-sign"></i>New</a>
-                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-calendar"></i>Event</a>
-                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-bell"></i>Snoozed</a>
-                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-trash-2"></i>Deleted</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-settings"></i>Settings</a>
-                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-life-buoy"></i>Tips & Tricks</a>
-                                        </div>
-                                    </div> -->
                                 </div>
                             </div>
                             <div class="card-body custom-card-action p-0">
-                                <!-- <div id="payment-records-chart"></div> -->
+                                <div id="payment-records-chart"></div>
                                 <canvas id="abnormalReportsChart"></canvas>
                             </div>
                         </div>
@@ -248,18 +250,16 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                 </div>
                             </div>
                             <div class="card-body custom-card-action p-0">
-                                <!-- <div id="daily-target-chart"></div> -->
+                                <div id="daily-target-chart"></div>
                                 <canvas id="targetReportsChart"></canvas>
                                 <div id="chartTooltip"></div>
                             </div>
                         </div>
-                    </div>
-                    <!-- [Abnormal chart] end -->
+                    </div> -->
                 </div>
             </div>
-            <!-- [ Main Content ] end -->
         </div>
-        </div> <!-- .nxl-content -->
+        </div>
 
         <?php
         require_once './layout/footer.php';
@@ -278,11 +278,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script src="/connectify-web/assets/js/common-init.min.js"></script>
     <script src="/connectify-web/assets/js/dashboard-init.min.js"></script>
     <script src="/connectify-web/assets/js/theme-customizer-init.min.js"></script>
-    
+
     <script src="/connectify-web/assets/public/vendor/chart.js/Chart.min.js"></script>
 
     <script src="./js/dashboard.js"></script>
-     <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script>
+    <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script>
     <script>
         setInterval(() => {
             fetch("/connectify-web/update_activity.php");
@@ -341,6 +341,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 }
             });
         }
+
         function getTotalLineReports() {
             $.ajax({
                 url: '/connectify-web/controllers/LineReportController.php?type=total',
@@ -394,6 +395,110 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 }
             });
         }
+    </script>
+
+    <script>
+        $.ajax({
+            url: '/connectify-web/controllers/DailyTargetReportController.php?type=target-report-chart',
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) {
+                if (!res.success) return;
+
+                const rawData = res.data;
+
+                const categories = [...new Set(rawData.map(item => item.date))].sort();
+                const isoDates = categories.map(d => new Date(d).toISOString());
+
+                const models = [...new Set(rawData.map(item => item.model_name))].sort();
+
+                const statusMap = {
+                    "not target": 1,
+                    "target": 2,
+                    "not running": 0
+                };
+
+                const reverseStatusMap = {
+                    1: "Not Target",
+                    2: "Target",
+                    0: "Not Running"
+                };
+
+                const series = models.map(model => {
+                    const data = isoDates.map((iso, idx) => {
+                        const date = categories[idx];
+                        const found = rawData.find(item =>
+                            item.model_name === model &&
+                            item.date === date
+                        );
+                        const val = found ? statusMap[found.uph_status_name.toLowerCase()] : 0;
+                        console.log(`Model ${model}, date ${date} →`, val);
+                        return val;
+                    });
+                    return {
+                        name: model,
+                        data
+                    };
+                });
+
+                console.log("Series final:", series);
+
+                var options = {
+                    series,
+                    chart: {
+                        type: 'area',
+                        height: 350,
+                        toolbar: {
+                            show: true
+                        }
+                    },
+                    stroke: {
+                        width: 3,
+                        curve: 'smooth'
+                    },
+                    markers: {
+                        size: 5
+                    },
+                    xaxis: {
+                        title: {
+                            text: 'Date'
+                        },
+                        type: 'datetime',
+                        categories: isoDates,
+                        labels: {
+                            formatter: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-GB', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            }
+                        }
+                    },
+                    yaxis: {
+                        tickAmount: 2,
+                        labels: {
+                            formatter: val => reverseStatusMap[val] || val
+                        },
+                        title: {
+                            text: '......'
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: val => reverseStatusMap[val] || '-'
+                        }
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector("#lineReportsChart"), options);
+                chart.render();
+            },
+            error: function(err) {
+                console.error(err);
+            }
+        });
     </script>
 
     <script>
@@ -464,7 +569,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const modelColors = [
                     // '#1f77b4', 
                     // '#ff7f0e', 
-                    '#2ca02c', 
+                    '#2ca02c',
                     // '#d62728', 
                     // '#9467bd', 
                     // '#8c564b', 
@@ -585,103 +690,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 });
             }
         });
-
-        // $.ajax({
-        //     url: '/connectify-web/controllers/DailyTargetReportController.php?type=target-report-chart',
-        //     type: 'GET',
-        //     dataType: 'json',
-        //     success: function(res) {
-        //         if (!res.success || !Array.isArray(res.data)) return;
-
-        //         const data = res.data;
-        //         data.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        //         const labels = [...new Set(data.map(d => d.date))];
-
-        //         const statusCategories = ['Target', 'Not Target', 'Not Running'];
-        //         const statusColors = {
-        //             'Target': 'green',
-        //             'Not Target': 'red',
-        //             'Not Running': 'yellow'
-        //         };
-
-        //         // Simpan daftar model per status per tanggal
-        //         const modelsPerStatus = {};
-        //         labels.forEach(date => {
-        //             modelsPerStatus[date] = {
-        //                 'Target': [],
-        //                 'Not Target': [],
-        //                 'Not Running': []
-        //             };
-        //         });
-
-        //         data.forEach(d => {
-        //             const date = d.date;
-        //             const status = d.uph_status_name || 'Not Running';
-        //             modelsPerStatus[date][status].push(d.model_name);
-        //         });
-
-        //         // Hitung jumlah per status per tanggal
-        //         const counts = labels.map(date => {
-        //             return {
-        //                 'Target': modelsPerStatus[date]['Target'].length,
-        //                 'Not Target': modelsPerStatus[date]['Not Target'].length,
-        //                 'Not Running': modelsPerStatus[date]['Not Running'].length
-        //             };
-        //         });
-
-        //         // Siapkan dataset untuk setiap status
-        //         const datasets = statusCategories.map(status => ({
-        //             label: status,
-        //             data: counts.map(c => c[status]),
-        //             backgroundColor: statusColors[status],
-        //         }));
-
-        //         const ctx = document.getElementById('targetReportsChart').getContext('2d');
-
-        //         new Chart(ctx, {
-        //             type: 'bar',
-        //             data: {
-        //                 labels: labels,
-        //                 datasets: datasets
-        //             },
-        //             options: {
-        //                 responsive: true,
-        //                 plugins: {
-        //                     tooltip: {
-        //                         callbacks: {
-        //                             label: function(ctx) {
-        //                                 const date = labels[ctx.dataIndex];
-        //                                 const status = ctx.dataset.label;
-        //                                 const models = modelsPerStatus[date][status];
-        //                                 return status + ' (' + models.length + '): ' + models.join(', ');
-        //                             }
-        //                         }
-        //                     },
-        //                     legend: {
-        //                         position: 'top'
-        //                     }
-        //                 },
-        //                 scales: {
-        //                     x: {
-        //                         stacked: false,
-        //                         // membuat bar bergandengan
-        //                         categoryPercentage: 0.8,
-        //                         barPercentage: 0.9
-        //                     },
-        //                     y: {
-        //                         stacked: false,
-        //                         beginAtZero: true,
-        //                         title: {
-        //                             display: true,
-        //                             text: 'Jumlah'
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         });
-        //     }
-        // });
     </script>
 
 </body>

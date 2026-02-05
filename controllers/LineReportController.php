@@ -18,7 +18,11 @@ class LineReportController
         switch ($method) {
             case 'GET':
                 if (isset($_GET['type']) && $_GET['type'] === 'total') {
+                    // $this->getReportsTotalByDepartment([1,2,3]);
                     $this->getLineReportsTotal();
+                }
+                else if (isset($_GET['type']) && $_GET['type'] === 'total-by-model') {
+                    $this->getReportsTotalByDepartment([1,2,3]);
                 }
                 else if (isset($_GET['type']) && $_GET['type'] === 'sec1') {
                     $this->getAllReportsSec1(1);
@@ -45,6 +49,54 @@ class LineReportController
                 break;
                 exit();
         }
+    }
+
+    public function getReportsTotalByDepartment($departmentIds)
+    {
+        $placeholders = implode(',', array_fill(0, count($departmentIds), '?'));
+        
+        $stmt = $this->conn->prepare("
+            SELECT d.department_name, d.id AS department_id, COUNT(*) AS total_reports
+            FROM line_report_per_shift lrp
+            LEFT JOIN models m ON lrp.model_id = m.id
+            LEFT JOIN users u ON lrp.user_id = u.id
+            LEFT JOIN users u_owner ON m.owner_id = u_owner.id
+            LEFT JOIN department d ON u_owner.department_id = d.id
+            WHERE d.id IN ($placeholders)
+            GROUP BY d.id
+        ");
+        $stmt->bind_param(str_repeat('i', count($departmentIds)), ...$departmentIds);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $totals = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            // $totals['total_dep' . $row['department_id']] = (int)$row['total_reports'];
+            $totals['total_dep' . $row['department_id']] = [
+            'department_name' => $row['department_name'],
+            'total_reports' => (int)$row['total_reports']
+        ];
+        }
+
+        foreach ($departmentIds as $departmentId) {
+                 if (!isset($totals['total_dep' . $departmentId])) {
+            $totals['total_dep' . $departmentId] = [
+                'department_name' => 'Unknown', // Nama departemen default jika tidak ada laporan
+                'total_reports' => 0
+            ];
+        }
+            // if (!isset($totals['total_dep' . $departmentId])) {
+            //     $totals['total_dep' . $departmentId] = 0;
+            // }
+        }
+
+        echo json_encode([
+            "success" => true,
+            // "id" => 1,  // ID bisa disesuaikan dengan parameter atau context yang diperlukan
+            "data" => $totals
+        ]);
+        exit();
     }
 
     public function getAllReportsSec1($departmentId)

@@ -19,6 +19,9 @@
                     <ul class="nxl-submenu">
                         <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/dashboard.php">Main Dashboard</a></li>
                     </ul>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics</a></li>
+                    </ul>
                 </li>
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">

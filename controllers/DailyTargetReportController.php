@@ -49,7 +49,7 @@ class DailyTargetReportController
     public function getAllReports()
     {
         $result = $this->conn->query("SELECT dtr.id, dtr.date, dtr.remark, dtr.target, dtr.output, dtr.gap,
-                                            m.model_name, m.line_area, 
+                                            dtr.user_id, m.model_name, m.line_area, 
                                             us.uph_status_name, 
                                             u.name AS report_user,
                                             u_owner.name AS owner_name,

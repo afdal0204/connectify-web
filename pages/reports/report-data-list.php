@@ -390,6 +390,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script src="/connectify-web/pages/js/dashboard.js"></script>
     <!-- <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script> -->
     <script>
+        const LOGGED_USER_ID = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
+        const LOGGED_USER_ROLE = <?= json_encode($_SESSION['role_id'] ?? null) ?>;
+    </script>
+
+    <script>
         setInterval(() => {
             fetch("/connectify-web/update_activity.php");
         }, 60000);
@@ -532,21 +537,30 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     // {
                     //     data: 'work_id'
                     // },
-                    
                     {
                         data: null,
                         className: 'no-export',
-                        render: function(data, type, row) {
-                            return `   
-                            <div class="d-flex justify-content-center align-items-center gap-1">                    
-                            <a href="#" class="btn btn-sm btn-danger btn-delete-report" 
-                                data-id="${row.id}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteModalReport">
-                                <i class="feather-trash"></i>
-                            </a>
-                         </div>
-                    `;
+                        orderable: false,
+                        render: function (data, type, row) {
+
+                            const isAdmin = [1, 2].includes(parseInt(LOGGED_USER_ROLE));
+                            const isOwner = parseInt(row.user_id) === parseInt(LOGGED_USER_ID);
+
+                            if (!isAdmin && !isOwner) {
+                                return ''; 
+                            }
+
+                            return `
+                                <div class="d-flex justify-content-center">
+                                    <a href="#"
+                                    class="btn btn-sm btn-danger btn-delete-report"
+                                    data-id="${row.id}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModalReport">
+                                        <i class="feather-trash"></i>
+                                    </a>
+                                </div>
+                            `;
                         }
                     }
                 ],

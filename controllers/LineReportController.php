@@ -53,6 +53,7 @@ class LineReportController
             SELECT 
                 lrp.id, 
                 lrp.shift, 
+                lrp.user_id,
                 lrp.date, 
                 lrp.remark,
                 m.model_name, 
@@ -91,6 +92,7 @@ class LineReportController
             SELECT 
                 lrp.id, 
                 lrp.shift, 
+                lrp.user_id,
                 lrp.date, 
                 lrp.remark,
                 m.model_name, 
@@ -128,6 +130,7 @@ class LineReportController
             SELECT 
                 lrp.id, 
                 lrp.shift, 
+                lrp.user_id,
                 lrp.date, 
                 lrp.remark,
                 m.model_name, 

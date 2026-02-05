@@ -59,7 +59,7 @@ class ReportController
         $filter_date_to    = $_GET['filter_date_to'] ?? '';
 
         $sql = "SELECT 
-                    ar.id, m.model_name, s.station_name, d.device_name, 
+                    ar.id, ar.user_id, m.model_name, s.station_name, d.device_name, 
                     ar.shift, ar.date, ar.time_start, ar.time_finish,
                     ec.error_code, ec.symptom, ar.root_cause,
                     ar.action_taken, u.name, u.work_id, ar.remark
@@ -71,6 +71,7 @@ class ReportController
                 LEFT JOIN users u ON ar.user_id = u.id
                 WHERE 1 = 1";
 
+     
         // --- APPLY FILTER MODEL ---
         if (!empty($filter_model)) {
             $sql .= " AND ar.model_id = " . intval($filter_model);
@@ -392,6 +393,7 @@ class ReportController
             echo json_encode(["success" => false, "message" => "Failed to delete report", "error" => $deleteReport->error]);
         }
     }
+
 }
 
 // === Auto-handle access file directly ===

@@ -44,7 +44,7 @@ class ErrorController
                                         u.name, u.work_id
             FROM error_code e
             LEFT JOIN users u ON e.user_id = u.id
-            ORDER BY e.error_code ASC");
+            ORDER BY e.id DESC, e.error_code ASC");
         $errors = [];
 
         while ($row = $result->fetch_assoc()) {

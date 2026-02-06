@@ -1,3 +1,21 @@
+<style>
+    .text-badge-wrapper {
+        flex-wrap: wrap;       /* supaya teks panjang bisa wrap */
+        gap: 0.25rem;          /* jarak teks dan badge */
+    }
+
+    .text-truncate {
+        white-space: nowrap;   /* atau gunakan wrap tergantung kebutuhan */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .nxl-arrow i {
+        vertical-align: middle;  /* memaksa icon sejajar tengah dengan teks */
+        font-size: 1rem;         /* sesuaikan dengan font teks */
+    }
+
+
+</style>
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
         <div class="m-header">
@@ -20,7 +38,7 @@
                         <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/dashboard.php">Main Dashboard</a></li>
                     </ul>
                     <ul class="nxl-submenu">
-                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics</a></li>
+                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics <span class="badge bg-soft-success text-success ms-1">NEW</span></a></li>
                     </ul>
                 </li>
                 <li class="nxl-item nxl-hasmenu">
@@ -34,7 +52,7 @@
                         <li class="nxl-item nxl-hasmenu">
                                 <a href="javascript:void(0);" class="nxl-link">
                                     <!-- <span class="nxl-micon"><i class="feather-file-text"></i></span> -->
-                                    Line Report per Shift
+                                    Line Report (Shift)<span class="badge bg-soft-success text-success ms-2">NEW</span>  
                                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                                 </a>
 

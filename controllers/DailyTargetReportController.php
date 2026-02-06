@@ -157,15 +157,15 @@ class DailyTargetReportController
             );
             
         if ($stmt->execute()) {
-            $report_id = $this->conn->insert_id;
-            $message = "$user_name just added new daily target report to model $model_name";
+            // $report_id = $this->conn->insert_id;
+            // $message = "$user_name just added new daily target report to model $model_name";
 
-            $notifStmt = $this->conn->prepare("
-                INSERT INTO notifications (user_id, target_report_id, message, model_id, is_read)
-                VALUES (?, ?, ?, ?, 0)
-            ");
-            $notifStmt->bind_param("iisi", $user_id, $report_id, $message, $model_id);
-            $notifStmt->execute();
+            // $notifStmt = $this->conn->prepare("
+            //     INSERT INTO notifications (user_id, target_report_id, message, model_id, is_read)
+            //     VALUES (?, ?, ?, ?, 0)
+            // ");
+            // $notifStmt->bind_param("iisi", $user_id, $report_id, $message, $model_id);
+            // $notifStmt->execute();
 
             echo json_encode(["success" => true, "message" => "New report added successfully"]);
             exit();

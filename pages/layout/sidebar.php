@@ -20,7 +20,7 @@
     <div class="navbar-wrapper">
         <div class="m-header">
             <a href="/connectify-web/pages/dashboard.php" class="b-brand">
-                <img src="/connectify-web/assets/images/logo2.png" alt="connectify logo" class="logo logo-lg" />
+                <img src="/connectify-web/assets/images/logo21.png" alt="connectify logo" class="logo logo-lg" />
                 <img src="/connectify-web/assets/images/logo.png" alt="connectify logo" class="logo logo-sm" />
             </a>
         </div>
@@ -38,7 +38,7 @@
                         <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/dashboard.php">Main Dashboard</a></li>
                     </ul>
                     <ul class="nxl-submenu">
-                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics <span class="badge bg-soft-success text-success ms-1">NEW</span></a></li>
+                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics <span class="badge bg-soft-success text-success">NEW</span></a></li>
                     </ul>
                 </li>
                 <li class="nxl-item nxl-hasmenu">

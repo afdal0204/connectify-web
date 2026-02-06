@@ -160,7 +160,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         ?>
     </main>
 
-     <!-- Modal Filter -->
+    <!-- Modal Filter -->
     <div class="modal fade" id="filterModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -256,7 +256,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     0: "Not Running"
                 };
 
-                // 🔹 build ALL series
                 allSeries = allModels.map(model => {
                     const data = isoDates.map((iso, idx) => {
                         const date = categories[idx];
@@ -267,7 +266,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         return found ? statusMap[found.uph_status_name.toLowerCase()] : 0;
                     });
 
-                    return { name: model, data };
+                    return {
+                        name: model,
+                        data
+                    };
                 });
 
                 // 🔹 DEFAULT: hanya 3 garis pertama
@@ -278,16 +280,33 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     chart: {
                         type: 'area',
                         height: 350,
-                        toolbar: { show: true }
+                        toolbar: {
+                            show: true
+                        }
                     },
                     stroke: {
                         width: 3,
                         curve: 'smooth'
                     },
-                    markers: { size: 5 },
+                    markers: {
+                        size: 5
+                    },
                     xaxis: {
+                        title: {
+                            text: 'Date'
+                        },
                         type: 'datetime',
-                        categories: isoDates
+                        categories: isoDates,
+                        labels: {
+                            formatter: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-GB', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            }
+                        }
                     },
                     yaxis: {
                         tickAmount: 2,
@@ -338,6 +357,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             // default check 3 pertama
             $('.model-checkbox').slice(0, 3).prop('checked', true);
         }
+
         function initDefaultDate() {
             const today = new Date();
             const lastMonth = new Date();
@@ -399,22 +419,20 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         //     $('#filterModal').modal('hide');
         // });
 
-        $('#applyFilter').on('click', function () {
+        $('#applyFilter').on('click', function() {
             const selected = $('.model-checkbox:checked')
-                .map(function () {
+                .map(function() {
                     return this.value;
                 }).get();
 
             chart.updateSeries(
-                selected.length
-                    ? allSeries.filter(s => selected.includes(s.name))
-                    : allSeries.slice(0, 3)
+                selected.length ?
+                allSeries.filter(s => selected.includes(s.name)) :
+                allSeries.slice(0, 3)
             );
 
             $('#filterModal').modal('hide');
         });
-
-    
     </script>
     <!-- <script>
         $.ajax({
@@ -541,17 +559,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             data: totalReports
                         }],
                         chart: {
-                            type: 'bar',
-                            height: 350
-                        },
-                        plotOptions: {
-                            bar: {
-                                horizontal: false,
-                                endingShape: 'rounded'
+                            type: 'area',
+                            height: 350,
+                            toolbar: {
+                                show: true
                             }
-                        },
-                        dataLabels: {
-                            enabled: false
                         },
                         xaxis: {
                             categories: labels,
@@ -563,35 +575,20 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             title: {
                                 text: 'Total Reports'
                             },
-                            min: 0,
-                            tickAmount: 5,
-                            labels: {
-                                formatter: function(value) {
-                                    return value.toFixed(0);
-                                }
-                            }
+                            min: 0
                         },
-                        fill: {
-                            colors: ['#14a043']
+                        markers: {
+                            size: 5
                         },
                         stroke: {
-                            width: 1,
-                            colors: ['rgb(18, 100, 133)']
+                            curve: 'smooth'
+                        },
+                        title: {
+                            // text: 'Tota Report per Model',
+                            align: 'center'
                         },
                         tooltip: {
-                            y: {
-                                formatter: function(value) {
-                                    return value.toFixed(0);
-                                }
-                            }
-                        },
-                        grid: {
-                            show: true,
-                            borderColor: '#e7e7e7',
-                            strokeDashArray: 3
-                        },
-                        legend: {
-                            show: false
+                            enabled: true
                         }
                     };
 
@@ -604,7 +601,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             }
         });
 
-        $.ajax({
+       $.ajax({
             url: '/connectify-web/controllers/LineReportController.php?type=total-by-model',
             type: 'GET',
             data: {
@@ -622,6 +619,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         departmentNames.push(totals[key].department_name);
                         totalReports.push(totals[key].total_reports);
                     }
+
                     var options = {
                         series: [{
                             name: 'Total Reports',
@@ -629,41 +627,47 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         }],
                         chart: {
                             type: 'bar',
-                            height: 350
-                        },
-                        plotOptions: {
-                            bar: {
-                                horizontal: false,
-                                endingShape: 'rounded'
+                            height: 350,
+                            toolbar: {
+                                show: true
                             }
-                        },
-                        dataLabels: {
-                            enabled: false
                         },
                         xaxis: {
                             categories: departmentNames,
                             title: {
-                                text: 'Departments'
+                                text: 'Department'
                             }
                         },
                         yaxis: {
                             title: {
                                 text: 'Total Reports'
+                            },
+                            min: 0
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                columnWidth: '70%',
+                                endingShape: 'rounded'
                             }
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            // formatter: function (val) {
+                            //     return parseInt(val); 
+                            // }
+                        },
+                        title: {
+                            // text: 'Total Reports per Department',
+                            align: 'center'
                         },
                         tooltip: {
+                            enabled: true,
                             y: {
-                                formatter: function(value) {
-                                    return value.toFixed(0);
+                                formatter: function (val) {
+                                    return parseInt(val); 
                                 }
                             }
-                        },
-                        fill: {
-                            colors: ['#14a043']
-                        },
-                        stroke: {
-                            width: 1,
-                            colors: ['rgb(38, 100, 136)']
                         }
                     };
 

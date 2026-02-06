@@ -60,7 +60,7 @@
                             <ul class="nxl-submenu">
                                 <li class="nxl-item">
                                     <a class="nxl-link" href="/connectify-web/pages/reports/line-report/sec1.php">
-                                        Sec 1
+                                        Sec 1 
                                     </a>
                                 </li>
                                 <li class="nxl-item">

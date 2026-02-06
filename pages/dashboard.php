@@ -501,8 +501,21 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     },
                     markers: { size: 5 },
                     xaxis: {
+                        title: {
+                            text: 'Date'
+                        },
                         type: 'datetime',
-                        categories: isoDates
+                        categories: isoDates,
+                        labels: {
+                            formatter: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-GB', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            }
+                        }
                     },
                     yaxis: {
                         tickAmount: 2,

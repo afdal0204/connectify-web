@@ -39,10 +39,14 @@ class NotificationController
     }
     public function getNotifications()
     {
+        // $result = $this->conn->query("
+        //     SELECT * FROM notifications 
+        //     ORDER BY created_at DESC
+        //     LIMIT 7
+        // ");
         $result = $this->conn->query("
             SELECT * FROM notifications 
             ORDER BY created_at DESC
-            LIMIT 7
         ");
 
         $data = [];

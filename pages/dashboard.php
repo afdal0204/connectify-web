@@ -492,7 +492,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     series: defaultSeries,
                     chart: {
                         type: 'area',
-                        height: 350,
+                        height: 400,
                         toolbar: { show: true }
                     },
                     stroke: {
@@ -541,7 +541,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
                 initDefaultDate();
                 initModelFilter();
-
             }
         });
 
@@ -574,59 +573,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             $('#toDate').val(today.toISOString().split('T')[0]);
             $('#fromDate').val(lastMonth.toISOString().split('T')[0]);
         }
-
-        // $(document).on('change', '.model-checkbox', function () {
-        //     if ($('.model-checkbox:checked').length > 5) {
-        //         this.checked = false;
-        //         alert('Maksimal pilih 5 model');
-        //     }
-        // });
-        // $('#applyFilter').on('click', function () {
-        //     const selectedModels = $('.model-checkbox:checked')
-        //         .map(function () {
-        //             return this.value;
-        //         }).get();
-
-        //     const fromDate = $('#fromDate').val();
-        //     const toDate = $('#toDate').val();
-
-        //     // filter data by date
-        //     const filteredData = rawDataGlobal.filter(item =>
-        //         item.date >= fromDate && item.date <= toDate
-        //     );
-
-        //     // rebuild categories
-        //     const categories = [...new Set(filteredData.map(i => i.date))].sort();
-        //     const isoDates = categories.map(d => new Date(d).toISOString());
-
-        //     // rebuild series
-        //     const seriesSource = selectedModels.length
-        //         ? allModels.filter(m => selectedModels.includes(m))
-        //         : allModels.slice(0, 3);
-
-        //     const newSeries = seriesSource.map(model => ({
-        //         name: model,
-        //         data: categories.map(date => {
-        //             const found = filteredData.find(d =>
-        //                 d.model_name === model && d.date === date
-        //             );
-        //             return found ? ({
-        //                 "not running": 0,
-        //                 "not target": 1,
-        //                 "target": 2
-        //             })[found.uph_status_name.toLowerCase()] : 0;
-        //         })
-        //     }));
-
-        //     chart.updateOptions({
-        //         xaxis: { categories: isoDates }
-        //     });
-
-        //     chart.updateSeries(newSeries);
-
-        //     $('#filterModal').modal('hide');
-        // });
-
         $('#applyFilter').on('click', function () {
             const selected = $('.model-checkbox:checked')
                 .map(function () {
@@ -641,7 +587,16 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
             $('#filterModal').modal('hide');
         });
+        
+        $(document).on('click', '[data-bs-toggle="refresh"]', function() {
+            $('.model-checkbox').prop('checked', false);
+            $('.model-checkbox').slice(0, 3).prop('checked', true);
+            chart.updateSeries(allSeries.slice(0, 3));
 
+            initDefaultDate();
+
+            $('#filterModal').modal('hide');
+        });
     
     </script>
     <!-- target chart -->

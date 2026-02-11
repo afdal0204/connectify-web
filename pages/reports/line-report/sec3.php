@@ -24,7 +24,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <meta name="description" content="">
     <meta name="keyword" content="">
     <meta name="author" content="theme_ocean">
-    <title>Connectify | Server</title>
+    <title>Connectify | Line Report</title>
     <link rel="shortcut icon" type="image/x-icon" href="/connectify-web/assets/images/logo.png" />
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/vendors.min.css">

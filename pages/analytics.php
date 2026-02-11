@@ -112,6 +112,23 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </div>
                         </div>
                     </div>
+                    <div class="col-xxl-12">
+                        <div class="card stretch stretch-full">
+                            <div class="card-header">
+                                <h5 class="card-title">Total reports by Users</h5>
+                                <div class="card-header-action">
+                                    <div class="card-header-btn">
+                                        <div data-bs-toggle="tooltip" title="Refresh">
+                                            <a id="btnRefresh" href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body custom-card-action p-0">
+                                <div id="topReporter"></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-xxl-6">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
@@ -366,59 +383,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             $('#toDate').val(today.toISOString().split('T')[0]);
             $('#fromDate').val(lastMonth.toISOString().split('T')[0]);
         }
-
-        // $(document).on('change', '.model-checkbox', function () {
-        //     if ($('.model-checkbox:checked').length > 5) {
-        //         this.checked = false;
-        //         alert('Maksimal pilih 5 model');
-        //     }
-        // });
-        // $('#applyFilter').on('click', function () {
-        //     const selectedModels = $('.model-checkbox:checked')
-        //         .map(function () {
-        //             return this.value;
-        //         }).get();
-
-        //     const fromDate = $('#fromDate').val();
-        //     const toDate = $('#toDate').val();
-
-        //     // filter data by date
-        //     const filteredData = rawDataGlobal.filter(item =>
-        //         item.date >= fromDate && item.date <= toDate
-        //     );
-
-        //     // rebuild categories
-        //     const categories = [...new Set(filteredData.map(i => i.date))].sort();
-        //     const isoDates = categories.map(d => new Date(d).toISOString());
-
-        //     // rebuild series
-        //     const seriesSource = selectedModels.length
-        //         ? allModels.filter(m => selectedModels.includes(m))
-        //         : allModels.slice(0, 3);
-
-        //     const newSeries = seriesSource.map(model => ({
-        //         name: model,
-        //         data: categories.map(date => {
-        //             const found = filteredData.find(d =>
-        //                 d.model_name === model && d.date === date
-        //             );
-        //             return found ? ({
-        //                 "not running": 0,
-        //                 "not target": 1,
-        //                 "target": 2
-        //             })[found.uph_status_name.toLowerCase()] : 0;
-        //         })
-        //     }));
-
-        //     chart.updateOptions({
-        //         xaxis: { categories: isoDates }
-        //     });
-
-        //     chart.updateSeries(newSeries);
-
-        //     $('#filterModal').modal('hide');
-        // });
-
         $('#applyFilter').on('click', function() {
             const selected = $('.model-checkbox:checked')
                 .map(function() {
@@ -433,116 +397,18 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
             $('#filterModal').modal('hide');
         });
-    </script>
-    <!-- <script>
-        $.ajax({
-            url: '/connectify-web/controllers/DailyTargetReportController.php?type=target-report-chart',
-            type: 'GET',
-            dataType: 'json',
-            success: function(res) {
-                if (!res.success) return;
 
-                const rawData = res.data;
+        $(document).on('click', '[data-bs-toggle="refresh"]', function() {
+            $('.model-checkbox').prop('checked', false);
+            $('.model-checkbox').slice(0, 3).prop('checked', true);
+            chart.updateSeries(allSeries.slice(0, 3));
 
-                // 1. Ambil dan ubah ke ISO
-                const categories = [...new Set(rawData.map(item => item.date))].sort();
-                const isoDates = categories.map(d => new Date(d).toISOString());
+            initDefaultDate();
 
-                // 2. Ambil daftar model unik
-                const models = [...new Set(rawData.map(item => item.model_name))].sort();
-
-                // 3. Mapping status
-                const statusMap = {
-                    "not target": 1,
-                    "target": 2,
-                    "not running": 0
-                };
-
-                const reverseStatusMap = {
-                    1: "Not Target",
-                    2: "Target",
-                    0: "Not Running"
-                };
-
-                // 4. Build series
-                const series = models.map(model => {
-                    const data = isoDates.map((iso, idx) => {
-                        const date = categories[idx];
-                        const found = rawData.find(item =>
-                            item.model_name === model &&
-                            item.date === date
-                        );
-                        const val = found ? statusMap[found.uph_status_name.toLowerCase()] : 0;
-                        console.log(`Model ${model}, date ${date} →`, val);
-                        return val;
-                    });
-                    return {
-                        name: model,
-                        data
-                    };
-                });
-
-                console.log("Series final:", series);
-
-                // 5. Render chart
-                var options = {
-                    series,
-                    chart: {
-                        type: 'area',
-                        height: 350,
-                        toolbar: {
-                            show: true
-                        }
-                    },
-                    stroke: {
-                        width: 3,
-                        curve: 'smooth'
-                    },
-                    markers: {
-                        size: 5
-                    },
-                    xaxis: {
-                        title: {
-                            text: 'Date'
-                        },
-                        type: 'datetime',
-                        categories: isoDates,
-                        labels: {
-                            formatter: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-GB', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                });
-                            }
-                        }
-                    },
-                    yaxis: {
-                        title: {
-                            text: '......'
-                        },
-                        tickAmount: 2,
-                        labels: {
-                            formatter: val => reverseStatusMap[val] || val
-                        },
-                    },
-                    tooltip: {
-                        y: {
-                            formatter: val => reverseStatusMap[val] || '-'
-                        }
-                    }
-                };
-
-                var chart = new ApexCharts(document.querySelector("#dailyReportsChart"), options);
-                chart.render();
-            },
-            error: function(err) {
-                console.error(err);
-            }
+            $('#filterModal').modal('hide');
         });
-    </script> -->
-
+    </script>
+   
     <script>
         $.ajax({
             url: '/connectify-web/controllers/ReportController.php?type=total-by-model',
@@ -679,6 +545,63 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             },
             error: function(xhr, status, error) {
                 console.error("Error fetching data:", error);
+            }
+        });
+
+        $.ajax({
+            url: '/connectify-web/controllers/ReportController.php?type=top-reporter',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                if (json.success && Array.isArray(json.data)) {
+                    const labels = json.data.map(item => item.name);
+                    const totalReports = json.data.map(item => parseInt(item.total_report));
+
+                    var options = {
+                        series: [{
+                            name: 'Total Reports',
+                            data: totalReports
+                        }],
+                        chart: {
+                            type: 'area',
+                            height: 350,
+                            toolbar: {
+                                show: true
+                            }
+                        },
+                        xaxis: {
+                            categories: labels,
+                            title: {
+                                text: 'Name'
+                            }
+                        },
+                        yaxis: {
+                            title: {
+                                text: 'Total Reports'
+                            },
+                            min: 0
+                        },
+                        markers: {
+                            size: 5
+                        },
+                        stroke: {
+                            curve: 'smooth'
+                        },
+                        title: {
+                            // text: 'Tota Report per Model',
+                            align: 'center'
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    };
+
+                    var chart = new ApexCharts(document.querySelector("#topReporter"), options);
+                    chart.render();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Chart data fetch error:", error);
             }
         });
     </script>

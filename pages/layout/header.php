@@ -1,3 +1,27 @@
+<style>
+    /* #notifList {
+        max-height: 300px;   
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    @media (max-width: 768px) {
+        #notifList {
+            max-height: 200px;  
+        }
+    } */
+#notifList {
+    max-height: 300px;   /* Atur tinggi maksimal */
+    overflow-y: auto;    /* Membuat kontainer scrollable */
+    padding-right: 10px; /* Ruang tambahan di kanan */
+    padding-bottom: 10px; /* Jarak antara daftar notifikasi dan footer */
+}
+.notifications-footer {
+    margin-top: 10px; /* Jarak antara daftar notifikasi dan footer */
+}
+
+</style>
+
 <header class="nxl-header">
     <div class="header-wrapper">
         <div class="header-left d-flex align-items-center gap-4">
@@ -73,9 +97,10 @@
                         <div class="d-flex justify-content-between align-items-center notifications-head">
                             <h6 class="fw-bold text-dark mb-0">Notifications</h6>
                         </div>
-                        <div id="notifList"></div>
+                         <div id="notifList" style="max-height: 500px; overflow-y: auto; padding-right: 10px;"></div>
+                        <!-- <div id="notifList"></div> -->
                         <div class="text-center notifications-footer">
-                            <a href="javascript:void(0);" class="fs-13 fw-semibold text-dark">All Notifications</a>
+                            <!-- <a href="javascript:void(0);" class="fs-13 fw-semibold text-dark">All Notifications</a> -->
                         </div>
                     </div>
                 </div>
@@ -113,6 +138,7 @@
         </div>
     </div>
 </header>
+
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -240,7 +266,7 @@
                                     class="rounded me-3 border" width="40" height="40">
 
                                 <div class="notifications-desc">
-                                    <a href="#" class="font-body text-truncate-3-line">
+                                    <a href="#" class="font-body text-truncate-5-line">
                                         ${n.message}
                                     </a>
                                     <div class="d-flex justify-content-between align-items-center mt-1">

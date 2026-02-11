@@ -29,7 +29,7 @@ if ($stationResult->num_rows > 0) {
     }
 }
 
-$role_id = $_SESSION['role_id'] ?? 'Guest'; 
+$role_id = $_SESSION['role_id'] ?? 'Guest';
 ?>
 
 <!DOCTYPE html>
@@ -43,7 +43,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <meta name="keyword" content="">
     <meta name="author" content="theme_ocean">
     <title>Connectify | Model</title>
-    
+
     <link rel="shortcut icon" type="image/x-icon" href="/connectify-web/assets/images/logo.png" />
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/vendors.min.css">
@@ -77,7 +77,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             text-overflow: ellipsis;
         } */
 
-     /* Membuat semua cell di #modelTable wrap */
+        /* Membuat semua cell di #modelTable wrap */
         #modelTable td,
         #modelTable th {
             white-space: normal !important;
@@ -97,7 +97,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         #modelTable th:nth-child(6) {
             max-width: 220px;
         } */
-
     </style>
 </head>
 
@@ -232,8 +231,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             <label>Output Target</label>
                             <input type="number" id="outputTarget" name="outputTarget" class="form-control" required>
                         </div>
-                        <div class="col-md-6 mt-2">
-                            <label for="userOwner" class="form-label">Owner</label>
+                        <div class="col-md-6">
+                            <label for="userOwner" class="">Owner</label>
                             <select id="userOwner" name="userOwner" class="form-select" required>
                                 <option value="">-----</option>
                                 <?php foreach ($users_owner as $owner): ?>
@@ -244,7 +243,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </select>
                         </div>
                         <div class="col-md-4 mt-2">
-                            <label class="form-label">Members</label>
+                            <label class="">Members</label>
                             <select id="userMembers" name="userMembers[]" class="form-select" required>
                                 <option value="">-----</option>
                                 <?php foreach ($users_member as $member): ?>
@@ -255,7 +254,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </select>
                         </div>
                         <div class="col-8 mt-2">
-                            <label class="form-label">Selected Members</label>
+                            <label class="">Selected Members</label>
                             <div id="selectedMembersContainer" class="d-flex flex-wrap gap-2 border p-2" style="min-height: 50px;"></div>
                         </div>
                         <div class="col-12 d-flex justify-content-center mt-4">
@@ -324,7 +323,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Members</label>
+                                    <label class="">Members</label>
                                     <select id="editUserMembers" name="editUserMembers" class="form-select" required>
                                         <option value="">-----</option>
                                         <?php foreach ($users_member as $member): ?>
@@ -335,7 +334,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     </select>
                                 </div>
                                 <div class="col-8">
-                                    <label class="form-label">Selected Members</label>
+                                    <label class="">Selected Members</label>
                                     <div id="EditSelectedMembersContainer" class="d-flex flex-wrap gap-2 border p-2" style="min-height: 50px;"></div>
                                 </div>
                                 <!-- <div class="col-md-12">
@@ -409,7 +408,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     </div>
 
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
-     <!-- vendors.min.js {always must need to be top} -->
+    <!-- vendors.min.js {always must need to be top} -->
     <script src="/connectify-web/assets/vendors/js/dataTables.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/dataTables.bs5.min.js"></script>
     <script src="/connectify-web/assets/js/leads-init.min.js"></script>
@@ -419,13 +418,13 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script src="/connectify-web/assets/vendors/js/select2-active.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/jquery.time-to.min.js "></script>
     <script src="/connectify-web/assets/js/common-init.min.js"></script>
-     <script src="assets/js/projects-init.min.js"></script>
+    <script src="assets/js/projects-init.min.js"></script>
     <script src="/connectify-web/assets/js/widgets-tables-init.min.js"></script>
     <script src="/connectify-web/assets/js/theme-customizer-init.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/dataTables.buttons.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/jszip.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>>
-   <!-- <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script> -->
+    <!-- <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script> -->
     <script src="/connectify-web/pages/js/dashboard.js"></script>
     <script>
         setInterval(() => {
@@ -466,11 +465,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     // },
                     {
                         data: null,
-                        render: function(data, type, row){
+                        render: function(data, type, row) {
                             if (!row.output_target || row.output_target.length === 0) return '-';
-                           
+
                             return `${data.output_target}`;
-                            
+
                         }
                     },
                     {
@@ -528,7 +527,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     render: function(data, type, row, meta) {
                         return meta.row + 1;
                     },
-                    
+
                 }],
                 autoWidth: false,
                 // columnDefs: [
@@ -568,11 +567,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 container.empty();
                 selectedMembers.forEach((name, id) => {
                     const badge = $(`
-                <span class="badge bg-info text-dark d-flex align-items-center">
-                    ${name}
-                    <button type="button" class="btn-close btn-close-white btn-sm ms-2" aria-label="Remove"></button>
-                </span>
-            `);
+                        <span class="badge bg-info text-dark d-flex align-items-center">
+                            ${name}
+                            <button type="button" class="btn-close btn-close-white btn-sm ms-2" aria-label="Remove"></button>
+                        </span>
+                    `);
                     badge.find('button').click(() => {
                         selectedMembers.delete(id);
                         renderSelectedMembers();
@@ -630,10 +629,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
                         } else {
                             $('#message-container').html(`
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>`);
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    ${response.message}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>`);
                         }
                     },
                     error: function(xhr) {
@@ -702,11 +701,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     const trimmed = name.trim();
                     selectedMembers.set(trimmed, trimmed);
                     memberContainer.append(`
-                <span class="badge bg-info text-dark me-2 mb-2">
-                    ${trimmed}
-                    <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-member" data-name="${trimmed}"></button>
-                </span>
-            `);
+                        <span class="badge bg-info text-dark me-2 mb-2">
+                            ${trimmed}
+                            <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-member" data-name="${trimmed}"></button>
+                        </span>
+                    `);
                 });
 
                 memberContainer.off('click', '.remove-member').on('click', '.remove-member', function() {
@@ -719,11 +718,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 stations.forEach(st => {
                     const trimmed = st.trim();
                     stationContainer.append(`
-                <span class="badge bg-secondary text-light me-2 mb-2">
-                    ${trimmed}
-                    <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-station" data-name="${trimmed}"></button>
-                </span>
-            `);
+                        <span class="badge bg-secondary text-light me-2 mb-2">
+                            ${trimmed}
+                            <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-station" data-name="${trimmed}"></button>
+                        </span>
+                    `);
                 });
 
                 stationContainer.off('click', '.remove-station').on('click', '.remove-station', function() {
@@ -772,11 +771,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 container.empty();
                 selectedMembers.forEach((name, id) => {
                     const badge = $(`
-                <span class="badge bg-info text-dark d-flex align-items-center me-2 mb-2">
-                    ${name}
-                    <button type="button" class="btn-close btn-close-white btn-sm ms-2 remove-member" data-id="${id}" aria-label="Remove"></button>
-                </span>
-            `);
+                        <span class="badge bg-info text-dark d-flex align-items-center me-2 mb-2">
+                            ${name}
+                            <button type="button" class="btn-close btn-close-white btn-sm ms-2 remove-member" data-id="${id}" aria-label="Remove"></button>
+                        </span>
+                    `);
                     badge.find('button').click(() => {
                         selectedMembers.delete(id);
                         renderEditSelectedMembers();
@@ -800,11 +799,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 container.empty();
                 devices.forEach(d => {
                     container.append(`
-                <span class="badge bg-info text-dark me-2 mb-2">
-                    ${d.device_name} (${d.station})
-                    <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-device" data-id="${d.id}"></button>
-                </span>
-            `);
+                        <span class="badge bg-info text-dark me-2 mb-2">
+                            ${d.device_name} (${d.station})
+                            <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-device" data-id="${d.id}"></button>
+                        </span>
+                    `);
                 });
 
                 container.off('click', '.remove-device').on('click', '.remove-device', function() {
@@ -822,11 +821,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
                 stations.push(newStation);
                 $('#stationList').append(`
-            <span class="badge bg-info text-dark me-2 mb-2">
-                ${newStation}
-                <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-station" data-name="${newStation}"></button>
-            </span>
-        `);
+                    <span class="badge bg-info text-dark me-2 mb-2">
+                        ${newStation}
+                        <button type="button" class="btn-close btn-close-white btn-sm ms-1 remove-station" data-name="${newStation}"></button>
+                    </span>
+                `);
                 $('#newStationName').val('');
                 renderDeviceStations();
             });

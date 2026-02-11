@@ -19,17 +19,13 @@ class ReportController
             case 'GET':
                 if (isset($_GET['type']) && $_GET['type'] === 'total') {
                     $this->getTotalReports();
-                }
-                else if (isset($_GET['type']) && $_GET['type'] === 'total-by-model') {
+                } else if (isset($_GET['type']) && $_GET['type'] === 'total-by-model') {
                     $this->getTotalReportByModel();
-                }
-                else if (isset($_GET['type']) && $_GET['type'] === 'my-report'){
+                } else if (isset($_GET['type']) && $_GET['type'] === 'my-report') {
                     $this->getReportsByWorkId();
-                }
-                else if (isset($_GET['type']) && $_GET['type'] === 'top-reporter'){
+                } else if (isset($_GET['type']) && $_GET['type'] === 'top-reporter') {
                     $this->getTopReporter();
-                }             
-                else {
+                } else {
                     $this->getAllReports();
                 }
                 break;
@@ -71,7 +67,7 @@ class ReportController
                 LEFT JOIN users u ON ar.user_id = u.id
                 WHERE 1 = 1";
 
-     
+
         // --- APPLY FILTER MODEL ---
         if (!empty($filter_model)) {
             $sql .= " AND ar.model_id = " . intval($filter_model);
@@ -105,7 +101,8 @@ class ReportController
 
 
     //chart and table abnormal report
-    private function getTotalReportByModel(){
+    private function getTotalReportByModel()
+    {
         $result = $this->conn->query("SELECT u_owner.name AS owner,
                                             m.id AS model_id,
                                             m.model_name,
@@ -138,8 +135,9 @@ class ReportController
         ]);
         exit();
     }
-    
-    public function getReportsByWorkId(){
+
+    public function getReportsByWorkId()
+    {
         $user_id = $_GET['user_id'] ?? null;
 
         if (!$user_id) {
@@ -171,7 +169,7 @@ class ReportController
 
         $stmt->execute();
 
-        $result = $stmt->get_result(); 
+        $result = $stmt->get_result();
 
         $reports = [];
 
@@ -183,24 +181,44 @@ class ReportController
             "data" => $reports
         ]);
         exit();
-    }  
+    }
 
-    public function getTopReporter(){
-        $result = $this->conn->query(" SELECT ar.id, m.model_name, ar.user_id, ar.model_id, u.name, u.work_id, COUNT(*) AS totalReports
-                                        FROM abnormal_reports ar
-                                        LEFT JOIN models m ON ar.model_id = m.id
-                                        LEFT JOIN users u ON ar.user_id = u.id
-                                        GROUP BY user_id, model_id
-                                        ORDER BY totalReports DESC
-                                        LIMIT 3");
+    public function getTopReporter()
+    {
+        $result = $this->conn->query(" SELECT
+                                        u.id, u.name,  u.role_id,
+                                        COALESCE(COUNT(c.user_id), 0) AS total_report         
+                                    FROM users u
+                                    LEFT JOIN (
+                                        SELECT user_id FROM abnormal_reports
+                                        UNION ALL
+                                        SELECT user_id FROM line_report_per_shift
+                                    ) AS c
+                                        ON c.user_id = u.id                                   
+                                    -- WHERE u.role_id IN (2, 3)                              
+                                    WHERE u.role_id IN (3)                              
+                                    GROUP BY u.id, u.name, u.role_id                        
+                                    ORDER BY u.name ASC;        
+                                ");
+        // $result = $this->conn->query(" SELECT ar.id, m.model_name, ar.user_id, ar.model_id, u.name, u.work_id, COUNT(*) AS totalReports
+        //                                 FROM abnormal_reports ar
+        //                                 LEFT JOIN models m ON ar.model_id = m.id
+        //                                 LEFT JOIN users u ON ar.user_id = u.id
+        //                                 GROUP BY user_id, model_id
+        //                                 ORDER BY totalReports DESC
+        //                                 LIMIT 3");
         $reports = [];
 
-        while ($row = $result->fetch_assoc()){
+        while ($row = $result->fetch_assoc()) {
             $reports[] = $row;
         }
-        echo json_encode($reports);
+        echo json_encode([
+            "success" => true,
+            "data" => $reports
+        ]);
+        exit();
     }
-    
+
     public function addReports()
     {
         $data = json_decode(file_get_contents("php://input"), true);
@@ -220,9 +238,10 @@ class ReportController
         $remark         = ucfirst(strtolower(trim($data['remark']))) ?? "";
 
 
-        if (!$model_id || !$station_id || !$shift || !$date || !$time_start || !$time_finish 
-                || !$error_code_id || !$root_cause || !$action_taken || !$user_id || !$remark)
-        {
+        if (
+            !$model_id || !$station_id || !$shift || !$date || !$time_start || !$time_finish
+            || !$error_code_id || !$root_cause || !$action_taken || !$user_id || !$remark
+        ) {
             http_response_code(400);
             echo json_encode(["message" => "All fields are required"]);
             exit();
@@ -275,7 +294,6 @@ class ReportController
 
             echo json_encode(["success" => true, "message" => "New report added successfully"]);
             exit();
-            
         } else {
             http_response_code(500);
             echo json_encode([
@@ -305,13 +323,14 @@ class ReportController
         $action_taken   = ucfirst(strtolower(trim($data['action_taken']))) ?? "";
         $remark         = ucfirst(strtolower(trim($data['remark']))) ?? "";
 
-        if (!$model_id || !$station_id || !$shift || !$date || !$time_start || !$time_finish 
-                || !$error_code_id || !$root_cause || !$action_taken|| !$remark)
-            {
-                http_response_code(400);
-                echo json_encode(["message" => "All fields are required"]);
-                exit();
-            }
+        if (
+            !$model_id || !$station_id || !$shift || !$date || !$time_start || !$time_finish
+            || !$error_code_id || !$root_cause || !$action_taken || !$remark
+        ) {
+            http_response_code(400);
+            echo json_encode(["message" => "All fields are required"]);
+            exit();
+        }
 
         $checkStmt = $this->conn->prepare("SELECT id FROM abnormal_reports WHERE id = ?");
         $checkStmt->bind_param('i', $id);
@@ -387,13 +406,12 @@ class ReportController
         $deleteReport->bind_param('i', $id);
 
         if ($deleteReport->execute()) {
-            echo json_encode(["success"=>true, "message" => "Report deleted successfully"]);
+            echo json_encode(["success" => true, "message" => "Report deleted successfully"]);
         } else {
             http_response_code(500);
             echo json_encode(["success" => false, "message" => "Failed to delete report", "error" => $deleteReport->error]);
         }
     }
-
 }
 
 // === Auto-handle access file directly ===

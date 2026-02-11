@@ -42,7 +42,6 @@ class LoginController {
             exit;
         }
 
-        // $stmt = $this->conn->prepare("SELECT * FROM users WHERE work_id = ?");
         $stmt = $this->conn->prepare("SELECT u.id, u.name, u.work_id, u.department_id,
                                                 d.department_name AS department,
                                                 u.role_id,

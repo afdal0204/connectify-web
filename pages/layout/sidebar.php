@@ -13,8 +13,6 @@
         vertical-align: middle;  /* memaksa icon sejajar tengah dengan teks */
         font-size: 1rem;         /* sesuaikan dengan font teks */
     }
-
-
 </style>
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">

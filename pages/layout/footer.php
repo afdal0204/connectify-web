@@ -13,7 +13,7 @@
     <p class="fs-11 text-muted fw-medium text-uppercase mb-0 copyright">
     </p>
     <p class="text-muted fw-medium mb-0 copyright">
-        <span>Copyright © Connectiy 2025 - </span>
+        <span>Copyright © Connectify 2025 - </span>
         <script>
             document.write(new Date().getFullYear());
         </script>

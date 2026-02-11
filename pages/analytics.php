@@ -201,8 +201,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     <label class="form-label fw-semibold">Select Model</label>
 
                     <div id="modelDropdown"
-                        class="border rounded p-2"
-                        style="max-height: 280px; overflow-y: auto;">
+                        class="border rounded p-3 d-flex flex-wrap gap-3"
+                        style="max-height: 180px; overflow-y: auto;">
                         <!-- checkbox via JS -->
                     </div>
                 </div>

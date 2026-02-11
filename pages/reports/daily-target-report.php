@@ -150,40 +150,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 </div>
             </div>
             <div class="main-content">
-                <div class="row g-3 px-0 mt-2 mb-2 align-items-end">
-                    <!-- <div class="col-md-2">
-                        <label class="form-label fw-bold">Model</label>
-                        <select id="filterModel" class="form-select">
-                            <option value="">All</option>
-                            <?php $modelRes->data_seek(0);
-                            while ($row = $modelRes->fetch_assoc()): ?>
-                                <option value="<?= $row['id'] ?>"><?= $row['model_name'] ?></option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-bold">Start Date</label>
-                        <input type="date" id="filterDateFrom" class="form-control"
-                            max="<?= date('Y-m-d') ?>">
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-bold">End Date</label>
-                        <input type="date" id="filterDateTo" class="form-control"
-                            max="<?= date('Y-m-d') ?>">
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end justify-content-start gap-2">
-                        <button class="btn btn-primary" id="btnApplyFilter">
-                            <i class="fas fa-filter"></i> Apply
-                        </button>
-                        <button class="btn btn-secondary" id="btnClearFilter">
-                            <i class="fas fa-times"></i> Clear
-                        </button>
-                        <div id="exportButtonsContainer"></div>
-                    </div> -->
-
+                <div class="row g-3 px-0 mb-2 align-items-end">
                     <div class="col-md-12 d-flex align-items-end justify-content-end">
                         <input type="search" id="customSearchBox" class="form-control" placeholder="Search..." style="max-width: 250px;">
                     </div>
@@ -226,23 +193,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     </table>
                                 </div>
                             </div>
-                            <!-- <div class="card-footer">
-                                <ul class="list-unstyled d-flex align-items-center gap-2 mb-0 pagination-common-style">
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-arrow-left"></i></a>
-                                    </li>
-                                    <li><a href="javascript:void(0);" class="active">1</a></li>
-                                    <li><a href="javascript:void(0);">2</a></li>
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-dot"></i></a>
-                                    </li>
-                                    <li><a href="javascript:void(0);">8</a></li>
-                                    <li><a href="javascript:void(0);">9</a></li>
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-arrow-right"></i></a>
-                                    </li>
-                                </ul>
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -309,6 +259,13 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         <div class="col-md-12">
                             <label class="form-label">Remarks</label>
                             <textarea id="remark" class="form-control" rows="2"></textarea>
+
+                            <!-- <label class="form-label">Upload Image <small class="text-muted">(Optional)</small></label>
+                            <input type="file"
+                                name="remark_image"
+                                id="remarkImage"
+                                class="form-control"
+                                accept="image/*"> -->
                         </div>
 
                         <input type="hidden" id="user_id" value="<?= htmlspecialchars($_SESSION['user_id'] ?? '') ?>">

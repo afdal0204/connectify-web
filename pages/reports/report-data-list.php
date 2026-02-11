@@ -82,11 +82,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         </div>
                         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                             <div class="dropdown filter-dropdown">
-                                <!-- <a class="btn btn-md btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 10" data-bs-auto-close="outside">
+                                <a class="btn btn-md btn-light-brand" data-bs-toggle="modal" data-bs-target="#abnormalFilterModal" data-bs-offset="0, 10" data-bs-auto-close="outside">
                                     <i class="feather-filter me-2"></i>
                                     <span>Filter</span>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end">
+                                <!-- <div class="dropdown-menu dropdown-menu-end">
                                     <div class="dropdown-item">
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" id="Role" checked="checked">
@@ -142,8 +142,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 </div>
             </div>
             <div class="main-content">
-                <div class="row g-3 px-0 mt-2 mb-2 align-items-end">
-                    <div class="col-md-2">
+                <div class="row g-3 px-0 mb-2 align-items-end">
+                    <!-- <div class="col-md-2">
                         <label class="form-label fw-bold">Model</label>
                         <select id="filterModel" class="form-select">
                             <option value="">All</option>
@@ -174,22 +174,22 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             <i class="fas fa-times"></i> Clear
                         </button>
                         <div id="exportButtonsContainer"></div>
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end justify-content-end">
+                    </div> -->
+                    <div class="col-md-12 d-flex align-items-end justify-content-end">
                         <input type="search" id="customSearchBox" class="form-control" placeholder="Search..." style="max-width: 250px;">
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-xxl-12">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
                                 <h5 class="card-title">Abnormal Reports</h5>
+                                
                                 <div class="card-header-action">
+                                    <div id="exportButtonsContainer"></div>
                                     <div class="card-header-btn">
                                         <div data-bs-toggle="tooltip" title="Refresh">
-                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                            <a id="btnClearFilter1" href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
                                         </div>
                                     </div>
                                 </div>
@@ -223,23 +223,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     </table>
                                 </div>
                             </div>
-                            <!-- <div class="card-footer">
-                                <ul class="list-unstyled d-flex align-items-center gap-2 mb-0 pagination-common-style">
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-arrow-left"></i></a>
-                                    </li>
-                                    <li><a href="javascript:void(0);" class="active">1</a></li>
-                                    <li><a href="javascript:void(0);">2</a></li>
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-dot"></i></a>
-                                    </li>
-                                    <li><a href="javascript:void(0);">8</a></li>
-                                    <li><a href="javascript:void(0);">9</a></li>
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-arrow-right"></i></a>
-                                    </li>
-                                </ul>
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -249,6 +232,55 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         require_once '../layout/footer.php';
         ?>
     </main>
+     <!-- Modal Filter -->
+    <div class="modal fade" id="abnormalFilterModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manage Filter</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                  <div class="modal-body pt-3">
+                <div class="container-fluid">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Model</label>
+                            <select id="filterModel" class="form-select">
+                                <option value="">All</option>
+                                <?php $modelRes->data_seek(0);
+                                while ($row = $modelRes->fetch_assoc()): ?>
+                                    <option value="<?= $row['id'] ?>">
+                                        <?= $row['model_name'] ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Start Date</label>
+                            <input type="date"
+                                   id="filterDateFrom"
+                                   class="form-control"
+                                   max="<?= date('Y-m-d') ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">End Date</label>
+                            <input type="date"
+                                   id="filterDateTo"
+                                   class="form-control"
+                                   max="<?= date('Y-m-d') ?>">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+                <div class="modal-footer">
+                    <button id="btnClearFilter" class="btn btn-light" data-bs-dismiss="modal">Clear</button>
+                    <button class="btn btn-success" id="btnApplyFilter">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Create Report Modal -->
     <div class="modal fade" id="createReportModal" tabindex="-1" aria-labelledby="createReportModalLabel" aria-hidden="true">
@@ -408,9 +440,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dom: 'Blrtip',
                 buttons: [{
                     extend: 'excelHtml5',
-                    text: '<i class="fas fa-file-excel"></i> Export to Excel',
+                    // text: '  <i class="feather-download me-1 mb-0"></i><span>Genarate Report</span>',
+                    text: '<i class="feather-download"></i> Genarate Report',
                     title: 'Abnormal Report',
-                    className: 'btn btn-success btn-xs',
+                    className: 'btn btn-xs btn-primary rounded',
+                    // className: 'btn btn-success btn-xs',
                     
                     exportOptions: {
                         // columns: ':visible',
@@ -608,9 +642,15 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
             $('#btnApplyFilter').click(function() {
                 reportTable.ajax.reload();
-                
+                 $('#abnormalFilterModal').modal('hide');
             });
             $('#btnClearFilter').click(function() {
+                $('#filterModel').val('');
+                $('#filterDateFrom').val('');
+                $('#filterDateTo').val('');
+                reportTable.ajax.reload();
+            });
+            $('#btnClearFilter1').click(function() {
                 $('#filterModel').val('');
                 $('#filterDateFrom').val('');
                 $('#filterDateTo').val('');

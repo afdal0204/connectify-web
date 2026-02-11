@@ -86,7 +86,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 </div>
             </div>
             <div class="main-content">
-                <div class="row g-3 px-0 mt-2 mb-2 align-items-end">
+                <div class="row g-3 px-0 mb-2 align-items-end">
                     <div class="col-md-12 d-flex align-items-end justify-content-end">
                         <input type="search" id="customSearchBox" class="form-control" placeholder="Search..." style="max-width: 250px;">
                     </div>

@@ -140,7 +140,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 </div>
             </div>
             <div class="main-content">
-                <div class="row g-3 px-0 mt-2 mb-2 align-items-end">
+                <div class="row g-3 px-0 mb-2 align-items-end">
                     <div class="col-md-12 d-flex align-items-end justify-content-end">
                         <input type="search" id="customSearchBox" class="form-control" placeholder="Search..." style="max-width: 250px;">
                     </div>
@@ -179,23 +179,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     </table>
                                 </div>
                             </div>
-                            <!-- <div class="card-footer">
-                                <ul class="list-unstyled d-flex align-items-center gap-2 mb-0 pagination-common-style">
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-arrow-left"></i></a>
-                                    </li>
-                                    <li><a href="javascript:void(0);" class="active">1</a></li>
-                                    <li><a href="javascript:void(0);">2</a></li>
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-dot"></i></a>
-                                    </li>
-                                    <li><a href="javascript:void(0);">8</a></li>
-                                    <li><a href="javascript:void(0);">9</a></li>
-                                    <li>
-                                        <a href="javascript:void(0);"><i class="bi bi-arrow-right"></i></a>
-                                    </li>
-                                </ul>
-                            </div> -->
                         </div>
                     </div>
                 </div>

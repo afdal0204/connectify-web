@@ -56,8 +56,6 @@ if ($action == 'getLine' && !empty($_POST['model_id'])) {
     $res = $stmt->get_result();
     $row = $res->fetch_assoc();
 
-    // $line_area = $row ? $row['line_area'] : '';
-    // echo json_encode(['line_area' => $line_area]);
     echo json_encode([
         'success' => true,
         'model_id' => $model_id,
@@ -66,7 +64,36 @@ if ($action == 'getLine' && !empty($_POST['model_id'])) {
     exit;
 }
 
-if ($action == 'get')
+if ($action == 'getModels') {
+    $dept_id = $_POST['dept_id'] ?? '';
+
+    if (!empty($dept_id)) {
+        // filter berdasarkan department tertentu
+        $sql = "SELECT m.id, m.model_name 
+                FROM models m
+                LEFT JOIN users u_owner ON m.owner_id = u_owner.id
+                LEFT JOIN department d ON u_owner.department_id = d.id
+                WHERE d.id = ?
+                ORDER BY m.model_name ASC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $dept_id);
+    } else {
+        // kalau dept ALL, ambil semua model
+        $sql = "SELECT id, model_name FROM models ORDER BY model_name ASC";
+        $stmt = $conn->prepare($sql);
+    }
+
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    $data = [];
+    while ($row = $res->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    echo json_encode($data);
+    exit;
+}
 
 echo json_encode([]);
 exit;

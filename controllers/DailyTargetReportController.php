@@ -63,8 +63,8 @@ class DailyTargetReportController
                                         LEFT JOIN uph_status us ON dtr.uph_status_id = us.id
                                         ORDER BY dtr.date DESC, dtr.id DESC;
                                         ");
-        $reports = [];
 
+        $reports = [];
         while ($row = $result->fetch_assoc()) {
             $reports[] = $row;
         }

@@ -177,23 +177,23 @@ class UserController
     {
         $data = json_decode(file_get_contents("php://input"), true);
 
-        $name = strtoupper(trim($data['name'] ?? ''));
-        $work_id = strtoupper(trim($data['work_id'] ?? ''));
-        $password = $data['password'] ?? '';
-        $department_id = strtoupper(trim($data['department_id'] ?? ''));
-        $role_id = strtoupper(trim($data['role_id'] ?? ''));
+        // $name = strtoupper(trim($data['name'] ?? ''));
+        // $work_id = strtoupper(trim($data['work_id'] ?? ''));
+        // $password = $data['password'] ?? '';
+        // $department_id = strtoupper(trim($data['department_id'] ?? ''));
+        // $role_id = strtoupper(trim($data['role_id'] ?? ''));
 
-        if (!$name || !$work_id || !$department_id || !$role_id || !$password ) {
-            $missing = [];
-            if (!$name) $missing[] = 'name';
-            if (!$work_id) $missing[] = 'work_id';
-            if (!$department_id) $missing[] = 'department_id';
-            if (!$role_id) $missing[] = 'role_id';
-            if (!$password) $missing[] = 'password';
-            http_response_code(400);
-            echo json_encode(["message" => "All fields are required", 'missing_field' => $missing]);
-            exit();
-        }
+        // if (!$name || !$work_id || !$department_id || !$role_id || !$password ) {
+        //     $missing = [];
+        //     if (!$name) $missing[] = 'name';
+        //     if (!$work_id) $missing[] = 'work_id';
+        //     if (!$department_id) $missing[] = 'department_id';
+        //     if (!$role_id) $missing[] = 'role_id';
+        //     if (!$password) $missing[] = 'password';
+        //     http_response_code(400);
+        //     echo json_encode(["message" => "All fields are required", 'missing_field' => $missing]);
+        //     exit();
+        // }
 
         $name = strtoupper(trim($data['name'] ?? null));
         $work_id = strtoupper(trim($data['work_id'] ?? null));
@@ -201,7 +201,7 @@ class UserController
         $department_id = strtoupper(trim($data['department_id'] ?? null));
         $role_id = strtoupper(trim($data['role_id'] ?? null));
 
-        if (!$name || !$work_id || !$password || !$department_id || !$role_id) {
+        if (!$name || !$work_id || !$department_id || !$role_id) {
             http_response_code(400);
             echo json_encode(["message" => "All fields are required"]);
             exit();

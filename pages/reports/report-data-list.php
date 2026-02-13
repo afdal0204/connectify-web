@@ -3,6 +3,7 @@ include './../../config.php';
 
 session_start();
 
+$deptRes = $conn->query("SELECT id, department_name FROM department ORDER BY department_name ASC");
 $modelRes = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $modelResModal = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $errorRes = $conn->query("SELECT id, error_code, symptom FROM error_code ORDER BY error_code ASC");
@@ -86,47 +87,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     <i class="feather-filter me-2"></i>
                                     <span>Filter</span>
                                 </a>
-                                <!-- <div class="dropdown-menu dropdown-menu-end">
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Role" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Role">Role</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Team" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Team">Team</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Email" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Email">Email</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Member" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Member">Member</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Recommendation" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Recommendation">Recommendation</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-plus me-3"></i>
-                                        <span>Create New</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-filter me-3"></i>
-                                        <span>Manage Filter</span>
-                                    </a>
-                                </div> -->
                             </div>
                             <a href="javascript:void(0);" class="btn btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createReportModal">
                                 <i class="feather-plus me-2"></i>
@@ -232,6 +192,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         require_once '../layout/footer.php';
         ?>
     </main>
+    
      <!-- Modal Filter -->
     <div class="modal fade" id="abnormalFilterModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -243,7 +204,19 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                   <div class="modal-body pt-3">
                 <div class="container-fluid">
                     <div class="row g-3">
-                        <div class="col-12">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Department</label>
+                            <select id="filterDept" class="form-select">
+                                <option value="">All</option>
+                                <?php $deptRes->data_seek(0);
+                                while ($row = $deptRes->fetch_assoc()): ?>
+                                    <option value="<?= $row['id'] ?>">
+                                        <?= $row['department_name'] ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="col-6">
                             <label class="form-label fw-semibold">Model</label>
                             <select id="filterModel" class="form-select">
                                 <option value="">All</option>
@@ -441,7 +414,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 buttons: [{
                     extend: 'excelHtml5',
                     // text: '  <i class="feather-download me-1 mb-0"></i><span>Genarate Report</span>',
-                    text: '<i class="feather-download"></i> Genarate Report',
+                    text: '<i class="feather-download me-2"></i> Genarate Report',
                     title: 'Abnormal Report',
                     className: 'btn btn-xs btn-primary rounded',
                     // className: 'btn btn-success btn-xs',
@@ -491,6 +464,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         $('row:first c', sheet).attr('s', headerStyleIndex);
                     }
                 }],
+
                 ajax: {
                     url: '/connectify-web/controllers/ReportController.php',
                     type: 'GET',
@@ -498,6 +472,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         d.model_id = $('#modelSelect').val();
                         d.station_id = $('#stationSelect').val();
                         d.date = $('#date').val();
+                        d.filter_dept = $('#filterDept').val();  
                         d.filter_model = $('#filterModel').val();
                         d.filter_date_from = $('#filterDateFrom').val();
                         d.filter_date_to = $('#filterDateTo').val();
@@ -645,12 +620,14 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                  $('#abnormalFilterModal').modal('hide');
             });
             $('#btnClearFilter').click(function() {
+                $('#filterDept').val('');
                 $('#filterModel').val('');
                 $('#filterDateFrom').val('');
                 $('#filterDateTo').val('');
                 reportTable.ajax.reload();
             });
             $('#btnClearFilter1').click(function() {
+                $('#filterDept').val('');
                 $('#filterModel').val('');
                 $('#filterDateFrom').val('');
                 $('#filterDateTo').val('');
@@ -709,7 +686,27 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             }
         });
     </script>
-
+    <!-- filter data -->
+    <script>
+        $('#filterDept').change(function() {
+            const dept_id = $(this).val();
+            $.ajax({
+                url: '/connectify-web/pages/reports/get-data.php',
+                type: 'POST',
+                data: {
+                    action: 'getModels',
+                    dept_id: dept_id
+                },
+                dataType: 'json',
+                success: function(data) {
+                    $('#filterModel').prop('disabled', false).html('<option value="">All</option>');
+                    data.forEach(obj => {
+                        $('#filterModel').append(`<option value="${obj.id}">${obj.model_name}</option>`);
+                    });
+                }
+            });
+        });
+    </script>
     <!-- add report -->
     <script>
         $('#modelSelect').change(function() {

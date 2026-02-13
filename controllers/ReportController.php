@@ -50,6 +50,7 @@ class ReportController
     }
     public function getAllReports()
     {
+        $filter_dept       = $_GET['filter_dept'] ?? '';
         $filter_model      = $_GET['filter_model'] ?? '';
         $filter_date_from  = $_GET['filter_date_from'] ?? '';
         $filter_date_to    = $_GET['filter_date_to'] ?? '';
@@ -58,15 +59,22 @@ class ReportController
                     ar.id, ar.user_id, m.model_name, s.station_name, d.device_name, 
                     ar.shift, ar.date, ar.time_start, ar.time_finish,
                     ec.error_code, ec.symptom, ar.root_cause,
-                    ar.action_taken, u.name, u.work_id, ar.remark
+                    ar.action_taken, u.name, u.work_id, ar.remark,
+                    dept.department_name
                 FROM abnormal_reports ar
                 LEFT JOIN models m ON ar.model_id = m.id
                 LEFT JOIN stations s ON ar.station_id = s.id
                 LEFT JOIN devices d ON ar.device_id = d.id
                 LEFT JOIN error_code ec ON ar.error_code_id = ec.id
                 LEFT JOIN users u ON ar.user_id = u.id
+                LEFT JOIN users u_owner ON m.owner_id = u_owner.id
+                LEFT JOIN department dept ON m.owner_id = u_owner.id AND u_owner.department_id = dept.id
+                -- LEFT JOIN department dept ON u.department_id = dept.id
                 WHERE 1 = 1";
 
+
+        // --- APPLY FILTER DEPARTMENT ---
+        if (!empty($filter_dept)) { $sql .= " AND dept.id = " . intval($filter_dept); }
 
         // --- APPLY FILTER MODEL ---
         if (!empty($filter_model)) {

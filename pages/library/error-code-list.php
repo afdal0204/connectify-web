@@ -205,6 +205,34 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     </script>
 
     <script>
+          function showSuccessToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                }
+            }).fire({
+                icon: "success",
+                title: message
+            });
+        }
+        function showErrorToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            }).fire({
+                icon: "error",
+                title: message
+            });
+        }
         $(document).ready(function() {
             const errorCodeTable = $('#errorCodeTable').DataTable({
                 dom: 'lrtip',
@@ -311,14 +339,15 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     processData: false,
                     success: function(response) {
                         $('#deleteErrorCodeModal').modal('hide');
-
-                        if (response.success) {
-                            errorCodeTable.ajax.reload(null, false);
-                            showAlert('Success', response.message, 'success');
-                        } else {
-                            showAlert('Failed', response.message, 'danger');
-                        }
-
+                         $('#deleteModalSec2').modal('hide');
+                        showSuccessToast(response.message);
+                        // if (response.success) {
+                        //     errorCodeTable.ajax.reload(null, false);
+                        //     showAlert('Success', response.message, 'success');
+                        // } else {
+                        //     showAlert('Failed', response.message, 'danger');
+                        // }
+                        errorCodeTable.ajax.reload(null, false);
                         deleteErrorCode = null;
                     },
                     error: function(xhr) {
@@ -361,31 +390,40 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dataType: 'json',
                 success: function(response) {
                     $('#createErrorCodeModal').modal('hide');
-
                     if (response.success) {
-                        $('#alertErrorCodeContainer').html(
-                            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                            ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`
-                        );
 
-                        setTimeout(() => {
-                            $('.alert').alert('close');
-                            $('#createErrorCodeModal').modal('hide');
-                        }, 1500);
+                        showSuccessToast(response.message);
 
                         $('#errorCodeForm')[0].reset();
                         $('#errorCodeTable').DataTable().ajax.reload(null, false);
 
-
                     } else {
-                        $('#message-container').html(`
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>`);
+                        showErrorToast(response.message);
                     }
+                    // if (response.success) {
+                    //     $('#alertErrorCodeContainer').html(
+                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    // </div>`
+                    //     );
+
+                    //     setTimeout(() => {
+                    //         $('.alert').alert('close');
+                    //         $('#createErrorCodeModal').modal('hide');
+                    //     }, 1500);
+
+                    //     $('#errorCodeForm')[0].reset();
+                    //     $('#errorCodeTable').DataTable().ajax.reload(null, false);
+
+
+                    // } else {
+                    //     $('#message-container').html(`
+                    //     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    //     </div>`);
+                    // }
                 },
                 error: function(xhr) {
                     let msg = "Unexpected error";

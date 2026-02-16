@@ -358,7 +358,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             </div>
         </div>
     </div>
-
+                                    
     <div class="modal fade" id="deleteModalTargetReport" tabindex="-1" aria-labelledby="deleteModalTargetReportLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -377,6 +377,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         </div>
     </div>
 
+     <script src="/connectify-web/assets/js/apps-storage-init.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
      <!-- vendors.min.js {always must need to be top} -->
     <script src="/connectify-web/assets/vendors/js/dataTables.min.js"></script>
@@ -409,6 +410,35 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     </script>
 
     <script>
+        function showSuccessToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                }
+            }).fire({
+                icon: "success",
+                title: message
+            });
+        }
+        function showErrorToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            }).fire({
+                icon: "error",
+                title: message
+            });
+        }
+
         $(document).ready(function() {
             const dailytargetTable = $('#dailyTargetReportTable').DataTable({
                 // dom: 'Brtip',
@@ -538,6 +568,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     data-bs-toggle="modal"
                                     data-bs-target="#editTargetReportModal">
                                     <i class="feather-edit"></i></a>
+                                    
                                 <a href="#" class="btn btn-sm btn-danger btn-delete-target-report" 
                                     data-id="${row.id}" 
                                     data-bs-toggle="modal" 
@@ -574,12 +605,90 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dailytargetTable.search(this.value).draw();
             });
 
+           
+
             let deleteReportId = null;
 
             $(document).on('click', '.btn-delete-target-report', function(e) {
                 e.preventDefault();
                 deleteReportId = $(this).data('id');
             });
+            
+            // $(document).on('click', '.btn-delete-target-report', function (e) {
+            //     e.preventDefault();
+
+            //     const reportId = $(this).data('id');
+            //     console.log(reportId)
+
+            //     const swalWithBootstrapButtons = Swal.mixin({
+            //         customClass: {
+            //             confirmButton: "btn btn-danger m-1",
+            //             cancelButton: "btn btn-secondary m-1"
+            //         },
+            //         buttonsStyling: false
+            //     });
+
+            //     swalWithBootstrapButtons.fire({
+            //         title: "Are you sure?",
+            //         text: "You want to delete this report!",
+            //         icon: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonText: "Yes, delete it!",
+            //         cancelButtonText: "No, cancel!",
+            //         reverseButtons: true
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             $.ajax({
+            //                 url: '/connectify-web/controllers/DailyTargetReportController.php',
+            //                 type: 'DELETE',
+            //                 data: JSON.stringify({ 
+            //                     id: reportId
+            //                  }),
+            //                 contentType: 'application/json',
+            //                 dataType: 'json', 
+            //                 success: function (response) {
+            //                     console.log("Response:", response);
+
+            //                     if (response.success) {
+            //                         swalWithBootstrapButtons.fire(
+            //                             "Deleted!",
+            //                             response.message,
+            //                             "success"
+            //                         );
+
+            //                         $('#dailyTargetReportTable')
+            //                             .DataTable()
+            //                             .ajax.reload(null, false);
+
+            //                     } else {
+
+            //                         swalWithBootstrapButtons.fire(
+            //                             "Failed!",
+            //                             response.message,
+            //                             "error"
+            //                         );
+            //                     }
+            //                 },
+            //                 error: function (xhr) {
+            //                     swalWithBootstrapButtons.fire(
+            //                         "Error!",
+            //                         "Something went wrong!",
+            //                         "error"
+            //                     );
+            //                 }
+            //             });
+
+            //         } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+            //             swalWithBootstrapButtons.fire(
+            //                 "Cancelled",
+            //                 "Your data is safe :)",
+            //                 "error"
+            //             );
+            //         }
+            //     });
+            // });
+
             $('#btnConfirmDeleteDailyTargetReport').on('click', function() {
                 if (!deleteReportId) return;
 
@@ -592,14 +701,15 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     contentType: 'application/json',
                     success: function(response) {
                         $('#deleteModalTargetReport').modal('hide');
+                        showSuccessToast(response.message);
 
-                        if (response.success) {
-                            dailytargetTable.ajax.reload(null, false);
-                            showAlert('Success', response.message, 'success');
-                        } else {
-                            showAlert('Failed', response.message, 'danger');
-                        }
-
+                        // if (response.success) {
+                        //     dailytargetTable.ajax.reload(null, false);
+                        //     showAlert('Success', response.message, 'success');
+                        // } else {
+                        //     showAlert('Failed', response.message, 'danger');
+                        // }
+                        dailytargetTable.ajax.reload(null, false);
                         deleteReportId = null;
                     },
                     error: function(xhr) {
@@ -698,31 +808,41 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dataType: 'json',
                 success: function(response) {
                     $('#createTargetReportModal').modal('hide');
-
                     if (response.success) {
-                        $('#alertTargetReportContainer').html(
-                            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                            ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`
-                        );
 
-                        setTimeout(() => {
-                            $('.alert').alert('close');
-                            $('#createTargetReportModal').modal('hide');
-                        }, 1500);
+                        showSuccessToast(response.message);
 
                         $('#dailyTargetReportForm')[0].reset();
                         $('#dailyTargetReportTable').DataTable().ajax.reload(null, false);
 
-
                     } else {
-                        $('#message-container').html(`
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>`);
+                        showErrorToast(response.message);
                     }
+
+                    // if (response.success) {
+                    //     $('#alertTargetReportContainer').html(
+                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    // </div>`
+                    //     );
+
+                    //     setTimeout(() => {
+                    //         $('.alert').alert('close');
+                    //         $('#createTargetReportModal').modal('hide');
+                    //     }, 1500);
+
+                    //     $('#dailyTargetReportForm')[0].reset();
+                    //     $('#dailyTargetReportTable').DataTable().ajax.reload(null, false);
+
+
+                    // } else {
+                    //     $('#message-container').html(`
+                    //     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    //     </div>`);
+                    // }
                 },
                 error: function(xhr) {
                     let msg = "Unexpected error";
@@ -814,29 +934,40 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 success: function(response) {
                     $('#editTargetReportModal').modal('hide');
                     if (response.success) {
-                        $('#alertTargetReportContainer').html(
-                            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                        );
 
-                        setTimeout(() => {
-                            $('.alert').alert('close');
-                            $('#editTargetReportModal').modal('hide');
-                        }, 1500);
+                        showSuccessToast(response.message);
 
-                        // Reset form
                         $('#editdailyTargetReportForm')[0].reset();
                         $('#dailyTargetReportTable').DataTable().ajax.reload(null, false);
+
                     } else {
-                        $('#message-edit-container').html(
-                            `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                        );
+                        showErrorToast(response.message);
                     }
+
+                    // if (response.success) {
+                    //     $('#alertTargetReportContainer').html(
+                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    //     </div>`
+                    //     );
+
+                    //     setTimeout(() => {
+                    //         $('.alert').alert('close');
+                    //         $('#editTargetReportModal').modal('hide');
+                    //     }, 1500);
+
+                    //     // Reset form
+                    //     $('#editdailyTargetReportForm')[0].reset();
+                    //     $('#dailyTargetReportTable').DataTable().ajax.reload(null, false);
+                    // } else {
+                    //     $('#message-edit-container').html(
+                    //         `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    //     </div>`
+                    //     );
+                    // }
                 },
                 error: function(xhr, status, error) {
                     let msg = "Unexpected error";

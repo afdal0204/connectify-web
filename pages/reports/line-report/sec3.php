@@ -237,6 +237,35 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
         }, 60000);
     </script>
     <script>
+        function showSuccessToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                }
+            }).fire({
+                icon: "success",
+                title: message
+            });
+        }
+        function showErrorToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            }).fire({
+                icon: "error",
+                title: message
+            });
+        }
+
         $(document).ready(function() {
             const lineReportTable = $('#lineReportTable').DataTable({
                 dom: 'lrtip',
@@ -324,7 +353,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     }
                 }],
                 autoWidth: false,
-                pageLength: 5,
+                pageLength: 10,
                 lengthMenu: [5, 10, 25, 50, 100],
                 language: {
                     paginate: {
@@ -360,14 +389,14 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     contentType: 'application/json',
                     success: function(response) {
                         $('#deleteModalSec3').modal('hide');
-
-                        if (response.success) {
-                            lineReportTable.ajax.reload(null, false);
-                            showAlert('Success', response.message, 'success');
-                        } else {
-                            showAlert('Failed', response.message, 'danger');
-                        }
-
+                         showSuccessToast(response.message);
+                        // if (response.success) {
+                        //     lineReportTable.ajax.reload(null, false);
+                        //     showAlert('Success', response.message, 'success');
+                        // } else {
+                        //     showAlert('Failed', response.message, 'danger');
+                        // }
+                        lineReportTable.ajax.reload(null, false);
                         deleteServer = null;
                     },
                     error: function(xhr) {
@@ -450,31 +479,40 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 dataType: 'json',
                 success: function(response) {
                     $('#createSec3Modal').modal('hide');
-
                     if (response.success) {
-                        $('#alertLineReportSec3').html(
-                            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                            ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`
-                        );
 
-                        setTimeout(() => {
-                            $('.alert').alert('close');
-                            $('#createSec3Modal').modal('hide');
-                        }, 1500);
+                        showSuccessToast(response.message);
 
                         $('#lineReportSec3')[0].reset();
                         $('#lineReportTable').DataTable().ajax.reload(null, false);
 
-
                     } else {
-                        $('#message-container').html(`
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>`);
+                        showErrorToast(response.message);
                     }
+                    // if (response.success) {
+                    //     $('#alertLineReportSec3').html(
+                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    // </div>`
+                    //     );
+
+                    //     setTimeout(() => {
+                    //         $('.alert').alert('close');
+                    //         $('#createSec3Modal').modal('hide');
+                    //     }, 1500);
+
+                    //     $('#lineReportSec3')[0].reset();
+                    //     $('#lineReportTable').DataTable().ajax.reload(null, false);
+
+
+                    // } else {
+                    //     $('#message-container').html(`
+                    //     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    //     </div>`);
+                    // }
                 },
                 error: function(xhr) {
                     let msg = "Unexpected error";

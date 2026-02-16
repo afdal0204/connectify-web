@@ -416,6 +416,34 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     </script>
 
     <script>
+        function showSuccessToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                }
+            }).fire({
+                icon: "success",
+                title: message
+            });
+        }
+        function showErrorToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            }).fire({
+                icon: "error",
+                title: message
+            });
+        }
         $(document).ready(function() {
             const modelTable = $('#modelTable').DataTable({
                 dom: 'lrtip',
@@ -447,12 +475,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     //     className: 'text-center',
                     // },
                     {
-                        data: null,
+                        data: 'output_target',
                         render: function(data, type, row) {
-                            if (!row.output_target || row.output_target.length === 0) return '-';
-
-                            return `${data.output_target}`;
-
+                            if (!data || data === "0" || data === 0) {
+                                return '-'
+                            }
+                            return data;
                         }
                     },
                     {
@@ -591,32 +619,41 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     data: JSON.stringify(payload),
                     success: function(response) {
                         $('#createModelModal').modal('hide');
-
                         if (response.success) {
-                            $('#alertModelContainer').html(
-                                `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                            );
 
-                            setTimeout(() => {
-                                $('.alert').alert('close');
-                                $('#createModelModal').modal('hide');
-                            }, 1500);
+                            showSuccessToast(response.message);
 
                             $('#modelForm')[0].reset();
-                            selectedMembers.clear();
-                            renderSelectedMembers();
                             $('#modelTable').DataTable().ajax.reload(null, false);
 
                         } else {
-                            $('#message-container').html(`
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    ${response.message}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>`);
+                            showErrorToast(response.message);
                         }
+                        // if (response.success) {
+                        //     $('#alertModelContainer').html(
+                        //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                        // ${response.message}
+                        // <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        // </div>`
+                        //     );
+
+                        //     setTimeout(() => {
+                        //         $('.alert').alert('close');
+                        //         $('#createModelModal').modal('hide');
+                        //     }, 1500);
+
+                        //     $('#modelForm')[0].reset();
+                        //     selectedMembers.clear();
+                        //     renderSelectedMembers();
+                        //     $('#modelTable').DataTable().ajax.reload(null, false);
+
+                        // } else {
+                        //     $('#message-container').html(`
+                        //         <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        //             ${response.message}
+                        //             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        //         </div>`);
+                        // }
                     },
                     error: function(xhr) {
                         let msg = "Unexpected error";
@@ -878,26 +915,27 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             $('#editModelModal').modal('hide');
                             // $('#modelTable').DataTable().ajax.reload(null, false);
                             // alert(res.message);
-                            $('#alertModelContainer').html(
-                                `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                            );
+                        //     $('#alertModelContainer').html(
+                        //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                        // ${response.message}
+                        // <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        // </div>`
+                        //     );
 
-                            setTimeout(() => {
-                                $('.alert').alert('close');
-                            }, 1500);
-
+                        //     setTimeout(() => {
+                        //         $('.alert').alert('close');
+                        //     }, 1500);
+                             showSuccessToast(response.message);
                             $('#modelStationForm')[0].reset();
                             $('#modelTable').DataTable().ajax.reload(null, false);
                         } else {
+                            showErrorToast(response.message);
                             // alert(res.message);
-                            $('#edit-message-container').html(`
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>`);
+                    //         $('#edit-message-container').html(`
+                    // <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    //     ${response.message}
+                    //     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    // </div>`);
                         }
                     },
                     error: function(xhr) {
@@ -946,27 +984,26 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             $('#editModelModal').modal('hide');
                             // $('#modelTable').DataTable().ajax.reload(null, false);
                             // alert(res.message);
-                            $('#alertModelContainer').html(
-                                `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                            );
+                        //     $('#alertModelContainer').html(
+                        //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                        // ${response.message}
+                        // <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        // </div>`
+                        //     );
 
-                            setTimeout(() => {
-                                $('.alert').alert('close');
-                            }, 1500);
-
+                        //     setTimeout(() => {
+                        //         $('.alert').alert('close');
+                        //     }, 1500);
+                           showSuccessToast(response.message);
                             $('#modelDeviceForm')[0].reset();
-                            // selectedMembers.clear();
-                            // renderSelectedMembers();
                             $('#modelTable').DataTable().ajax.reload(null, false);
                         } else {
-                            $('#edit-message-container').html(`
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>`);
+                            showErrorToast(response.message);
+                    //         $('#edit-message-container').html(`
+                    // <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    //     ${response.message}
+                    //     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    // </div>`);
                         }
                     },
                     error: function(xhr) {

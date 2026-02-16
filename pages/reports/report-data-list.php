@@ -406,6 +406,35 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     </script>
 
     <script>
+        function showSuccessToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                }
+            }).fire({
+                icon: "success",
+                title: message
+            });
+        }
+        function showErrorToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            }).fire({
+                icon: "error",
+                title: message
+            });
+        }
+
         $(document).ready(function() {
             const reportTable = $('#reportTable').DataTable({
                 // dom: 'Bfrtip',
@@ -654,14 +683,14 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     contentType: 'application/json',
                     success: function(response) {
                         $('#deleteModalReport').modal('hide');
-
-                        if (response.success) {
-                            reportTable.ajax.reload(null, false);
-                            showAlert('Success', response.message, 'success');
-                        } else {
-                            showAlert('Failed', response.message, 'danger');
-                        }
-
+                        showSuccessToast(response.message);
+                        // if (response.success) {
+                            //     showAlert('Success', response.message, 'success');
+                            //     reportTable.ajax.reload(null, false);
+                        // } else {
+                        //     showAlert('Failed', response.message, 'danger');
+                        // }
+                        reportTable.ajax.reload(null, false);
                         deleteReportId = null;
                     },
                     error: function(xhr) {
@@ -822,35 +851,44 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 success: function(response) {
                     // $('#message-container').html('');
                     $('#createReportModal').modal('hide');
+                     if (response.success) {
 
-                    if (response.success) {
-                        // alert(response.message);
-                        $('#alertReportContainer').html(
-                            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                            ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`
-                        );
-
-                        setTimeout(() => {
-                            $('.alert').alert('close');
-                            $('#createReportModal').modal('hide');
-                        }, 1500);
+                        showSuccessToast(response.message);
 
                         $('#reportForm')[0].reset();
                         $('#reportTable').DataTable().ajax.reload(null, false);
 
-                        // disabled station and device after save successfully
-                        $('#stationSelect').prop('disabled', true).html('<option value="">-----</option>');
-                        $('#deviceSelect').prop('disabled', true).html('<option value="">-----</option>');
-
                     } else {
-                        $('#message-container').html(`
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>`);
+                        showErrorToast(response.message);
                     }
+                    // if (response.success) {
+                    //     // alert(response.message);
+                    //     $('#alertReportContainer').html(
+                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    // </div>`
+                    //     );
+
+                    //     setTimeout(() => {
+                    //         $('.alert').alert('close');
+                    //         $('#createReportModal').modal('hide');
+                    //     }, 1500);
+
+                    //     $('#reportForm')[0].reset();
+                    //     $('#reportTable').DataTable().ajax.reload(null, false);
+
+                    //     // disabled station and device after save successfully
+                    //     $('#stationSelect').prop('disabled', true).html('<option value="">-----</option>');
+                    //     $('#deviceSelect').prop('disabled', true).html('<option value="">-----</option>');
+
+                    // } else {
+                    //     $('#message-container').html(`
+                    //     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    //         ${response.message}
+                    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    //     </div>`);
+                    // }
                 },
                 error: function(xhr) {
                     let msg = "Unexpected error";

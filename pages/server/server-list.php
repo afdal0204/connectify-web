@@ -313,6 +313,34 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
         }, 60000);
     </script>
     <script>
+        function showSuccessToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                }
+            }).fire({
+                icon: "success",
+                title: message
+            });
+        }
+        function showErrorToast(message) {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            }).fire({
+                icon: "error",
+                title: message
+            });
+        }
         $(document).ready(function() {
             const serverTable = $('#serverTable').DataTable({
                 dom: 'lrtip',
@@ -411,14 +439,14 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     contentType: 'application/json',
                     success: function(response) {
                         $('#deleteModalServer').modal('hide');
-
-                        if (response.success) {
-                            serverTable.ajax.reload(null, false);
-                            showAlert('Success', response.message, 'success');
-                        } else {
-                            showAlert('Failed', response.message, 'danger');
-                        }
-
+                        showSuccessToast(response.message);
+                        // if (response.success) {
+                        //     serverTable.ajax.reload(null, false);
+                        //     showAlert('Success', response.message, 'success');
+                        // } else {
+                        //     showAlert('Failed', response.message, 'danger');
+                        // }
+                         serverTable.ajax.reload(null, false);
                         deleteServer = null;
                     },
                     error: function(xhr) {
@@ -466,27 +494,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     $('#createServerModal').modal('hide');
 
                     if (response.success) {
-                        $('#alertServerContainer').html(
-                            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                        );
-
-                        setTimeout(() => {
-                            $('.alert').alert('close');
-                            $('#createServerModal').modal('hide');
-                        }, 1500);
-
-                        // Reset form
+                        showSuccessToast(response.message);
                         $('#serverForm')[0].reset();
                         $('#serverTable').DataTable().ajax.reload(null, false);
                     } else {
-                        $('#message-container').html(
-                            `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${response.message}
-                        </div>`
-                        );
+                        showErrorToast(response.message);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -546,28 +558,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 success: function(response) {
                     $('#editServerModal').modal('hide');
                     if (response.success) {
-                        $('#alertServerContainer').html(
-                            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                        );
-
-                        setTimeout(() => {
-                            $('.alert').alert('close');
-                            $('#editServerModal').modal('hide');
-                        }, 1500);
-
-                        // Reset form
+                        showSuccessToast(response.message);
                         $('#serverForm')[0].reset();
                         $('#serverTable').DataTable().ajax.reload(null, false);
                     } else {
-                        $('#message-edit-container').html(
-                            `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            ${response.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>`
-                        );
+                        showErrorToast(response.message);
                     }
                 },
                 error: function(xhr, status, error) {

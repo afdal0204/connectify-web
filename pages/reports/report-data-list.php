@@ -634,11 +634,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
                             return `
                                 <div class="d-flex justify-content-center">
-                                    <a href="#"
-                                    class="btn btn-sm btn-danger btn-delete-report"
-                                    data-id="${row.id}"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModalReport">
+                                    <a href="#" class="btn btn-sm btn-danger btn-delete-report"
+                                    data-id="${row.id}">
                                         <i class="feather-trash"></i>
                                     </a>
                                 </div>
@@ -708,39 +705,112 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             });
 
 
-            let deleteReportId = null;
+            // let deleteReportId = null;
 
-            $(document).on('click', '.btn-delete-report', function(e) {
+            // $(document).on('click', '.btn-delete-report', function(e) {
+            //     e.preventDefault();
+            //     deleteReportId = $(this).data('id');
+            // });
+
+            // $('#btnConfirmDeleteReport').on('click', function() {
+            //     if (!deleteReportId) return;
+
+            //     $.ajax({
+            //         url: '/connectify-web/controllers/ReportController.php',
+            //         type: 'DELETE',
+            //         data: JSON.stringify({
+            //             id: deleteReportId
+            //         }),
+            //         contentType: 'application/json',
+            //         success: function(response) {
+            //             $('#deleteModalReport').modal('hide');
+            //             showSuccessToast(response.message);
+            //             // if (response.success) {
+            //                 //     showAlert('Success', response.message, 'success');
+            //                 //     reportTable.ajax.reload(null, false);
+            //             // } else {
+            //             //     showAlert('Failed', response.message, 'danger');
+            //             // }
+            //             reportTable.ajax.reload(null, false);
+            //             deleteReportId = null;
+            //         },
+            //         error: function(xhr) {
+            //             $('#deleteModalReport').modal('hide');
+            //             showAlert('Error', xhr.statusText, 'danger');
+            //             deleteReportId = null;
+            //         }
+            //     });
+            // });
+
+             $(document).on('click', '.btn-delete-report', function (e) {
                 e.preventDefault();
-                deleteReportId = $(this).data('id');
-            });
 
-            $('#btnConfirmDeleteReport').on('click', function() {
-                if (!deleteReportId) return;
+                const reportId = $(this).data('id');
+                console.log(reportId)
 
-                $.ajax({
-                    url: '/connectify-web/controllers/ReportController.php',
-                    type: 'DELETE',
-                    data: JSON.stringify({
-                        id: deleteReportId
-                    }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#deleteModalReport').modal('hide');
-                        showSuccessToast(response.message);
-                        // if (response.success) {
-                            //     showAlert('Success', response.message, 'success');
-                            //     reportTable.ajax.reload(null, false);
-                        // } else {
-                        //     showAlert('Failed', response.message, 'danger');
-                        // }
-                        reportTable.ajax.reload(null, false);
-                        deleteReportId = null;
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: "btn btn-success m-1",
+                        cancelButton: "btn btn-secondary m-1"
                     },
-                    error: function(xhr) {
-                        $('#deleteModalReport').modal('hide');
-                        showAlert('Error', xhr.statusText, 'danger');
-                        deleteReportId = null;
+                    buttonsStyling: false
+                });
+
+                swalWithBootstrapButtons.fire({
+                    title: "Are you sure?",
+                    text: "You want to delete this report!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel!",
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.value === true) {
+                        $.ajax({
+                            url: '/connectify-web/controllers/ReportController.php',
+                            type: 'DELETE',
+                            data: JSON.stringify({ 
+                                id: reportId
+                             }),
+                            contentType: 'application/json',
+                            dataType: 'json', 
+                            success: function (response) {
+                                if (response.success) {
+                                    swalWithBootstrapButtons.fire(
+                                        "Deleted!",
+                                        response.message,
+                                        "success"
+                                    );
+
+                                    $('#reportTable')
+                                        .DataTable()
+                                        .ajax.reload(null, false);
+
+                                } else {
+
+                                    swalWithBootstrapButtons.fire(
+                                        "Failed!",
+                                        response.message,
+                                        "error"
+                                    );
+                                }
+                            },
+                            error: function (xhr) {
+                                swalWithBootstrapButtons.fire(
+                                    "Error!",
+                                    "Something went wrong!",
+                                    "error"
+                                );
+                            }
+                        });
+
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+                        swalWithBootstrapButtons.fire(
+                            "Cancelled",
+                            "Your data is safe :)",
+                            "error"
+                        );
                     }
                 });
             });

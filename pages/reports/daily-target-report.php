@@ -360,7 +360,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         </div>
     </div>
                                     
-    <div class="modal fade" id="deleteModalTargetReport" tabindex="-1" aria-labelledby="deleteModalTargetReportLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteModalTargetReport1" tabindex="-1" aria-labelledby="deleteModalTargetReportLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
@@ -478,7 +478,14 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             page: 'all'
                         }
                     },
-
+            
+                    filename: function(){
+                        const now = new Date();
+                        const pad = n => n.toString().padStart(2,'0');
+                        const formattedDate = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+                        return `Daily Target Report_${formattedDate}`;
+                    },
+                    
                     // export to excel
                     customize: function(xlsx) {
                         const sheet = xlsx.xl.worksheets['sheet1.xml'];
@@ -488,20 +495,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         const borderIndex = borders.children().length - 1;
 
                         const sheetData = $('sheetData', sheet);
-                        // Geser semua row ke bawah 1 baris
-                        // $('row', sheetData).each(function () {
-                        //     const rowIndex = parseInt($(this).attr('r'));
-                        //     $(this).attr('r', rowIndex + 1);
 
-                        //     $(this).find('c').each(function () {
-                        //         const cellRef = $(this).attr('r');
-                        //         const col = cellRef.replace(/[0-9]/g, '');
-                        //         const row = parseInt(cellRef.replace(/[A-Z]/g, ''));
-                        //         $(this).attr('r', col + (row + 1));
-                        //     });
-                        // });
-
-                        // Tambahkan row baru di paling atas
                         sheetData.prepend(`
                             <row r="1">
                                 <c t="inlineStr" r="A1">
@@ -684,12 +678,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     data-bs-target="#editTargetReportModal">
                                     <i class="feather-edit"></i></a>
                                     
-                                <a href="#" class="btn btn-sm btn-danger btn-delete-target-report" 
-                                    data-id="${row.id}" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#deleteModalTargetReport">
+                                <a href="#" class="btn btn-sm btn-danger btn-delete-target-report" data-id="${row.id}">
                                     <i class="feather-trash"></i>
                                 </a>
+
                             </div>
                         `;
                         }
@@ -741,115 +733,75 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dailytargetTable.ajax.reload();
             });
 
-            let deleteReportId = null;
-
-            $(document).on('click', '.btn-delete-target-report', function(e) {
+            $(document).on('click', '.btn-delete-target-report', function (e) {
                 e.preventDefault();
-                deleteReportId = $(this).data('id');
-            });
-            
-            // $(document).on('click', '.btn-delete-target-report', function (e) {
-            //     e.preventDefault();
 
-            //     const reportId = $(this).data('id');
-            //     console.log(reportId)
+                const reportId = $(this).data('id');
+                console.log(reportId)
 
-            //     const swalWithBootstrapButtons = Swal.mixin({
-            //         customClass: {
-            //             confirmButton: "btn btn-danger m-1",
-            //             cancelButton: "btn btn-secondary m-1"
-            //         },
-            //         buttonsStyling: false
-            //     });
-
-            //     swalWithBootstrapButtons.fire({
-            //         title: "Are you sure?",
-            //         text: "You want to delete this report!",
-            //         icon: "warning",
-            //         showCancelButton: true,
-            //         confirmButtonText: "Yes, delete it!",
-            //         cancelButtonText: "No, cancel!",
-            //         reverseButtons: true
-            //     }).then((result) => {
-            //         if (result.isConfirmed) {
-            //             $.ajax({
-            //                 url: '/connectify-web/controllers/DailyTargetReportController.php',
-            //                 type: 'DELETE',
-            //                 data: JSON.stringify({ 
-            //                     id: reportId
-            //                  }),
-            //                 contentType: 'application/json',
-            //                 dataType: 'json', 
-            //                 success: function (response) {
-            //                     console.log("Response:", response);
-
-            //                     if (response.success) {
-            //                         swalWithBootstrapButtons.fire(
-            //                             "Deleted!",
-            //                             response.message,
-            //                             "success"
-            //                         );
-
-            //                         $('#dailyTargetReportTable')
-            //                             .DataTable()
-            //                             .ajax.reload(null, false);
-
-            //                     } else {
-
-            //                         swalWithBootstrapButtons.fire(
-            //                             "Failed!",
-            //                             response.message,
-            //                             "error"
-            //                         );
-            //                     }
-            //                 },
-            //                 error: function (xhr) {
-            //                     swalWithBootstrapButtons.fire(
-            //                         "Error!",
-            //                         "Something went wrong!",
-            //                         "error"
-            //                     );
-            //                 }
-            //             });
-
-            //         } else if (result.dismiss === Swal.DismissReason.cancel) {
-
-            //             swalWithBootstrapButtons.fire(
-            //                 "Cancelled",
-            //                 "Your data is safe :)",
-            //                 "error"
-            //             );
-            //         }
-            //     });
-            // });
-
-            $('#btnConfirmDeleteDailyTargetReport').on('click', function() {
-                if (!deleteReportId) return;
-
-                $.ajax({
-                    url: '/connectify-web/controllers/DailyTargetReportController.php',
-                    type: 'DELETE',
-                    data: JSON.stringify({
-                        id: deleteReportId
-                    }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#deleteModalTargetReport').modal('hide');
-                        showSuccessToast(response.message);
-
-                        // if (response.success) {
-                        //     dailytargetTable.ajax.reload(null, false);
-                        //     showAlert('Success', response.message, 'success');
-                        // } else {
-                        //     showAlert('Failed', response.message, 'danger');
-                        // }
-                        dailytargetTable.ajax.reload(null, false);
-                        deleteReportId = null;
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: "btn btn-success m-1",
+                        cancelButton: "btn btn-secondary m-1"
                     },
-                    error: function(xhr) {
-                        $('#deleteModalTargetReport').modal('hide');
-                        showAlert('Error', xhr.statusText, 'danger');
-                        deleteReportId = null;
+                    buttonsStyling: false
+                });
+
+                swalWithBootstrapButtons.fire({
+                    title: "Are you sure?",
+                    text: "You want to delete this report!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel!",
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.value === true) {
+                        $.ajax({
+                            url: '/connectify-web/controllers/DailyTargetReportController.php',
+                            type: 'DELETE',
+                            data: JSON.stringify({ 
+                                id: reportId
+                             }),
+                            contentType: 'application/json',
+                            dataType: 'json', 
+                            success: function (response) {
+                                if (response.success) {
+                                    swalWithBootstrapButtons.fire(
+                                        "Deleted!",
+                                        response.message,
+                                        "success"
+                                    );
+
+                                    $('#dailyTargetReportTable')
+                                        .DataTable()
+                                        .ajax.reload(null, false);
+
+                                } else {
+
+                                    swalWithBootstrapButtons.fire(
+                                        "Failed!",
+                                        response.message,
+                                        "error"
+                                    );
+                                }
+                            },
+                            error: function (xhr) {
+                                swalWithBootstrapButtons.fire(
+                                    "Error!",
+                                    "Something went wrong!",
+                                    "error"
+                                );
+                            }
+                        });
+
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+                        swalWithBootstrapButtons.fire(
+                            "Cancelled",
+                            "Your data is safe :)",
+                            "error"
+                        );
                     }
                 });
             });

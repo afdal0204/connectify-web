@@ -382,10 +382,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                     data-bs-target="#editServerModal">
                                     <i class="feather-edit"></i>
                                 </a>
-                                <a href="#" class="btn btn-sm btn-danger btn-delete-server"
-                                    data-id="${row.id}"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModalServer">
+                                <a href="#" class="btn btn-sm btn-danger btn-delete-server" data-id="${row.id}">
                                     <i class="feather-trash"></i>
                                 </a>
                             </div>
@@ -419,37 +416,75 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 serverTable.search(this.value).draw();
             });
 
-            let deleteServer = null;
-            $(document).on('click', '.btn-delete-server', function(e) {
+            $(document).on('click', '.btn-delete-server', function (e) {
                 e.preventDefault();
-                deleteServer = $(this).data('id');
-            });
-            $('#btnConfirmDeleteServer').on('click', function() {
-                if (!deleteServer) return;
 
-                $.ajax({
-                    url: '/connectify-web/controllers/ServerController.php',
-                    type: 'DELETE',
-                    data: JSON.stringify({
-                        id: deleteServer
-                    }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#deleteModalServer').modal('hide');
-                        showSuccessToast(response.message);
-                        // if (response.success) {
-                        //     serverTable.ajax.reload(null, false);
-                        //     showAlert('Success', response.message, 'success');
-                        // } else {
-                        //     showAlert('Failed', response.message, 'danger');
-                        // }
-                         serverTable.ajax.reload(null, false);
-                        deleteServer = null;
+                const serverId = $(this).data('id');
+                console.log(serverId)
+
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: "btn btn-success m-1",
+                        cancelButton: "btn btn-secondary m-1"
                     },
-                    error: function(xhr) {
-                        $('#deleteModalServer').modal('hide');
-                        showAlert('Error', xhr.statusText, 'danger');
-                        deleteServer = null;
+                    buttonsStyling: false
+                });
+
+                swalWithBootstrapButtons.fire({
+                    title: "Are you sure?",
+                    text: "You want to delete this server!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel!",
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.value === true) {
+                        $.ajax({
+                            url: '/connectify-web/controllers/ServerController.php',
+                            type: 'DELETE',
+                            data: JSON.stringify({ 
+                                id: serverId
+                             }),
+                            contentType: 'application/json',
+                            dataType: 'json', 
+                            success: function (response) {
+                                if (response.success) {
+                                    swalWithBootstrapButtons.fire(
+                                        "Deleted!",
+                                        response.message,
+                                        "success"
+                                    );
+
+                                    $('#serverTable')
+                                        .DataTable()
+                                        .ajax.reload(null, false);
+
+                                } else {
+
+                                    swalWithBootstrapButtons.fire(
+                                        "Failed!",
+                                        response.message,
+                                        "error"
+                                    );
+                                }
+                            },
+                            error: function (xhr) {
+                                swalWithBootstrapButtons.fire(
+                                    "Error!",
+                                    "Something went wrong!",
+                                    "error"
+                                );
+                            }
+                        });
+
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+                        swalWithBootstrapButtons.fire(
+                            "Cancelled",
+                            "Your data is safe :)",
+                            "error"
+                        );
                     }
                 });
             });

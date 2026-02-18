@@ -333,10 +333,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                             }
                             return `
                             <div class="d-flex justify-content-center align-items-center gap-1">
-                                <a href="#" class="btn btn-sm btn-danger btn-delete-server"
-                                    data-id="${row.id}"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModalSec1">
+                                <a href="#" class="btn btn-sm btn-danger btn-delete-report"
+                                    data-id="${row.id}">
                                     <i class="feather-trash"></i>
                                 </a>
                             </div>
@@ -371,37 +369,75 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 lineReportTable.search(this.value).draw();
             });
 
-            let deleteServer = null;
-            $(document).on('click', '.btn-delete-server', function(e) {
+            $(document).on('click', '.btn-delete-report', function (e) {
                 e.preventDefault();
-                deleteServer = $(this).data('id');
-            });
-            $('#btnConfirmDeleteSec1').on('click', function() {
-                if (!deleteServer) return;
 
-                $.ajax({
-                    url: '/connectify-web/controllers/LineReportController.php',
-                    type: 'DELETE',
-                    data: JSON.stringify({
-                        id: deleteServer
-                    }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#deleteModalSec1').modal('hide');
-                        showSuccessToast(response.message);
-                        // if (response.success) {
-                        //     lineReportTable.ajax.reload(null, false);
-                        //     showAlert('Success', response.message, 'success');
-                        // } else {
-                        //     showAlert('Failed', response.message, 'danger');
-                        // }
-                        lineReportTable.ajax.reload(null, false);
-                        deleteServer = null;
+                const reportId = $(this).data('id');
+                console.log(reportId)
+
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: "btn btn-success m-1",
+                        cancelButton: "btn btn-secondary m-1"
                     },
-                    error: function(xhr) {
-                        $('#deleteModalSec1').modal('hide');
-                        showAlert('Error', xhr.statusText, 'danger');
-                        deleteServer = null;
+                    buttonsStyling: false
+                });
+
+                swalWithBootstrapButtons.fire({
+                    title: "Are you sure?",
+                    text: "You want to delete this report!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel!",
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.value === true) {
+                        $.ajax({
+                            url: '/connectify-web/controllers/LineReportController.php',
+                            type: 'DELETE',
+                            data: JSON.stringify({ 
+                                id: reportId
+                             }),
+                            contentType: 'application/json',
+                            dataType: 'json', 
+                            success: function (response) {
+                                if (response.success) {
+                                    swalWithBootstrapButtons.fire(
+                                        "Deleted!",
+                                        response.message,
+                                        "success"
+                                    );
+
+                                    $('#lineReportTable')
+                                        .DataTable()
+                                        .ajax.reload(null, false);
+
+                                } else {
+
+                                    swalWithBootstrapButtons.fire(
+                                        "Failed!",
+                                        response.message,
+                                        "error"
+                                    );
+                                }
+                            },
+                            error: function (xhr) {
+                                swalWithBootstrapButtons.fire(
+                                    "Error!",
+                                    "Something went wrong!",
+                                    "error"
+                                );
+                            }
+                        });
+
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+                        swalWithBootstrapButtons.fire(
+                            "Cancelled",
+                            "Your data is safe :)",
+                            "error"
+                        );
                     }
                 });
             });

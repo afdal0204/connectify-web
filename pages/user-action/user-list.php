@@ -263,7 +263,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     </div>
 
     <!-- delete user -->
-    <div class="modal fade" id="deleteModalUser" tabindex="-1" aria-labelledby="deleteModalUserLabel" aria-hidden="true">
+    <!-- <div class="modal fade" id="deleteModalUser" tabindex="-1" aria-labelledby="deleteModalUserLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
@@ -279,7 +279,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- view user -->
     <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
@@ -425,12 +425,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                 data-bs-target="#editUserModal">
                                 <i class="feather-edit"></i>
                             </a>
-                            <a href="#" class="btn btn-sm btn-danger btn-delete-user" 
-                                data-work_id="${row.work_id}"
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteModalUser">
-                                <i class="feather-trash"></i>
-                            </a>
+                             <a href="#" class="btn btn-sm btn-danger btn-delete-user" data-work_id="${row.work_id}">
+                                    <i class="feather-trash"></i>
+                                </a>
                              </div>
                         `;
                         }
@@ -463,37 +460,76 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 userTable.search(this.value).draw();
             });
 
-            let deleteUser = null;
-            $(document).on('click', '.btn-delete-user', function(e) {
+            // delete user 
+            $(document).on('click', '.btn-delete-user', function (e) {
                 e.preventDefault();
-                deleteUser = $(this).data('work_id');
-            });
-            $('#btnConfirmDeleteUser').on('click', function() {
-                if (!deleteUser) return;
 
-                $.ajax({
-                    url: '/connectify-web/controllers/UserController.php',
-                    type: 'DELETE',
-                    data: JSON.stringify({
-                        work_id: deleteUser
-                    }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#deleteModalUser').modal('hide');
-                        showSuccessToast(response.message);
-                        // if (response.success) {
-                        //     userTable.ajax.reload(null, false);
-                        //     showAlert('Success', response.message, 'success');
-                        // } else {
-                        //     showAlert('Failed', response.message, 'danger');
-                        // }
-                        userTable.ajax.reload(null, false);
-                        deleteUser = null;
+                const workId = $(this).data('work_id');
+                console.log(workId)
+
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: "btn btn-success m-1",
+                        cancelButton: "btn btn-secondary m-1"
                     },
-                    error: function(xhr) {
-                        $('#deleteModalUser').modal('hide');
-                        showAlert('Error', xhr.statusText, 'danger');
-                        deleteUser = null;
+                    buttonsStyling: false
+                });
+
+                swalWithBootstrapButtons.fire({
+                    title: "Are you sure?",
+                    text: "You want to delete this user!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel!",
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.value === true) {
+                        $.ajax({
+                            url: '/connectify-web/controllers/UserController.php',
+                            type: 'DELETE',
+                            data: JSON.stringify({ 
+                                work_id: workId
+                             }),
+                            contentType: 'application/json',
+                            dataType: 'json', 
+                            success: function (response) {
+                                if (response.success) {
+                                    swalWithBootstrapButtons.fire(
+                                        "Deleted!",
+                                        response.message,
+                                        "success"
+                                    );
+
+                                    $('#userTable')
+                                        .DataTable()
+                                        .ajax.reload(null, false);
+
+                                } else {
+
+                                    swalWithBootstrapButtons.fire(
+                                        "Failed!",
+                                        response.message,
+                                        "error"
+                                    );
+                                }
+                            },
+                            error: function (xhr) {
+                                swalWithBootstrapButtons.fire(
+                                    "Error!",
+                                    "Something went wrong!",
+                                    "error"
+                                );
+                            }
+                        });
+
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+                        swalWithBootstrapButtons.fire(
+                            "Cancelled",
+                            "Your data is safe :)",
+                            "error"
+                        );
                     }
                 });
             });

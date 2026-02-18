@@ -393,33 +393,80 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
     <script>
         function showSuccessToast(message) {
-            Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener("mouseenter", Swal.stopTimer);
-                    toast.addEventListener("mouseleave", Swal.resumeTimer);
-                }
-            }).fire({
+            Swal.fire({
+                title: "Success!",
+                text: message,
                 icon: "success",
-                title: message
+                confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success"
+                },
+                buttonsStyling: false
             });
         }
+
         function showErrorToast(message) {
-            Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            }).fire({
+            Swal.fire({
+                title: "Failed!",
+                text: message,
                 icon: "error",
-                title: message
+                confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-danger"
+                },
+                buttonsStyling: false
             });
         }
+        // function showSuccessToast(message) {
+        //     Swal.fire({
+        //         icon: "success",
+        //         title: "Success",
+        //         text: message,
+        //         showConfirmButton: false,
+        //         timer: 1500,
+        //         timerProgressBar: true
+        //     });
+        // }
+
+        // function showErrorToast(message) {
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Failed",
+        //         text: message,
+        //         showConfirmButton: false,
+        //         timer: 1500,
+        //         timerProgressBar: true
+        //     });
+        // }
+
+        // function showSuccessToast(message) {
+        //     Swal.mixin({
+        //         toast: true,
+        //         position: "top-end",
+        //         showConfirmButton: false,
+        //         timer: 3000,
+        //         timerProgressBar: true,
+        //         didOpen: (toast) => {
+        //             toast.addEventListener("mouseenter", Swal.stopTimer);
+        //             toast.addEventListener("mouseleave", Swal.resumeTimer);
+        //         }
+        //     }).fire({
+        //         icon: "success",
+        //         title: message
+        //     });
+        // }
+        // function showErrorToast(message) {
+        //     Swal.mixin({
+        //         toast: true,
+        //         position: "top-end",
+        //         showConfirmButton: false,
+        //         timer: 3000,
+        //         timerProgressBar: true
+        //     }).fire({
+        //         icon: "error",
+        //         title: message
+        //     });
+        // }
 
         $(document).ready(function() {
             const reportTable = $('#reportTable').DataTable({

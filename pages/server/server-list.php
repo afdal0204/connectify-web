@@ -314,31 +314,28 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     </script>
     <script>
         function showSuccessToast(message) {
-            Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener("mouseenter", Swal.stopTimer);
-                    toast.addEventListener("mouseleave", Swal.resumeTimer);
-                }
-            }).fire({
+            Swal.fire({
+                title: "Success!",
+                text: message,
                 icon: "success",
-                title: message
+                confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-success"
+                },
+                buttonsStyling: false
             });
         }
+
         function showErrorToast(message) {
-            Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            }).fire({
+            Swal.fire({
+                title: "Failed!",
+                text: message,
                 icon: "error",
-                title: message
+                confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "btn btn-danger"
+                },
+                buttonsStyling: false
             });
         }
         $(document).ready(function() {

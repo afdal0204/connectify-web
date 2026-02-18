@@ -1,25 +1,13 @@
 <style>
-    /* #notifList {
-        max-height: 300px;   
-        overflow-y: auto;
-        padding-right: 10px;
-    }
-
-    @media (max-width: 768px) {
-        #notifList {
-            max-height: 200px;  
-        }
-    } */
 #notifList {
-    max-height: 300px;   /* Atur tinggi maksimal */
-    overflow-y: auto;    /* Membuat kontainer scrollable */
-    padding-right: 10px; /* Ruang tambahan di kanan */
-    padding-bottom: 10px; /* Jarak antara daftar notifikasi dan footer */
+    max-height: 300px;  
+    overflow-y: auto;   
+    padding-right: 10px; 
+    padding-bottom: 10px; 
 }
 .notifications-footer {
-    margin-top: 10px; /* Jarak antara daftar notifikasi dan footer */
+    margin-top: 10px;
 }
-
 </style>
 
 <header class="nxl-header">

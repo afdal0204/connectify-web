@@ -1,17 +1,17 @@
 <style>
     .text-badge-wrapper {
-        flex-wrap: wrap;       /* supaya teks panjang bisa wrap */
-        gap: 0.25rem;          /* jarak teks dan badge */
+        flex-wrap: wrap;     
+        gap: 0.25rem;     
     }
 
     .text-truncate {
-        white-space: nowrap;   /* atau gunakan wrap tergantung kebutuhan */
+        white-space: nowrap;   
         overflow: hidden;
         text-overflow: ellipsis;
     }
     .nxl-arrow i {
-        vertical-align: middle;  /* memaksa icon sejajar tengah dengan teks */
-        font-size: 1rem;         /* sesuaikan dengan font teks */
+        vertical-align: middle;
+        font-size: 1rem;  
     }
 </style>
 <nav class="nxl-navigation">

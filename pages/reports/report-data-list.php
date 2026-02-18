@@ -37,24 +37,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         #reportTable td,
         #reportTable th {
             white-space: normal !important;   
-            /* word-wrap: break-word !important;  */
-            /* word-break: break-word !important; */
-             /* padding: 8px 12px; */
         }
          .remark-text, .action-taken-text, .root-cause-text {
             white-space: pre-line;
         }
-        /* #reportTable td:nth-child(4),
-        #reportTable th:nth-child(4) {
-            max-width: 200px;
-             word-wrap: break-word !important; 
-              word-break: break-word !important;
-        } */
-
-        /* #reportTable td:nth-child(6),
-        #reportTable th:nth-child(6) {
-            max-width: 220px;
-        } */
     </style>
 </head>
 
@@ -465,6 +451,17 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
                         const borders = $('borders', styles);
                         const borderIndex = borders.children().length - 1;
+                        const sheetData = $('sheetData', sheet);
+                        // Tambahkan row baru di paling atas
+                        sheetData.prepend(`
+                            <row r="1">
+                                <c t="inlineStr" r="A1">
+                                    <is>
+                                        <t>Abnormal Report</t>
+                                    </is>
+                                </c>
+                            </row>
+                        `);
 
                         borders.append(`
                         <border>

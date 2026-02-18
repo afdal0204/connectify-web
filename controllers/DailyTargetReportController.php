@@ -48,7 +48,12 @@ class DailyTargetReportController
 
     public function getAllReports()
     {
-        $result = $this->conn->query("SELECT dtr.id, dtr.date, dtr.remark, dtr.target, dtr.output, dtr.gap,
+        $filter_dept       = $_GET['filter_dept'] ?? '';
+        $filter_model      = $_GET['filter_model'] ?? '';
+        $filter_date_from  = $_GET['filter_date_from'] ?? '';
+        $filter_date_to    = $_GET['filter_date_to'] ?? '';
+
+        $sql = "SELECT dtr.id, dtr.date, dtr.remark, dtr.target, dtr.output, dtr.gap,
                                             dtr.user_id, m.model_name, m.line_area, 
                                             us.uph_status_name, 
                                             u.name AS report_user,
@@ -59,10 +64,32 @@ class DailyTargetReportController
                                         LEFT JOIN models m ON dtr.model_id = m.id
                                         LEFT JOIN users u ON dtr.user_id = u.id              -- user created report
                                         LEFT JOIN users u_owner ON m.owner_id = u_owner.id    -- owner model (get department)
-                                        LEFT JOIN department d ON u_owner.department_id = d.id
+                                        -- LEFT JOIN department d ON u_owner.department_id = d.id
+                                        LEFT JOIN department d ON m.owner_id = u_owner.id AND u_owner.department_id = d.id
                                         LEFT JOIN uph_status us ON dtr.uph_status_id = us.id
-                                        ORDER BY dtr.date DESC, dtr.id DESC;
-                                        ");
+                                        WHERE 1 = 1";
+
+        // --- APPLY FILTER DEPARTMENT ---
+        if (!empty($filter_dept)) { $sql .= " AND d.id = " . intval($filter_dept); }
+
+        // --- APPLY FILTER MODEL ---
+        if (!empty($filter_model)) {
+            $sql .= " AND dtr.model_id = " . intval($filter_model);
+        }
+
+        // --- APPLY FILTER DATE RANGE ---
+        if (!empty($filter_date_from)) {
+            $filter_date_from = $this->conn->real_escape_string($filter_date_from);
+            $sql .= " AND dtr.date >= '$filter_date_from'";
+        }
+        if (!empty($filter_date_to)) {
+            $filter_date_to = $this->conn->real_escape_string($filter_date_to);
+            $sql .= " AND dtr.date <= '$filter_date_to'";
+        }
+
+        $sql .= " ORDER BY dtr.date DESC";
+
+        $result = $this->conn->query($sql);
 
         $reports = [];
         while ($row = $result->fetch_assoc()) {

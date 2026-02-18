@@ -2,6 +2,7 @@
 include './../../config.php';
 session_start();
 
+$deptRes = $conn->query("SELECT id, department_name FROM department ORDER BY department_name ASC");
 $modelRes = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $modelResModal = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 
@@ -40,28 +41,13 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
 
     <style>
-        /* Membuat semua cell di #modelTable wrap */
         #dailyTargetReportTable td,
         #dailyTargetReportTable th {
             white-space: normal !important;
-            /* membolehkan teks ke baris berikutnya */
-            /* word-wrap: break-word !important; 
-            word-break: break-word !important;
-             padding: 8px 12px; */
         }
         .remark-text {
             white-space: pre-line;
         }
-        /* Opsional: batasi lebar kolom tertentu supaya wrap lebih cepat */
-        /* #modelTable td:nth-child(4),
-        #modelTable th:nth-child(4) {
-            max-width: 200px;
-        }
-
-        #modelTable td:nth-child(6),
-        #modelTable th:nth-child(6) {
-            max-width: 220px;
-        } */
     </style>
 
 </head>
@@ -90,51 +76,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         </div>
                         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
                             <div class="dropdown filter-dropdown">
-                                <!-- <a class="btn btn-md btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 10" data-bs-auto-close="outside">
+                                <a class="btn btn-md btn-light-brand" data-bs-toggle="modal" data-bs-target="#dailyFilterModal" data-bs-offset="0, 10" data-bs-auto-close="outside">
                                     <i class="feather-filter me-2"></i>
                                     <span>Filter</span>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Role" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Role">Role</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Team" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Team">Team</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Email" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Email">Email</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Member" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Member">Member</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="Recommendation" checked="checked">
-                                            <label class="custom-control-label c-pointer" for="Recommendation">Recommendation</label>
-                                        </div>
-                                    </div>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-plus me-3"></i>
-                                        <span>Create New</span>
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="feather-filter me-3"></i>
-                                        <span>Manage Filter</span>
-                                    </a>
-                                </div> -->
                             </div>
                             <a href="javascript:void(0);" class="btn btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createTargetReportModal">
                                 <i class="feather-plus me-2"></i>
@@ -143,9 +88,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         </div>
                     </div>
                     <div class="d-md-none d-flex align-items-center">
-                        <a href="javascript:void(0)" class="page-header-right-open-toggle">
+                        <ahref="javascript:void(0)" class="page-header-right-open-toggle">
                             <i class="feather-align-right fs-20"></i>
-                        </a>
+                        </ahref=>
                     </div>
                 </div>
             </div>
@@ -160,10 +105,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         <div class="card stretch stretch-full">
                             <div class="card-header">
                                 <h5 class="card-title">Daily Target Reports</h5>
+                                
                                 <div class="card-header-action">
+                                    <div id="exportButtonsContainer"></div>
                                     <div class="card-header-btn">
                                         <div data-bs-toggle="tooltip" title="Refresh">
-                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                            <a id="btnClearFilter1" href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
                                         </div>
                                     </div>
                                 </div>
@@ -202,6 +149,68 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         require_once '../layout/footer.php'
         ?>
     </main>
+
+     <!-- Modal Filter -->
+    <div class="modal fade" id="dailyFilterModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manage Filter</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                  <div class="modal-body pt-3">
+                <div class="container-fluid">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Department</label>
+                            <select id="filterDept" class="form-select">
+                                <option value="">All</option>
+                                <?php $deptRes->data_seek(0);
+                                while ($row = $deptRes->fetch_assoc()): ?>
+                                    <option value="<?= $row['id'] ?>">
+                                        <?= $row['department_name'] ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Model</label>
+                            <select id="filterModel" class="form-select">
+                                <option value="">All</option>
+                                <?php $modelRes->data_seek(0);
+                                while ($row = $modelRes->fetch_assoc()): ?>
+                                    <option value="<?= $row['id'] ?>">
+                                        <?= $row['model_name'] ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Start Date</label>
+                            <input type="date"
+                                   id="filterDateFrom"
+                                   class="form-control"
+                                   max="<?= date('Y-m-d') ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">End Date</label>
+                            <input type="date"
+                                   id="filterDateTo"
+                                   class="form-control"
+                                   max="<?= date('Y-m-d') ?>">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+                <div class="modal-footer">
+                    <button id="btnClearFilter" class="btn btn-light" data-bs-dismiss="modal">Clear</button>
+                    <button class="btn btn-success" id="btnApplyFilter">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="createTargetReportModal" tabindex="-1" aria-labelledby="createTargetReportModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 40rem;">
@@ -297,15 +306,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     <form id="editdailyTargetReportForm" class="row g-3">
                         <input type="hidden" id="edit-id" name="id">
                         <input type="hidden" id="edit-model-id" name="model_id">
-                        <!-- <div class="col-md-6">
-                            <label class="form-label">Model</label>
-                            <select id="edimodelSelect" class="form-select" required>
-                                <option value="">-----</option>
-                                <?php while ($row = $modelRes->fetch_assoc()): ?>
-                                    <option value="<?= $row['id'] ?>"><?= htmlspecialchars($row['model_name']) ?></option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div> -->
+
                         <div class="col-md-6">
                             <label class="form-label">Model</label>
                             <input type="text" id="edimodelSelect" class="form-control" readonly>
@@ -408,7 +409,27 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             fetch("/connectify-web/update_activity.php");
         }, 60000);
     </script>
-
+        <!-- filter data -->
+    <script>
+        $('#filterDept').change(function() {
+            const dept_id = $(this).val();
+            $.ajax({
+                url: '/connectify-web/pages/reports/get-data.php',
+                type: 'POST',
+                data: {
+                    action: 'getModels',
+                    dept_id: dept_id
+                },
+                dataType: 'json',
+                success: function(data) {
+                    $('#filterModel').prop('disabled', false).html('<option value="">All</option>');
+                    data.forEach(obj => {
+                        $('#filterModel').append(`<option value="${obj.id}">${obj.model_name}</option>`);
+                    });
+                }
+            });
+        });
+    </script>
     <script>
         function showSuccessToast(message) {
             Swal.mixin({
@@ -442,7 +463,86 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         $(document).ready(function() {
             const dailytargetTable = $('#dailyTargetReportTable').DataTable({
                 // dom: 'Brtip',
-                dom: 'lrtip',
+                dom: 'Blrtip',
+                buttons: [{
+                    extend: 'excelHtml5',
+                    // text: '  <i class="feather-download me-1 mb-0"></i><span>Genarate Report</span>',
+                    text: '<i class="feather-download me-2"></i> Genarate Report',
+                    title: 'Daily Target Report',
+                    className: 'btn btn-xs btn-primary rounded',
+                    // className: 'btn btn-success btn-xs',
+                    
+                    exportOptions: {
+                        // columns: ':visible',
+                        columns: ':visible:not(.no-export)',
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied',
+                            page: 'all'
+                        }
+                    },
+
+                    // export to excel
+                    customize: function(xlsx) {
+                        const sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        const styles = xlsx.xl['styles.xml'];
+
+                        const borders = $('borders', styles);
+                        const borderIndex = borders.children().length - 1;
+
+                        const sheetData = $('sheetData', sheet);
+                        // Geser semua row ke bawah 1 baris
+                        // $('row', sheetData).each(function () {
+                        //     const rowIndex = parseInt($(this).attr('r'));
+                        //     $(this).attr('r', rowIndex + 1);
+
+                        //     $(this).find('c').each(function () {
+                        //         const cellRef = $(this).attr('r');
+                        //         const col = cellRef.replace(/[0-9]/g, '');
+                        //         const row = parseInt(cellRef.replace(/[A-Z]/g, ''));
+                        //         $(this).attr('r', col + (row + 1));
+                        //     });
+                        // });
+
+                        // Tambahkan row baru di paling atas
+                        sheetData.prepend(`
+                            <row r="1">
+                                <c t="inlineStr" r="A1">
+                                    <is>
+                                        <t>Daily Target Report</t>
+                                    </is>
+                                </c>
+                            </row>
+                        `);
+                        
+                        borders.append(`
+                        <border>
+                            <left style="thin"><color auto="1"/></left>
+                            <right style="thin"><color auto="1"/></right>
+                            <top style="thin"><color auto="1"/></top>
+                            <bottom style="thin"><color auto="1"/></bottom>
+                        </border>
+                    `);
+
+                        const cellXfs = $('cellXfs', styles);
+                        cellXfs.append(`
+                        <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
+                            <alignment horizontal="center" vertical="center" wrapText="1"/>
+                        </xf>
+                    `);
+                        cellXfs.append(`
+                        <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
+                            <alignment horizontal="center" vertical="center" wrapText="1"/>
+                        </xf>
+                    `);
+                        const bodyStyleIndex = cellXfs.children().length - 2;
+                        const headerStyleIndex = cellXfs.children().length - 1;
+
+                        $('row c', sheet).attr('s', bodyStyleIndex);
+                        $('row:first c', sheet).attr('s', headerStyleIndex);
+                    },
+                }],
+                
                 ajax: {
                     url: '/connectify-web/controllers/DailyTargetReportController.php',
                     type: 'GET',
@@ -450,6 +550,24 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         return json.success ? json.data : [];
                     }
                 },
+                ajax: {
+                    url: '/connectify-web/controllers/DailyTargetReportController.php',
+                    type: 'GET',
+                    data: function(d) {
+                        d.model_id = $('#modelSelect').val();
+                        d.station_id = $('#stationSelect').val();
+                        d.date = $('#date').val();
+                        d.filter_dept = $('#filterDept').val();  
+                        d.filter_model = $('#filterModel').val();
+                        d.filter_date_from = $('#filterDateFrom').val();
+                        d.filter_date_to = $('#filterDateTo').val();
+
+                    },
+                    dataSrc: function(json) {
+                        return json.success ? json.data : [];
+                    }
+                },
+                
                 // searching: false,
                 columns: [{
                         data: null,
@@ -583,7 +701,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 // ordering: false,
                 columnDefs: [{
                     targets: 11,
-                    orderable: false
+                    orderable: false,
+                    className: 'no-export' 
                 }],
                 autoWidth: false,
                 pageLength: 10,
@@ -601,11 +720,29 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 }
             });
 
+            dailytargetTable.buttons().container().appendTo('#exportButtonsContainer');
             $('#customSearchBox').on('keyup', function() {
                 dailytargetTable.search(this.value).draw();
             });
 
-           
+            $('#btnApplyFilter').click(function() {
+                dailytargetTable.ajax.reload();
+                 $('#dailyFilterModal').modal('hide');
+            });
+            $('#btnClearFilter').click(function() {
+                $('#filterDept').val('');
+                $('#filterModel').val('');
+                $('#filterDateFrom').val('');
+                $('#filterDateTo').val('');
+                dailytargetTable.ajax.reload();
+            });
+            $('#btnClearFilter1').click(function() {
+                $('#filterDept').val('');
+                $('#filterModel').val('');
+                $('#filterDateFrom').val('');
+                $('#filterDateTo').val('');
+                dailytargetTable.ajax.reload();
+            });
 
             let deleteReportId = null;
 

@@ -87,7 +87,7 @@ class DailyTargetReportController
             $sql .= " AND dtr.date <= '$filter_date_to'";
         }
 
-        $sql .= " ORDER BY dtr.date DESC";
+        $sql .= " ORDER BY dtr.date DESC, dtr.id DESC";
 
         $result = $this->conn->query($sql);
 

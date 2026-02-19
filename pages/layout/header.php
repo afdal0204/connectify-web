@@ -254,7 +254,7 @@
                                     class="rounded me-3 border" width="40" height="40">
 
                                 <div class="notifications-desc">
-                                    <a href="#" class="font-body text-truncate-5-line">
+                                    <a href="#" class="font-body text-truncate-6-line">
                                         ${n.message}
                                     </a>
                                     <div class="d-flex justify-content-between align-items-center mt-1">

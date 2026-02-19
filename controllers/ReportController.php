@@ -25,6 +25,8 @@ class ReportController
                     $this->getReportsByWorkId();
                 } else if (isset($_GET['type']) && $_GET['type'] === 'top-reporter') {
                     $this->getTopReporter();
+                } else if (isset($_GET['type']) && $_GET['type'] === 'total-report-department') {
+                    $this->getTotalReportDepartment();
                 } else {
                     $this->getAllReports();
                 }
@@ -201,6 +203,8 @@ class ReportController
                                         SELECT user_id FROM abnormal_reports
                                         UNION ALL
                                         SELECT user_id FROM line_report_per_shift
+                                        -- UNION ALL
+                                        -- SELECT user_id FROM daily_target_report
                                     ) AS c
                                         ON c.user_id = u.id                                   
                                     -- WHERE u.role_id IN (2, 3)                              
@@ -208,13 +212,38 @@ class ReportController
                                     GROUP BY u.id, u.name, u.role_id                        
                                     ORDER BY u.name ASC;        
                                 ");
-        // $result = $this->conn->query(" SELECT ar.id, m.model_name, ar.user_id, ar.model_id, u.name, u.work_id, COUNT(*) AS totalReports
-        //                                 FROM abnormal_reports ar
-        //                                 LEFT JOIN models m ON ar.model_id = m.id
-        //                                 LEFT JOIN users u ON ar.user_id = u.id
-        //                                 GROUP BY user_id, model_id
-        //                                 ORDER BY totalReports DESC
-        //                                 LIMIT 3");
+        $reports = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $reports[] = $row;
+        }
+        echo json_encode([
+            "success" => true,
+            "data" => $reports
+        ]);
+        exit();
+    }
+
+    public function getTotalReportDepartment()
+    {
+        $result = $this->conn->query(" SELECT
+                                            d.id AS department_id,
+                                            d.department_name,
+                                            COALESCE(COUNT(r.model_id), 0) AS total_report
+                                        FROM department d
+                                        LEFT JOIN users u_owner ON u_owner.department_id = d.id
+                                        LEFT JOIN models m ON m.owner_id = u_owner.id
+                                        LEFT JOIN (
+                                                SELECT model_id FROM abnormal_reports
+                                                UNION ALL
+                                                SELECT model_id FROM line_report_per_shift
+                                                UNION ALL
+                                                SELECT model_id FROM daily_target_report
+                                        ) r 
+                                            ON r.model_id = m.id
+                                        GROUP BY d.id, d.department_name
+                                        ORDER BY d.department_name ASC
+                                        ;");
         $reports = [];
 
         while ($row = $result->fetch_assoc()) {

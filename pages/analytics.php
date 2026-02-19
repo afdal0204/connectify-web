@@ -89,8 +89,41 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             <div class="main-content">
                 <div class="row">
                     <!-- Chart -->
-
-                    <div class="col-xxl-12">
+                     <div class="col-xxl-12">
+                        <div class="card stretch stretch-full">
+                            <div class="card-header">
+                                <h5 class="card-title">Total reports by Users</h5>
+                                <div class="card-header-action">
+                                    <div class="card-header-btn">
+                                        <div data-bs-toggle="tooltip" title="Refresh">
+                                            <a id="btnRefresh" href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body custom-card-action p-0">
+                                <div id="topReporter"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6">
+                        <div class="card stretch stretch-full">
+                            <div class="card-header">
+                                <h5 class="card-title">Total reports by Departments</h5>
+                                <div class="card-header-action">
+                                    <div class="card-header-btn">
+                                        <div data-bs-toggle="tooltip" title="Refresh">
+                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body custom-card-action p-0">
+                                <div id="deparmentReportChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
                                 <h5 class="card-title">Daily Target Report</h5>
@@ -112,27 +145,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </div>
                         </div>
                     </div>
-                    <div class="col-xxl-12">
-                        <div class="card stretch stretch-full">
-                            <div class="card-header">
-                                <h5 class="card-title">Total reports by Users</h5>
-                                <div class="card-header-action">
-                                    <div class="card-header-btn">
-                                        <div data-bs-toggle="tooltip" title="Refresh">
-                                            <a id="btnRefresh" href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body custom-card-action p-0">
-                                <div id="topReporter"></div>
-                            </div>
-                        </div>
-                    </div>
+        
                     <div class="col-xxl-6">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
-                                <h5 class="card-title">Abnormal Report</h5>
+                                <h5 class="card-title">Abnormal Report by Models</h5>
                                 <div class="card-header-action">
                                     <div class="card-header-btn">
                                         <div data-bs-toggle="tooltip" title="Refresh">
@@ -501,7 +518,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         xaxis: {
                             categories: departmentNames,
                             title: {
-                                text: 'Department'
+                                text: 'Department Name'
                             }
                         },
                         yaxis: {
@@ -545,6 +562,70 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             },
             error: function(xhr, status, error) {
                 console.error("Error fetching data:", error);
+            }
+        });
+        
+         $.ajax({
+            url: '/connectify-web/controllers/ReportController.php?type=total-report-department',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                if (json.success && Array.isArray(json.data)) {
+                    const labels = json.data.map(item => item.department_name);
+                    const totalReports = json.data.map(item => parseInt(item.total_report));
+
+                    var options = {
+                        series: [{
+                            name: 'Total Reports',
+                            data: totalReports
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 350,
+                            toolbar: {
+                                show: true
+                            }
+                        },
+                        xaxis: {
+                            categories: labels,
+                            title: {
+                                text: ' Department Name'
+                            }
+                        },
+                        yaxis: {
+                            title: {
+                                text: 'Total Reports'
+                            },
+                            min: 0
+                        },
+                        markers: {
+                            size: 5
+                        },
+                        stroke: {
+                            curve: 'smooth'
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                columnWidth: '70%',
+                                endingShape: 'rounded'
+                            }
+                        },
+                        title: {
+                            // text: 'Tota Report per Model',
+                            align: 'center'
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    };
+
+                    var chart = new ApexCharts(document.querySelector("#deparmentReportChart"), options);
+                    chart.render();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Chart data fetch error:", error);
             }
         });
 

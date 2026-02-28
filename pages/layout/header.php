@@ -112,8 +112,8 @@
                             <span>Profile</span>
                         </a>
                         <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editSettingModal">
-                            <i class="feather-settings"></i>
-                            <span>Settings</span>
+                            <i class="feather-lock"></i>
+                            <span>Change Password</span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#logoutModal">

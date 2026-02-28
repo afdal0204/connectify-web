@@ -41,6 +41,7 @@ class NotificationController
     {
         $result = $this->conn->query("
             SELECT * FROM notifications 
+            WHERE created_at >= NOW() - INTERVAL 2 DAY
             ORDER BY created_at DESC
             LIMIT 20
         ");

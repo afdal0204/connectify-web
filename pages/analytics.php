@@ -452,7 +452,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             categories: labels,
                             title: {
                                 text: 'Model Name'
-                            }
+                            }     
                         },
                         yaxis: {
                             title: {

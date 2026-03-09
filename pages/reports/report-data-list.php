@@ -417,56 +417,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 buttonsStyling: false
             });
         }
-        // function showSuccessToast(message) {
-        //     Swal.fire({
-        //         icon: "success",
-        //         title: "Success",
-        //         text: message,
-        //         showConfirmButton: false,
-        //         timer: 1500,
-        //         timerProgressBar: true
-        //     });
-        // }
-
-        // function showErrorToast(message) {
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Failed",
-        //         text: message,
-        //         showConfirmButton: false,
-        //         timer: 1500,
-        //         timerProgressBar: true
-        //     });
-        // }
-
-        // function showSuccessToast(message) {
-        //     Swal.mixin({
-        //         toast: true,
-        //         position: "top-end",
-        //         showConfirmButton: false,
-        //         timer: 3000,
-        //         timerProgressBar: true,
-        //         didOpen: (toast) => {
-        //             toast.addEventListener("mouseenter", Swal.stopTimer);
-        //             toast.addEventListener("mouseleave", Swal.resumeTimer);
-        //         }
-        //     }).fire({
-        //         icon: "success",
-        //         title: message
-        //     });
-        // }
-        // function showErrorToast(message) {
-        //     Swal.mixin({
-        //         toast: true,
-        //         position: "top-end",
-        //         showConfirmButton: false,
-        //         timer: 3000,
-        //         timerProgressBar: true
-        //     }).fire({
-        //         icon: "error",
-        //         title: message
-        //     });
-        // }
 
         $(document).ready(function() {
             const reportTable = $('#reportTable').DataTable({
@@ -475,11 +425,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dom: 'Blrtip',
                 buttons: [{
                     extend: 'excelHtml5',
-                    // text: '  <i class="feather-download me-1 mb-0"></i><span>Genarate Report</span>',
                     text: '<i class="feather-download me-2"></i> Genarate Report',
                     title: 'Abnormal Report',
                     className: 'btn btn-xs btn-primary rounded',
-                    // className: 'btn btn-success btn-xs',
                     
                     exportOptions: {
                         // columns: ':visible',

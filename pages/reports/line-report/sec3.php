@@ -105,9 +105,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                             <div class="card-header">
                                 <h5 class="card-title">Line Report Section 3</h5>
                                 <div class="card-header-action">
+                                    <div id="exportButtonsContainer"></div>
                                     <div class="card-header-btn">
                                         <div data-bs-toggle="tooltip" title="Refresh">
-                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                            <a id="btnClearFilter1" href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
                                         </div>
                                     </div>
                                 </div>
@@ -126,7 +127,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                                 <th>Line Area</th>
                                                 <th>Remark</th>
                                                 <th>Reported By</th>
-                                                <th>Action</th>
+                                                <th class="no-export">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="lineReportTableBody">
@@ -325,7 +326,71 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
 
         $(document).ready(function() {
             const lineReportTable = $('#lineReportTable').DataTable({
-                dom: 'lrtip',
+                dom: 'Blrtip',
+                buttons: [{
+                    extend: 'excelHtml5',
+                    text: '<i class="feather-download me-2"></i> Genarate Report',
+                    title: 'Line Report Sec 3',
+                    className: 'btn btn-xs btn-primary rounded',
+                    
+                    exportOptions: {
+                        // columns: ':visible',
+                        columns: ':visible:not(.no-export)',    
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied',
+                            page: 'all'
+                        }
+                    },
+
+                    // export to excel
+                    customize: function(xlsx) {
+                        const sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        const styles = xlsx.xl['styles.xml'];
+
+                        const borders = $('borders', styles);
+                        const borderIndex = borders.children().length - 1;
+                        const sheetData = $('sheetData', sheet);
+                        // Tambahkan row baru di paling atas
+                        sheetData.prepend(`
+                            <row r="1">
+                                <c t="inlineStr" r="A1">
+                                    <is>
+                                        <t>Line Report Sec 3</t>
+                                    </is>
+                                </c>
+                            </row>
+                        `);
+
+                        borders.append(`
+                        <border>
+                            <left style="thin"><color auto="1"/></left>
+                            <right style="thin"><color auto="1"/></right>
+                            <top style="thin"><color auto="1"/></top>
+                            <bottom style="thin"><color auto="1"/></bottom>
+                        </border>
+                    `);
+
+                        const cellXfs = $('cellXfs', styles);
+                        cellXfs.append(`
+                        <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
+                            <alignment horizontal="center" vertical="center" wrapText="1"/>
+                        </xf>
+                    `);
+                        cellXfs.append(`
+                        <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
+                            <alignment horizontal="center" vertical="center" wrapText="1"/>
+                        </xf>
+                    `);
+                        const bodyStyleIndex = cellXfs.children().length - 2;
+                        const headerStyleIndex = cellXfs.children().length - 1;
+
+                        $('row c', sheet).attr('s', bodyStyleIndex);
+                        $('row:first c', sheet).attr('s', headerStyleIndex);
+                    }
+                }],
+
+
                 ajax: {
                     url: '/connectify-web/controllers/LineReportController.php?type=sec3',
                     type: 'GET',
@@ -430,12 +495,24 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 },
             });
 
+            lineReportTable.buttons().container().appendTo('#exportButtonsContainer');
+            $('#customSearchBox').on('keyup', function() {
+                lineReportTable.search(this.value).draw();
+            });
+
             $('#btnApplyFilter').click(function() {
                 lineReportTable.ajax.reload();
                  $('#sec3FilterModal').modal('hide');
             });
             
             $('#btnClearFilter').click(function() {
+                $('#filterModel').val('');
+                $('#filterDateFrom').val('');
+                $('#filterDateTo').val('');
+                lineReportTable.ajax.reload();
+            });
+
+             $('#btnClearFilter1').click(function() {
                 $('#filterModel').val('');
                 $('#filterDateFrom').val('');
                 $('#filterDateTo').val('');

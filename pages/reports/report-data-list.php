@@ -689,6 +689,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 reportTable.ajax.reload();
                  $('#abnormalFilterModal').modal('hide');
             });
+
             $('#btnClearFilter').click(function() {
                 $('#filterDept').val('');
                 $('#filterModel').val('');
@@ -704,43 +705,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 reportTable.ajax.reload();
             });
 
-
-            // let deleteReportId = null;
-
-            // $(document).on('click', '.btn-delete-report', function(e) {
-            //     e.preventDefault();
-            //     deleteReportId = $(this).data('id');
-            // });
-
-            // $('#btnConfirmDeleteReport').on('click', function() {
-            //     if (!deleteReportId) return;
-
-            //     $.ajax({
-            //         url: '/connectify-web/controllers/ReportController.php',
-            //         type: 'DELETE',
-            //         data: JSON.stringify({
-            //             id: deleteReportId
-            //         }),
-            //         contentType: 'application/json',
-            //         success: function(response) {
-            //             $('#deleteModalReport').modal('hide');
-            //             showSuccessToast(response.message);
-            //             // if (response.success) {
-            //                 //     showAlert('Success', response.message, 'success');
-            //                 //     reportTable.ajax.reload(null, false);
-            //             // } else {
-            //             //     showAlert('Failed', response.message, 'danger');
-            //             // }
-            //             reportTable.ajax.reload(null, false);
-            //             deleteReportId = null;
-            //         },
-            //         error: function(xhr) {
-            //             $('#deleteModalReport').modal('hide');
-            //             showAlert('Error', xhr.statusText, 'danger');
-            //             deleteReportId = null;
-            //         }
-            //     });
-            // });
 
              $(document).on('click', '.btn-delete-report', function (e) {
                 e.preventDefault();

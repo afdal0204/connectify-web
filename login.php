@@ -84,7 +84,7 @@ if (isset($_SESSION['user_id'])) {
     <meta name="description" content="">
     <meta name="keyword" content="">
     <meta name="author" content="theme_ocean">
-    <title>Connectiy</title>
+    <title>Connectify</title>
     <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="assets/vendors/css/vendors.min.css">

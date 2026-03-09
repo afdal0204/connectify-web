@@ -11,6 +11,13 @@ $modelResModal = $conn->query("SELECT m.id, m.model_name
                             WHERE d.id = 3
                             ORDER BY model_name ASC");
 
+$modelRes = $conn->query("SELECT m.id, m.model_name 
+                            FROM models m 
+                            LEFT JOIN users u_owner ON m.owner_id = u_owner.id
+                            LEFT JOIN department d ON u_owner.department_id = d.id
+                            WHERE d.id = 3
+                            ORDER BY model_name ASC");
+
 $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
 ?>
 
@@ -67,6 +74,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                             </a>
                         </div>
                         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+                            <div class="dropdown filter-dropdown">
+                                <a class="btn btn-md btn-light-brand" data-bs-toggle="modal" data-bs-target="#sec3FilterModal" data-bs-offset="0, 10" data-bs-auto-close="outside">
+                                    <i class="feather-filter me-2"></i>
+                                    <span>Filter</span>
+                                </a>
+                            </div>
                             <a href="javascript:void(0);" class="btn btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createSec3Modal">
                                 <i class="feather-plus me-2"></i>
                                 <span>Add Report</span>
@@ -130,6 +143,56 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
         require_once '../../layout/footer.php';
         ?>
     </main>
+
+    <!-- Modal Filter -->
+    <div class="modal fade" id="sec3FilterModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manage Filter</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                  <div class="modal-body pt-3">
+                <div class="container-fluid">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Model</label>
+                            <select id="filterModel" class="form-select">
+                                <option value="">All</option>
+                                <?php $modelRes->data_seek(0);
+                                while ($row = $modelRes->fetch_assoc()): ?>
+                                    <option value="<?= $row['id'] ?>">
+                                        <?= $row['model_name'] ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Start Date</label>
+                            <input type="date"
+                                   id="filterDateFrom"
+                                   class="form-control"
+                                   max="<?= date('Y-m-d') ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">End Date</label>
+                            <input type="date"
+                                   id="filterDateTo"
+                                   class="form-control"
+                                   max="<?= date('Y-m-d') ?>">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+                <div class="modal-footer">
+                    <button id="btnClearFilter" class="btn btn-light" data-bs-dismiss="modal">Clear</button>
+                    <button class="btn btn-success" id="btnApplyFilter">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- add -->
     <div class="modal fade" id="createSec3Modal" tabindex="-1" aria-labelledby="createSec3ModalLabel" aria-hidden="true">
@@ -266,6 +329,13 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 ajax: {
                     url: '/connectify-web/controllers/LineReportController.php?type=sec3',
                     type: 'GET',
+                     
+                    data: function(d){
+                        d.filter_model = $('#filterModel').val();
+                        d.filter_date_from = $('#filterDateFrom').val();
+                        d.filter_date_to = $('#filterDateTo').val();
+                    },
+
                     dataSrc: function(json) {
                         return json.success ? json.data : [];
                     }
@@ -358,6 +428,18 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     infoEmpty: "No data available",
                     infoFiltered: "(filtered from _MAX_ total entries)"
                 },
+            });
+
+            $('#btnApplyFilter').click(function() {
+                lineReportTable.ajax.reload();
+                 $('#sec3FilterModal').modal('hide');
+            });
+            
+            $('#btnClearFilter').click(function() {
+                $('#filterModel').val('');
+                $('#filterDateFrom').val('');
+                $('#filterDateTo').val('');
+                lineReportTable.ajax.reload();
             });
 
             $('#customSearchBox').on('keyup', function() {
@@ -473,10 +555,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     model_id
                 },
                 dataType: 'json',
-                // success: function(data) {
-                //     $('#lineInput').val(data.line_area || '');
-                //     $('#targetInput').val(data.output_target || '');
-                // },
                 success: function(res) {
                     if (res.success && res.data) {
                         $('#lineInput').val(res.data.line_area);
@@ -519,30 +597,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     } else {
                         showErrorToast(response.message);
                     }
-                    // if (response.success) {
-                    //     $('#alertLineReportSec3').html(
-                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                    //         ${response.message}
-                    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    // </div>`
-                    //     );
-
-                    //     setTimeout(() => {
-                    //         $('.alert').alert('close');
-                    //         $('#createSec3Modal').modal('hide');
-                    //     }, 1500);
-
-                    //     $('#lineReportSec3')[0].reset();
-                    //     $('#lineReportTable').DataTable().ajax.reload(null, false);
-
-
-                    // } else {
-                    //     $('#message-container').html(`
-                    //     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    //         ${response.message}
-                    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    //     </div>`);
-                    // }
                 },
                 error: function(xhr) {
                     let msg = "Unexpected error";

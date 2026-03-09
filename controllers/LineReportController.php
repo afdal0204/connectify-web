@@ -86,9 +86,6 @@ class LineReportController
                 'total_reports' => 0
             ];
         }
-            // if (!isset($totals['total_dep' . $departmentId])) {
-            //     $totals['total_dep' . $departmentId] = 0;
-            // }
         }
 
         echo json_encode([
@@ -99,9 +96,52 @@ class LineReportController
         exit();
     }
 
+    // public function getAllReportsSec1($departmentId)
+    // {
+    //     $stmt = $this->conn->prepare("
+    //         SELECT 
+    //             lrp.id, 
+    //             lrp.shift, 
+    //             lrp.user_id,
+    //             lrp.date, 
+    //             lrp.remark,
+    //             m.model_name, 
+    //             m.line_area,
+    //             u.name AS report_user,
+    //             d.department_name
+    //         FROM line_report_per_shift lrp
+    //         LEFT JOIN models m ON lrp.model_id = m.id
+    //         LEFT JOIN users u ON lrp.user_id = u.id
+    //         LEFT JOIN users u_owner ON m.owner_id = u_owner.id
+    //         LEFT JOIN department d ON u_owner.department_id = d.id
+    //         WHERE d.id = ?
+    //         ORDER BY lrp.date DESC, lrp.id DESC
+    //     ");
+
+    //     $stmt->bind_param("i", $departmentId);
+    //     $stmt->execute();
+
+    //     $result = $stmt->get_result();
+    //     $reports = [];
+
+    //     while ($row = $result->fetch_assoc()) {
+    //         $reports[] = $row;
+    //     }
+
+    //     echo json_encode([
+    //         "success" => true,
+    //         "data" => $reports
+    //     ]);
+    //     exit();
+    // }
+
     public function getAllReportsSec1($departmentId)
     {
-        $stmt = $this->conn->prepare("
+        $filter_model      = $_GET['filter_model'] ?? '';
+        $filter_date_from  = $_GET['filter_date_from'] ?? '';
+        $filter_date_to    = $_GET['filter_date_to'] ?? '';
+
+        $sql = "
             SELECT 
                 lrp.id, 
                 lrp.shift, 
@@ -118,10 +158,36 @@ class LineReportController
             LEFT JOIN users u_owner ON m.owner_id = u_owner.id
             LEFT JOIN department d ON u_owner.department_id = d.id
             WHERE d.id = ?
-            ORDER BY lrp.date DESC, lrp.id DESC
-        ");
+        ";
 
-        $stmt->bind_param("i", $departmentId);
+        $params = [$departmentId];
+        $types  = "i";
+
+        // filter model
+        if (!empty($filter_model)) {
+            $sql .= " AND lrp.model_id = ?";
+            $params[] = $filter_model;
+            $types .= "i";
+        }
+
+        // filter start date
+        if (!empty($filter_date_from)) {
+            $sql .= " AND lrp.date >= ?";
+            $params[] = $filter_date_from;
+            $types .= "s";
+        }
+
+        // filter end date
+        if (!empty($filter_date_to)) {
+            $sql .= " AND lrp.date <= ?";
+            $params[] = $filter_date_to;
+            $types .= "s";
+        }
+
+        $sql .= " ORDER BY lrp.date DESC, lrp.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -140,7 +206,11 @@ class LineReportController
 
     public function getAllReportsSec2($departmentId)
     {
-        $stmt = $this->conn->prepare("
+        $filter_model      = $_GET['filter_model'] ?? '';
+        $filter_date_from  = $_GET['filter_date_from'] ?? '';
+        $filter_date_to    = $_GET['filter_date_to'] ?? '';
+
+        $sql = "
             SELECT 
                 lrp.id, 
                 lrp.shift, 
@@ -157,10 +227,36 @@ class LineReportController
             LEFT JOIN users u_owner ON m.owner_id = u_owner.id
             LEFT JOIN department d ON u_owner.department_id = d.id
             WHERE d.id = ?
-            ORDER BY lrp.date DESC, lrp.id DESC
-        ");
+        ";
 
-        $stmt->bind_param("i", $departmentId);
+        $params = [$departmentId];
+        $types  = "i";
+
+        // filter model
+        if (!empty($filter_model)) {
+            $sql .= " AND lrp.model_id = ?";
+            $params[] = $filter_model;
+            $types .= "i";
+        }
+
+        // filter start date
+        if (!empty($filter_date_from)) {
+            $sql .= " AND lrp.date >= ?";
+            $params[] = $filter_date_from;
+            $types .= "s";
+        }
+
+        // filter end date
+        if (!empty($filter_date_to)) {
+            $sql .= " AND lrp.date <= ?";
+            $params[] = $filter_date_to;
+            $types .= "s";
+        }
+
+        $sql .= " ORDER BY lrp.date DESC, lrp.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -176,9 +272,14 @@ class LineReportController
         ]);
         exit();
     }
+
     public function getAllReportsSec3($departmentId)
     {
-        $stmt = $this->conn->prepare("
+        $filter_model      = $_GET['filter_model'] ?? '';
+        $filter_date_from  = $_GET['filter_date_from'] ?? '';
+        $filter_date_to    = $_GET['filter_date_to'] ?? '';
+
+        $sql = "
             SELECT 
                 lrp.id, 
                 lrp.shift, 
@@ -195,10 +296,36 @@ class LineReportController
             LEFT JOIN users u_owner ON m.owner_id = u_owner.id
             LEFT JOIN department d ON u_owner.department_id = d.id
             WHERE d.id = ?
-            ORDER BY lrp.date DESC, lrp.id DESC
-        ");
+        ";
 
-        $stmt->bind_param("i", $departmentId);
+        $params = [$departmentId];
+        $types  = "i";
+
+        // filter model
+        if (!empty($filter_model)) {
+            $sql .= " AND lrp.model_id = ?";
+            $params[] = $filter_model;
+            $types .= "i";
+        }
+
+        // filter start date
+        if (!empty($filter_date_from)) {
+            $sql .= " AND lrp.date >= ?";
+            $params[] = $filter_date_from;
+            $types .= "s";
+        }
+
+        // filter end date
+        if (!empty($filter_date_to)) {
+            $sql .= " AND lrp.date <= ?";
+            $params[] = $filter_date_to;
+            $types .= "s";
+        }
+
+        $sql .= " ORDER BY lrp.date DESC, lrp.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
 
         $result = $stmt->get_result();

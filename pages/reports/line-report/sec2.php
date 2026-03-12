@@ -141,8 +141,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
         require_once '../../layout/footer.php';
         ?>
     </main>
-
-     <!-- Modal Filter -->
+    
+    <!-- Modal Filter -->
     <div class="modal fade" id="sec2FilterModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -326,7 +326,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 dom: 'Blrtip',
                 buttons: [{
                     extend: 'excelHtml5',
-                    text: '<i class="feather-download me-2"></i> Genarate Report',
+                    text: '<i class="feather-download me-2"></i> Generate Report',
                     title: 'Line Report Sec 2',
                     className: 'btn btn-xs btn-primary rounded',
                     

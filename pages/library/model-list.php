@@ -290,10 +290,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     <label>Output Target</label>
                                     <input type="number" id="editOutputTarget" name="editOutputTarget" class="form-control" required>
                                 </div>
-                                <!-- <div class="col-md-4">
-                                <label>Owner</label>
-                                <input type="text" id="editUserOwner" name="editUserOwner" class="form-control" required readonly>
-                            </div> -->
                                 <div class="col-md-4">
                                     <label class="">Owner</label>
                                     <select id="editUserOwner" name="editUserOwner" class="form-select">
@@ -320,10 +316,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     <label class="">Selected Members</label>
                                     <div id="EditSelectedMembersContainer" class="d-flex flex-wrap gap-2 border p-2" style="min-height: 50px;"></div>
                                 </div>
-                                <!-- <div class="col-md-12">
-                                <label>Stations</label>
-                                <textarea type="text" id="modelStation" name="modelStation" class="form-control"></textarea>
-                            </div> -->
                                 <div class="col-6">
                                     <label>Stations</label>
                                     <div class="d-flex gap-2 mb-2">
@@ -352,17 +344,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     <label>Line Area</label>
                                     <input type="text" id="editDeviceLineArea" name="editDeviceLineArea" class="form-control" required readonly>
                                 </div>
-                                <!-- <div class="col-md-4">
-                                <label class="form-label">Stations</label>
-                                <select id="editDeviceStation" name="deviceStation" class="form-select" required>
-                                    <option value="">-----</option>
-                                    <?php foreach ($stations as $station): ?>
-                                        <option value="<?= $station['id'] ?>">
-                                            <?= htmlspecialchars($station['station_name']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div> -->
                                 <div class="col-md-4">
                                     <label class="">Stations</label>
                                     <select id="editDeviceStation" name="deviceStation" class="form-select" required>
@@ -390,6 +371,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         </div>
     </div>
 
+    
+
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
     <!-- vendors.min.js {always must need to be top} -->
     <script src="/connectify-web/assets/vendors/js/dataTables.min.js"></script>
@@ -406,7 +389,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script src="/connectify-web/assets/js/theme-customizer-init.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/dataTables.buttons.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/jszip.min.js"></script>
-    <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>>
+    <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
     <!-- <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script> -->
     <script src="/connectify-web/pages/js/dashboard.js"></script>
     <script>
@@ -626,31 +609,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         } else {
                             showErrorToast(response.message);
                         }
-                        // if (response.success) {
-                        //     $('#alertModelContainer').html(
-                        //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        // ${response.message}
-                        // <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        // </div>`
-                        //     );
-
-                        //     setTimeout(() => {
-                        //         $('.alert').alert('close');
-                        //         $('#createModelModal').modal('hide');
-                        //     }, 1500);
-
-                        //     $('#modelForm')[0].reset();
-                        //     selectedMembers.clear();
-                        //     renderSelectedMembers();
-                        //     $('#modelTable').DataTable().ajax.reload(null, false);
-
-                        // } else {
-                        //     $('#message-container').html(`
-                        //         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        //             ${response.message}
-                        //             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        //         </div>`);
-                        // }
                     },
                     error: function(xhr) {
                         let msg = "Unexpected error";
@@ -695,6 +653,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const output_target = button.data('output_target');
                 const owner = button.data('owner');
                 const owner_id = button.data('owner_id');
+
                 const members = button.data('members') ? button.data('members').split(',') : [];
                 const stationData = button.data('stations') ? button.data('stations').split(',') : [];
                 const deviceData = button.data('devices') ? button.data('devices').split(',') : [];
@@ -705,15 +664,13 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 modal.find('#editLineArea').val(line_area);
                 modal.find('#editDeviceLineArea').val(line_area);
                 modal.find('#editOutputTarget').val(output_target);
-
-                // modal.find('#editUserOwner').val(owner);
                 modal.find('#editUserOwner').val(owner_id);
-                // modal.find('#editUserOwner').val(parseInt(owner_id));
 
                 // Stations
                 const memberContainer = $('#EditSelectedMembersContainer');
                 memberContainer.empty();
                 selectedMembers.clear();
+                
                 members.forEach(name => {
                     const trimmed = name.trim();
                     selectedMembers.set(trimmed, trimmed);
@@ -856,10 +813,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 if (!deviceName || !stationId) {
                     return alert('Please select a station and enter device name');
                 }
-                // const isDuplicate = devices.some(d => d.device_name.toLowerCase() === deviceName.toLowerCase());
-                // if (isDuplicate) {
-                //     return alert('Device already exists');
-                // }
+
                 const deviceNames = devices.map(d => d.device_name);
                 if (deviceNames.includes(deviceName)) {
                     return alert('Device already exists');
@@ -870,7 +824,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     id: deviceId,
                     device_name: deviceName,
                     station_id: stationId,
-                    station: stationText
+                    station: stationText,
                 });
 
                 renderDeviceList();
@@ -880,8 +834,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             // Save Model + Stations
             $('#editSaveStationModel').on('click', function(e) {
                 e.preventDefault();
-                // $(document).on('click', '#editSaveStationModel', function (e) {
-                //     e.preventDefault();
 
                 const id = $('#edit-id').val().trim();
                 const line_area = $('#editLineArea').val().trim();
@@ -891,7 +843,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     .map(v => parseInt(v, 10))
                     .filter(v => !isNaN(v));
 
-                // console.log(membersArray); 
+                console.log(membersArray); 
                 const payload = {
                     id,
                     line_area,
@@ -910,29 +862,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         const res = typeof response === 'string' ? JSON.parse(response) : response;
                         if (res.success) {
                             $('#editModelModal').modal('hide');
-                            // $('#modelTable').DataTable().ajax.reload(null, false);
-                            // alert(res.message);
-                        //     $('#alertModelContainer').html(
-                        //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        // ${response.message}
-                        // <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        // </div>`
-                        //     );
-
-                        //     setTimeout(() => {
-                        //         $('.alert').alert('close');
-                        //     }, 1500);
-                             showSuccessToast(response.message);
+                            showSuccessToast(response.message);
                             $('#modelStationForm')[0].reset();
                             $('#modelTable').DataTable().ajax.reload(null, false);
                         } else {
                             showErrorToast(response.message);
-                            // alert(res.message);
-                    //         $('#edit-message-container').html(`
-                    // <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    //     ${response.message}
-                    //     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    // </div>`);
                         }
                     },
                     error: function(xhr) {
@@ -957,9 +891,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const model_id = $('#edit-id').val().trim();
                 const line_area = $('#editDeviceLineArea').val().trim();
                 const owner_id = $('#editUserOwner').val().trim();
-                // if (devices.length === 0) {
-                //     return alert('Please add at least one device.');
-                // }
+                
                 const payload = {
                     id: model_id,
                     owner_id: owner_id,
@@ -968,8 +900,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         station_id: d.station_id,
                         device_name: d.device_name
                     }))
-                };
-                // console.log(payload)
+                }; 
                 $.ajax({
                     url: '/connectify-web/controllers/ModelController.php?action=update',
                     method: 'POST',
@@ -979,28 +910,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         const res = typeof response === 'string' ? JSON.parse(response) : response;
                         if (res.success) {
                             $('#editModelModal').modal('hide');
-                            // $('#modelTable').DataTable().ajax.reload(null, false);
-                            // alert(res.message);
-                        //     $('#alertModelContainer').html(
-                        //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        // ${response.message}
-                        // <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        // </div>`
-                        //     );
-
-                        //     setTimeout(() => {
-                        //         $('.alert').alert('close');
-                        //     }, 1500);
-                           showSuccessToast(response.message);
+                            showSuccessToast(response.message);
                             $('#modelDeviceForm')[0].reset();
                             $('#modelTable').DataTable().ajax.reload(null, false);
                         } else {
                             showErrorToast(response.message);
-                    //         $('#edit-message-container').html(`
-                    // <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    //     ${response.message}
-                    //     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    // </div>`);
                         }
                     },
                     error: function(xhr) {
@@ -1021,7 +935,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             });
         });
     </script>
-
+    
+  
 </body>
 
 </html>

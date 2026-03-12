@@ -425,7 +425,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dom: 'Blrtip',
                 buttons: [{
                     extend: 'excelHtml5',
-                    text: '<i class="feather-download me-2"></i> Genarate Report',
+                    text: '<i class="feather-download me-2"></i> Generate Report',
                     title: 'Abnormal Report',
                     className: 'btn btn-xs btn-primary rounded',
                     

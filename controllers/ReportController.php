@@ -54,6 +54,8 @@ class ReportController
     {
         $filter_dept       = $_GET['filter_dept'] ?? '';
         $filter_model      = $_GET['filter_model'] ?? '';
+        $filter_station    = $_GET['filter_station'] ?? '';
+        $filter_device     = $_GET['filter_device'] ?? '';
         $filter_date_from  = $_GET['filter_date_from'] ?? '';
         $filter_date_to    = $_GET['filter_date_to'] ?? '';
 
@@ -76,11 +78,23 @@ class ReportController
 
 
         // --- APPLY FILTER DEPARTMENT ---
-        if (!empty($filter_dept)) { $sql .= " AND dept.id = " . intval($filter_dept); }
+        if (!empty($filter_dept)) {
+            $sql .= " AND dept.id = " . intval($filter_dept);
+        }
 
         // --- APPLY FILTER MODEL ---
         if (!empty($filter_model)) {
             $sql .= " AND ar.model_id = " . intval($filter_model);
+        }
+
+        // --- APPLY FILTER STATION ---
+        if (!empty($filter_station)) {
+            $sql .= " AND ar.station_id = " . intval($filter_station);
+        }
+
+        // --- APPLY FILTER DEVICE ---
+        if (!empty($filter_device)) {
+            $sql .= " AND ar.device_id = " . intval($filter_device);
         }
 
         // --- APPLY FILTER DATE RANGE ---

@@ -1,0 +1,79 @@
+add old data reports DB to new DB(web version)
+
+update reports r
+JOIN stations s ON r.station = s.station_name
+SET r.station_id = s.id
+
+update reports r
+JOIN devices d ON r.deviceId = d.device_name
+SET r.device_id = d.id
+
+update reports r
+JOIN error_code e ON r.errorCode = e.error_code
+SET r.error_code_id = e.id
+
+SELECT workId, name
+FROM reports
+WHERE name IS NOT NULL AND workId IS NOT NULL
+GROUP BY workId, name;
+
+update reports r
+JOIN users u ON r.workId = u.work_id OR r.name = u.name
+SET r.user_id = u.id
+WHERE r.user_id IS NULL;
+
+SELECT * FROM `reports` WHERE 
+model_id IS NULL OR
+station_id IS NULL OR
+device_id IS NULL OR
+error_code_id IS NULL OR
+user_id IS NULL;
+
+UPDATE reports 
+SET user_id = NULL
+WHERE user_id = 0;
+
+UPDATE reports 
+SET model_id = 21
+WHERE model_id = 0;
+
+UPDATE reports r 
+JOIN users u 
+ ON LOWER(TRIM(r.workId)) = 
+ LOWER(TRIM(u.work_id))
+ OR LOWER(TRIM(r.name)) = 
+ LOWER(TRIM(u.name))
+ 
+ SET r.user_id = u.id
+ WHERE r.user_id IS NULL;
+
+✅ Cara cek data mana yang menyebabkan error
+
+Jalankan query ini:
+
+SELECT model_id
+FROM reports
+LEFT JOIN models ON reports.model_id = models.id
+WHERE reports.model_id IS NOT NULL
+  AND models.id IS NULL;
+
+SELECT model_id
+FROM reports
+LEFT JOIN devices ON reports.device_id = devices.id
+WHERE reports.device_id IS NOT NULL
+  AND devices.id IS NULL;
+
+SELECT r.*
+FROM reports r
+LEFT JOIN error_code e ON r.error_code_id = e.id
+WHERE r.error_code_id IS NOT NULL
+  AND e.id IS NULL;
+
+
+NOTES
+
+Jika kamu ingin tidak menghapus tapi cukup set NULL, bisa pakai ini:
+
+UPDATE reports
+SET error_code_id = NULL
+WHERE error_code_id NOT IN (SELECT id FROM error_code);

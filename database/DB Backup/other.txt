@@ -1,0 +1,222 @@
+SELECT ar.model_id, m.model_name, u.name, COUNT(*) AS total_report
+FROM abnormal_reports ar
+LEFT JOIN models m ON ar.model_id = m.id
+GROUP BY model_name
+
+<div class="row">
+    <!-- card-card kamu tetap di sini -->
+</div>
+
+<!-- TABLE REPORT PER MODEL -->
+<div class="card shadow mb-4 mt-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Total Abnormal Reports per Model</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Model ID</th>
+                        <th>Model Name</th>
+                        <th>Total Reports</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($totalReportsByModel)): ?>
+                        <?php foreach ($totalReportsByModel as $row): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['model_id']) ?></td>
+                                <td><?= htmlspecialchars($row['model_name']) ?></td>
+                                <td><?= htmlspecialchars($row['total_report']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="3" class="text-center">No data found</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+totalReportTable
+ajax: {
+    url: '/connectify-web/controllers/UserController.php?type=total-by-model',
+    type: 'GET',
+    dataSrc: function (json) {
+        // Pastikan json.data adalah array
+        return Array.isArray(json.data) ? json.data : [];
+    }
+}
+
+
+CREATE TABLE messages (
+    id INT(11) PRIMARY KEY AUTO_INCREMENT,
+    sender_id INT(11) NOT NULL,
+    receiver_id INT(11) NOT NULL,
+    message TEXT NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id)
+);
+
+
+    // Fungsi untuk load messages
+        function loadMessages(user_id) {
+            $.ajax({
+                url: `/connectify-web/controllers/MessageController.php`,
+                method: 'GET',
+                data: { type: 'latest', user_id: user_id },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.success) {
+                        const list = $('#messageList');
+                        list.empty();
+
+                        if (data.data.length === 0) {
+                            list.append(`<div class="dropdown-item text-center small text-gray-500">No messages</div>`);
+                        } else {
+                            data.data.forEach(msg => {
+                                list.append(`
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <div class="dropdown-list-image mr-3">
+                                            <img class="rounded-circle" src="/connectify-web/assets/public/img/undraw_profile_2.svg" alt="Profile Image">
+                                            <div class="status-indicator ${msg.is_read == 0 ? 'bg-success' : ''}"></div>
+                                        </div>
+                                        <div class="font-weight-bold">
+                                            <div class="text-truncate">${escapeHtml(msg.message)}</div>
+                                            <div class="small text-gray-500">${escapeHtml(msg.sender_name)} · ${msg.created_at}</div>
+                                        </div>
+                                    </a>
+                                `);
+                            });
+                        }
+
+                        $('#messageCount').text(data.count);
+                    } else {
+                        console.error("Failed to load messages:", data.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                }
+            });
+        }
+
+        // Escape HTML untuk mencegah XSS
+        function escapeHtml(text) {
+            return $('<div>').text(text).html();
+        }
+
+        // Load saat halaman ready
+        $(document).ready(function() {
+            const user_id = "<?php echo $_SESSION['user_id']; ?>"; // contoh user login
+            loadMessages(user_id);
+
+            // Submit form pesan
+            $('#sendMessageForm').on('submit', function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/connectify-web/controllers/MessageController.php?type=send',
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.success) {
+                            alert("Message sent successfully!");
+                            $('#message').val(''); // kosongkan textarea
+                            loadMessages(user_id);  // reload message list
+                        } else {
+                            alert("Failed: " + data.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", error);
+                        alert("Something went wrong. Please try again.");
+                    }
+                });
+            });
+        });
+
+
+notifications.forEach(n => {
+    notifList.innerHTML += `
+        <a class="dropdown-item d-flex align-items-center" href="#">
+            <div class="mr-3">
+                <div class="icon-circle bg-primary">
+                    <i class="fas fa-file-alt text-white"></i>
+                </div>
+            </div>
+            <div>
+                <div class="small text-gray-500">${n.created_at}</div>
+                <span><strong>${n.user_name}</strong> <span class="text-gray-500">${n.message_text}</span></span>
+    <span class="font-weight-bold">${n.message}</span>
+            </div>
+        </a>
+    `;
+});
+
+
+public function deleteReports()
+{
+    $data = json_decode(file_get_contents("php://input"), true);
+    $id = $data['id'] ?? null;
+
+    if (!$id) {
+        http_response_code(400);
+        echo json_encode(["message" => "Report ID is required"]);
+        exit();
+    }
+
+    // Cek apakah report ada
+    $checkStmt = $this->conn->prepare("SELECT id FROM abnormal_reports WHERE id = ?");
+    $checkStmt->bind_param('i', $id);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+
+    if ($result->num_rows === 0) {
+        http_response_code(404);
+        echo json_encode(["message" => "Report id not found"]);
+        exit();
+    }
+
+    // Mulai transaksi untuk keamanan
+    $this->conn->begin_transaction();
+
+    try {
+        // Hapus notifikasi terkait report
+        $deleteNotif = $this->conn->prepare("DELETE FROM notifications WHERE report_id = ?");
+        $deleteNotif->bind_param('i', $id);
+        $deleteNotif->execute();
+
+        // Hapus report
+        $deleteReport = $this->conn->prepare("DELETE FROM abnormal_reports WHERE id = ?");
+        $deleteReport->bind_param('i', $id);
+        $deleteReport->execute();
+
+        // Commit transaksi
+        $this->conn->commit();
+
+        echo json_encode(["success" => true, "message" => "Report and related notifications deleted successfully"]);
+
+    } catch (Exception $e) {
+        $this->conn->rollback(); // rollback jika ada error
+        http_response_code(500);
+        echo json_encode([
+            "success" => false,
+            "message" => "Failed to delete report",
+            "error" => $e->getMessage()
+        ]);
+    }
+}
+
+ALTER TABLE users 
+    ADD last_activity DATETIME NULL AFTER password,
+    ADD is_online TINYINT(1) DEFAULT 0 AFTER last_activity;

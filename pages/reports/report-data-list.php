@@ -167,7 +167,7 @@ date_default_timezone_set('Asia/Jakarta');
                                                 <!-- <th>Work ID</th> -->
                                                 <th>Remark</th>
                                                 <th>Created by</th>
-                                                <th>Action</th>
+                                                <th>Delete</th>
                                             </tr>
                                         </thead>
                                         <tbody id="reportTableBody">

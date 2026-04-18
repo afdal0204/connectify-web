@@ -124,7 +124,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                                 <th>Line Area</th>
                                                 <th>Remark</th>
                                                 <th>Reported By</th>
-                                                <th class="no-export">Action</th>
+                                                <th class="no-export">Delete</th>
                                             </tr>
                                         </thead>
                                         <tbody id="lineReportTableBody">

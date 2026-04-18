@@ -152,7 +152,6 @@ class DailyTargetReportController
         $user_id = isset($data['user_id']) ? (int)$data['user_id'] : null;
         $remark = isset($data['remark']) ? ucfirst(strtolower(trim($data['remark']))) : null;
 
-        // if (!$date || !$model_id || !$uph_status_id || $target === null || $output === null || $user_id === null || $gap === null) {
         if (!$date || !$model_id || !$uph_status_id|| $user_id === null) {
             http_response_code(400);
             echo json_encode(["message" => "All fields are required"]);
@@ -169,6 +168,23 @@ class DailyTargetReportController
         $model = $modelQuery->fetch_assoc();
         $model_name = $model['model_name'] ?? 'Unknown Model';
 
+        $checkStmt = $this->conn->prepare("
+                SELECT id FROM daily_target_report 
+                WHERE date = ? AND model_id = ?
+            ");
+            $checkStmt->bind_param("si", $date, $model_id);
+            $checkStmt->execute();
+            $result = $checkStmt->get_result();
+
+            if ($result->num_rows > 0) {
+                http_response_code(400);
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Report already exists for this model on that date. Try a different date"
+                ]);
+                exit();
+        }
+
         $stmt = $this->conn->prepare("INSERT INTO daily_target_report (date, model_id, uph_status_id, target, output, gap, user_id, remark)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
@@ -184,16 +200,6 @@ class DailyTargetReportController
             );
             
         if ($stmt->execute()) {
-            // $report_id = $this->conn->insert_id;
-            // $message = "$user_name just added new daily target report to model $model_name";
-
-            // $notifStmt = $this->conn->prepare("
-            //     INSERT INTO notifications (user_id, target_report_id, message, model_id, is_read)
-            //     VALUES (?, ?, ?, ?, 0)
-            // ");
-            // $notifStmt->bind_param("iisi", $user_id, $report_id, $message, $model_id);
-            // $notifStmt->execute();
-
             echo json_encode(["success" => true, "message" => "New report added successfully"]);
             exit();
         } else {
@@ -222,17 +228,6 @@ class DailyTargetReportController
         // $user_id = isset($data['user_id']) ? (int)$data['user_id'] : null;
         $remark = isset($data['remark']) ? ucfirst(strtolower(trim($data['remark']))) : null;
 
-        // if (!$id
-        //     || !$date
-        //     || $uph_status_id === null
-        //     || $uph_status_id <= 0
-        //     || $target === null
-        //     || $output === null
-        //     || $gap === null || $gap === "") {
-        //     http_response_code(400);
-        //     echo json_encode(["message" => "All fields are required"]);
-        //     exit();
-        // }
         if (!$id
             || !$date
             || $uph_status_id === null

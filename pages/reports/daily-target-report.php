@@ -132,7 +132,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                                 <th>Output</th>
                                                 <th>Gap</th>
                                                 <th>Remarks</th>
-                                                <th>Action</th>
+                                                <th>Edit/Delete</th>
                                             </tr>
                                         </thead>
                                         <tbody id="dailyTargetReportTableBody">

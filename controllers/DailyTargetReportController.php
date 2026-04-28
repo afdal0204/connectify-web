@@ -220,7 +220,7 @@ class DailyTargetReportController
         $id = isset($data['id']) ? intval($data['id']) : 0;
 
         $date = isset($data['date']) ? date('Y-m-d', strtotime($data['date'])) : "";
-        // $model_id = isset($data['model_id']) ? (int)$data['model_id'] : null;
+        // $model_id = isset($data['model_id']) ? (int)$data['model  _id'] : null;
         $uph_status_id = isset($data['uph_status_id']) ? (int)$data['uph_status_id'] : null;
         $target = isset($data['target']) ? (int)$data['target'] : null;
         $output = isset($data['output']) ? (int)$data['output'] : null;

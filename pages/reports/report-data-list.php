@@ -30,6 +30,7 @@ date_default_timezone_set('Asia/Jakarta');
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/vendors.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/dataTables.bs5.min.css">
+
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
@@ -273,10 +274,8 @@ date_default_timezone_set('Asia/Jakarta');
 
     <!-- Create Report Modal -->
     <div class="modal fade" id="createReportModal" tabindex="-1" aria-labelledby="createReportModalLabel" aria-hidden="true">
-        <!-- <div class="modal-dialog modal-lg modal-dialog-centered"> -->
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <!-- Modal Header -->
                 <div class="modal-header">
                     <h5 class="modal-title" id="createReportModalLabel">Create New Report</h5>
                     <button id="closeX" class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
@@ -391,6 +390,7 @@ date_default_timezone_set('Asia/Jakarta');
         </div>
     </div>
 
+    <script src="/connectify-web/assets/vendors/js/jquery.time-to.min.js "></script>
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
     <!-- vendors.min.js {always must need to be top} -->
     <script src="/connectify-web/assets/vendors/js/dataTables.min.js"></script>
@@ -399,8 +399,7 @@ date_default_timezone_set('Asia/Jakarta');
 
     <script src="/connectify-web/assets/vendors/js/apexcharts.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/select2.min.js"></script>
-    <script src="/connectify-web/assets/vendors/js/select2-active.min.js"></script>
-    <script src="/connectify-web/assets/vendors/js/jquery.time-to.min.js "></script>
+    <!-- <script src="/connectify-web/assets/vendors/js/select2-active.min.js"></script> -->
     <script src="/connectify-web/assets/js/common-init.min.js"></script>
     <script src="assets/js/projects-init.min.js"></script>
     <script src="/connectify-web/assets/js/widgets-tables-init.min.js"></script>
@@ -781,6 +780,7 @@ date_default_timezone_set('Asia/Jakarta');
             }
         });
     </script>
+
     <!-- filter data -->
     <script>
         $(document).ready(function() {
@@ -956,12 +956,6 @@ date_default_timezone_set('Asia/Jakarta');
                         $deviceSelect.append(`<option value="${obj.id}">${obj.device_name}</option>`);
                     });
                 },
-                // success: function(data) {
-                //     $('#deviceSelect').prop('disabled', false).html('<option value="">-----</option>');
-                //     data.forEach(obj => {
-                //         $('#deviceSelect').append(`<option value="${obj.id}">${obj.device_name}</option>`);
-                //     });
-                // },
                 error: function(xhr) {
                     console.error("Error getting devices:", xhr.responseText);
                 }
@@ -991,7 +985,14 @@ date_default_timezone_set('Asia/Jakarta');
                 }
             });
         });
+        document.getElementById("date").addEventListener("input", function () {
+            let today = new Date().toISOString().split("T")[0];
 
+            if (this.value > today) {
+                alert("Tanggal tidak boleh lebih dari hari ini!");
+                this.value = today;
+            }
+        });                           
         $('#save').click(function() {
             const payload = {
                 model_id: $('#modelSelect').val(),
@@ -1027,34 +1028,6 @@ date_default_timezone_set('Asia/Jakarta');
                     } else {
                         showErrorToast(response.message);
                     }
-                    // if (response.success) {
-                    //     // alert(response.message);
-                    //     $('#alertReportContainer').html(
-                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                    //         ${response.message}
-                    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    // </div>`
-                    //     );
-
-                    //     setTimeout(() => {
-                    //         $('.alert').alert('close');
-                    //         $('#createReportModal').modal('hide');
-                    //     }, 1500);
-
-                    //     $('#reportForm')[0].reset();
-                    //     $('#reportTable').DataTable().ajax.reload(null, false);
-
-                    //     // disabled station and device after save successfully
-                    //     $('#stationSelect').prop('disabled', true).html('<option value="">-----</option>');
-                    //     $('#deviceSelect').prop('disabled', true).html('<option value="">-----</option>');
-
-                    // } else {
-                    //     $('#message-container').html(`
-                    //     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    //         ${response.message}
-                    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    //     </div>`);
-                    // }
                 },
                 error: function(xhr) {
                     let msg = "Unexpected error";
@@ -1069,7 +1042,6 @@ date_default_timezone_set('Asia/Jakarta');
                     setTimeout(() => {
                         $('.alert').alert('close');
                     }, 1500);
-                    // <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 }
             });
         });

@@ -154,6 +154,7 @@ date_default_timezone_set('Asia/Jakarta');
                                         <thead>
                                             <tr class="border-b">
                                                 <th>No</th>
+                                                <th>Department</th>
                                                 <th>Model</th>
                                                 <th>Station</th>
                                                 <th>Device ID</th>
@@ -541,6 +542,14 @@ date_default_timezone_set('Asia/Jakarta');
                         render: (data, type, row, meta) => meta.row + 1
                     },
                     {
+                        data: 'department_name',
+                            render: function(data, type, row) {
+                                return row.remark
+                                    ? `${data} (${row.remark})`
+                                    : data;
+                            }
+                    },
+                    {
                         data: 'model_name'
                     },
                     {
@@ -641,8 +650,8 @@ date_default_timezone_set('Asia/Jakarta');
                     },
                     // { targets: 1, width: "10%"},
                     // { targets: 3, width: "35%" },
-                    // { targets: 4, width: "15%" }, 
-                    // { targets: 5, width: "15%" }  
+                    // { targets: 4, width: "15%" },
+                    // { targets: 5, width: "15%" }
                 ],
                 responsive: true,
                 // <a href="#" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
@@ -901,7 +910,7 @@ date_default_timezone_set('Asia/Jakarta');
             });
         });
     </script> -->
-    
+
     <!-- add report -->
     <script>
         $('#modelSelect').change(function() {
@@ -992,7 +1001,7 @@ date_default_timezone_set('Asia/Jakarta');
                 alert("Tanggal tidak boleh lebih dari hari ini!");
                 this.value = today;
             }
-        });                           
+        });
         $('#save').click(function() {
             const payload = {
                 model_id: $('#modelSelect').val(),
@@ -1037,7 +1046,7 @@ date_default_timezone_set('Asia/Jakarta');
                     } catch {}
                     $('#message-container').html(`
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        ${msg}                    
+                        ${msg}
                     </div>`);
                     setTimeout(() => {
                         $('.alert').alert('close');

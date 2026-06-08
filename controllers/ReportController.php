@@ -59,12 +59,13 @@ class ReportController
         $filter_date_from  = $_GET['filter_date_from'] ?? '';
         $filter_date_to    = $_GET['filter_date_to'] ?? '';
 
-        $sql = "SELECT 
-                    ar.id, ar.user_id, m.model_name, s.station_name, d.device_name, 
+        $sql = "SELECT
+                    ar.id, ar.user_id, m.model_name, s.station_name, d.device_name,
                     ar.shift, ar.date, ar.time_start, ar.time_finish,
                     ec.error_code, ec.symptom, ar.root_cause,
                     ar.action_taken, u.name, u.work_id, ar.remark,
-                    dept.department_name
+                    dept.department_name,
+                    dept.remark
                 FROM abnormal_reports ar
                 LEFT JOIN models m ON ar.model_id = m.id
                 LEFT JOIN stations s ON ar.station_id = s.id
@@ -171,7 +172,7 @@ class ReportController
         }
 
         // $stmt = $this->conn->prepare("SELECT * FROM abnormal_reports WHERE user_id = ? ORDER BY `date` DESC, `time_start` DESC");
-        $stmt = $this->conn->prepare("SELECT ar.id, m.model_name, s.station_name, d.device_name, 
+        $stmt = $this->conn->prepare("SELECT ar.id, m.model_name, s.station_name, d.device_name,
                                         ar.shift, ar.date, ar.time_start, ar.time_finish,
                                         ec.error_code, ec.symptom, ar.root_cause,
                                         ar.action_taken, ar.user_id, u.name, u.work_id, ar.remark
@@ -211,7 +212,7 @@ class ReportController
     {
         $result = $this->conn->query(" SELECT
                                         u.id, u.name,  u.role_id,
-                                        COALESCE(COUNT(c.user_id), 0) AS total_report         
+                                        COALESCE(COUNT(c.user_id), 0) AS total_report
                                     FROM users u
                                     LEFT JOIN (
                                         SELECT user_id FROM abnormal_reports
@@ -220,11 +221,11 @@ class ReportController
                                         -- UNION ALL
                                         -- SELECT user_id FROM daily_target_report
                                     ) AS c
-                                        ON c.user_id = u.id                                   
-                                    -- WHERE u.role_id IN (2, 3)                              
-                                    WHERE u.role_id IN (3)                              
-                                    GROUP BY u.id, u.name, u.role_id                        
-                                    ORDER BY u.name ASC;        
+                                        ON c.user_id = u.id
+                                    -- WHERE u.role_id IN (2, 3)
+                                    WHERE u.role_id IN (3)
+                                    GROUP BY u.id, u.name, u.role_id
+                                    ORDER BY u.name ASC;
                                 ");
         $reports = [];
 
@@ -253,7 +254,7 @@ class ReportController
                                                 SELECT model_id FROM line_report_per_shift
                                                 UNION ALL
                                                 SELECT model_id FROM daily_target_report
-                                        ) r 
+                                        ) r
                                             ON r.model_id = m.id
                                         GROUP BY d.id, d.department_name
                                         ORDER BY d.department_name ASC
@@ -310,7 +311,7 @@ class ReportController
 
         // Prepare insert statement
         $stmt = $this->conn->prepare("
-            INSERT INTO abnormal_reports 
+            INSERT INTO abnormal_reports
             (model_id, station_id, device_id, shift, date, time_start, time_finish,
             error_code_id, root_cause, action_taken, user_id, remark)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

@@ -378,7 +378,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                     data-asset_number="${row.asset_number}"
                                     data-location_id="${row.location_id}"
                                     data-remark="${row.remark}"
-                                    data-bs-toggle="modal" 
+                                    data-bs-toggle="modal"
                                     data-bs-target="#editServerModal">
                                     <i class="feather-edit"></i>
                                 </a>
@@ -443,11 +443,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                         $.ajax({
                             url: '/connectify-web/controllers/ServerController.php',
                             type: 'DELETE',
-                            data: JSON.stringify({ 
+                            data: JSON.stringify({
                                 id: serverId
                              }),
                             contentType: 'application/json',
-                            dataType: 'json', 
+                            dataType: 'json',
                             success: function (response) {
                                 if (response.success) {
                                     swalWithBootstrapButtons.fire(

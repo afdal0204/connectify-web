@@ -544,8 +544,8 @@ date_default_timezone_set('Asia/Jakarta');
                     {
                         data: 'department_name',
                             render: function(data, type, row) {
-                                return row.remark
-                                    ? `${data} (${row.remark})`
+                                return row.dept_remark
+                                    ? `${data} (${row.dept_remark})`
                                     : data;
                             }
                     },

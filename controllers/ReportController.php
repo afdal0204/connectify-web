@@ -65,7 +65,7 @@ class ReportController
                     ec.error_code, ec.symptom, ar.root_cause,
                     ar.action_taken, u.name, u.work_id, ar.remark,
                     dept.department_name,
-                    dept.remark
+                    dept.remark as dept_remark
                 FROM abnormal_reports ar
                 LEFT JOIN models m ON ar.model_id = m.id
                 LEFT JOIN stations s ON ar.station_id = s.id

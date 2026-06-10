@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $departments = [];
-$deptQuery = "SELECT id, department_name FROM department";
+$deptQuery = "SELECT id, department_name, remark FROM department ORDER BY department_name ASC";
 $deptResult = $conn->query($deptQuery);
 if ($deptResult->num_rows > 0) {
     while ($row = $deptResult->fetch_assoc()) {
@@ -42,7 +42,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <meta name="keyword" content="">
     <meta name="author" content="theme_ocean">
     <title>Connectify | User</title>
-    
+
     <link rel="shortcut icon" type="image/x-icon" href="/connectify-web/assets/images/logo.png" />
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/vendors.min.css">
@@ -174,6 +174,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                 <?php foreach ($departments as $department): ?>
                                     <option value="<?= $department['id'] ?>">
                                         <?= htmlspecialchars($department['department_name']) ?>
+                                        <?= !empty($department['remark']) ? '(' . htmlspecialchars($department['remark']) . ')' : '' ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -236,6 +237,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                 <?php foreach ($departments as $department): ?>
                                     <option value="<?= $department['id'] ?>">
                                         <?= htmlspecialchars($department['department_name']) ?>
+                                        <?= !empty($department['remark']) ? '(' . htmlspecialchars($department['remark']) . ')' : '' ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -316,7 +318,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <script src="/connectify-web/assets/vendors/js/select2-active.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/jquery.time-to.min.js "></script>
     <script src="/connectify-web/assets/js/common-init.min.js"></script>
-     <script src="assets/js/projects-init.min.js"></script>
+     <!-- <script src="assets/js/projects-init.min.js"></script> -->
     <script src="/connectify-web/assets/js/widgets-tables-init.min.js"></script>
     <script src="/connectify-web/assets/js/theme-customizer-init.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/dataTables.buttons.min.js"></script>
@@ -329,7 +331,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
             fetch("/connectify-web/update_activity.php");
         }, 60000);
     </script>
-    
+
     <script>
         function showSuccessToast(message) {
             Swal.fire({
@@ -410,18 +412,18 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                             <a href="#" class="btn btn-sm btn-info btn-see-user"
                                 data-work_id="${row.work_id}"
                                 data-name="${row.name}"
-                                data-department="${row.department}"                              
+                                data-department="${row.department}"
                                 data-role="${row.role_name}"
                                 data-model="${row.all_models ?? ''}"
                                 data-bs-toggle="modal"
                                 data-bs-target="#viewUserModal"><i class="feather-eye"></i></a>
-                                
+
                             <a href="#" class="btn btn-sm btn-warning btn-edit-user"
                                 data-work_id="${row.work_id}"
                                 data-name="${row.name}"
                                 data-department_id="${row.department_id}"
                                 data-role_id="${row.role_id}"
-                                data-bs-toggle="modal" 
+                                data-bs-toggle="modal"
                                 data-bs-target="#editUserModal">
                                 <i class="feather-edit"></i>
                             </a>
@@ -460,7 +462,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 userTable.search(this.value).draw();
             });
 
-            // delete user 
+            // delete user
             $(document).on('click', '.btn-delete-user', function (e) {
                 e.preventDefault();
 
@@ -488,11 +490,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                         $.ajax({
                             url: '/connectify-web/controllers/UserController.php',
                             type: 'DELETE',
-                            data: JSON.stringify({ 
+                            data: JSON.stringify({
                                 work_id: workId
                              }),
                             contentType: 'application/json',
-                            dataType: 'json', 
+                            dataType: 'json',
                             success: function (response) {
                                 if (response.success) {
                                     swalWithBootstrapButtons.fire(

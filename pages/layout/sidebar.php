@@ -1,17 +1,17 @@
 <style>
     .text-badge-wrapper {
-        flex-wrap: wrap;     
-        gap: 0.25rem;     
+        flex-wrap: wrap;
+        gap: 0.25rem;
     }
 
     .text-truncate {
-        white-space: nowrap;   
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     .nxl-arrow i {
         vertical-align: middle;
-        font-size: 1rem;  
+        font-size: 1rem;
     }
 </style>
 <nav class="nxl-navigation">
@@ -50,7 +50,7 @@
                         <li class="nxl-item nxl-hasmenu">
                                 <a href="javascript:void(0);" class="nxl-link">
                                     <!-- <span class="nxl-micon"><i class="feather-file-text"></i></span> -->
-                                    Line Report (Shift)<span class="badge bg-soft-success text-success ms-2">NEW</span>  
+                                    Line Report (Shift)<span class="badge bg-soft-success text-success ms-2">NEW</span>
                                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                                 </a>
 
@@ -58,7 +58,7 @@
                             <ul class="nxl-submenu">
                                 <li class="nxl-item">
                                     <a class="nxl-link" href="/connectify-web/pages/reports/line-report/sec1.php">
-                                        Sec 1 
+                                        Sec 1
                                     </a>
                                 </li>
                                 <li class="nxl-item">
@@ -86,7 +86,7 @@
                     </ul>
                 </li>
             </ul>
-            
+
             <?php if ($role_id == 1 || $role_id == 4 || $role_id == 5 || $role_id == 6): ?>
                 <ul class="nxl-navbar">
                     <li class="nxl-item nxl-caption">
@@ -105,10 +105,13 @@
                         <li class="nxl-item nxl-hasmenu">
                             <a href="javascript:void(0);" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-users"></i></span>
-                                <span class="nxl-mtext">Users Management</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                                <span class="nxl-mtext">Admin Management</span><span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                             </a>
                             <ul class="nxl-submenu">
                                 <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/user-action/user-list.php">Users</a></li>
+                            </ul>
+                            <ul class="nxl-submenu">
+                                <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/user-action/department-list.php">Departments</a></li>
                             </ul>
                         </li>
                     <?php endif; ?>

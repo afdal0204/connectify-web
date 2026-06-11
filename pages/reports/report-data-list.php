@@ -36,7 +36,8 @@ date_default_timezone_set('Asia/Jakarta');
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
     <!-- <link href="/connectify-web/assets/public/vendor/DataTables/datatables.min.css" rel="stylesheet">  -->
-
+    <link rel="stylesheet" href="/connectify-web/assets/css/flatpickr.min.css">
+    <script src="/connectify-web/assets/js/flatpickr.min.js"></script>
     <style>
         #reportTable td,
         #reportTable th {
@@ -47,6 +48,10 @@ date_default_timezone_set('Asia/Jakarta');
         .action-taken-text,
         .root-cause-text {
             white-space: pre-line;
+        }
+
+        .flatpickr-input {
+            background-color: #fff !important;
         }
     </style>
 </head>
@@ -320,16 +325,15 @@ date_default_timezone_set('Asia/Jakarta');
                             <label class="form-label">Date</label>
                             <input type="date" id="date" class="form-control" required
                                 max="<?= date('Y-m-d') ?>">
-                            <small class="text-muted">Bulan/Hari/Tahun</small>
+                            <!-- <small class="text-muted">Bulan/Hari/Tahun</small> -->
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Time Start</label>
+                            <label class="form-label">Time Start<small class="text-muted">(Format 24 jam)</small></label>
                             <input type="time" id="timeStart" class="form-control" required>
-                            <!-- <input type="time" id="timeStart" class="form-control" value="<?= date('H:i') ?>" required> -->
-                            <small class="text-muted">AM => Siang(00.00-11.59) <br> PM => Malam(12.00-23.59)</small>
+                            <!-- <small class="text-muted">AM => Siang(00.00-11.59) <br> PM => Malam(12.00-23.59)</small> -->
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Time Finish</label>
+                            <label class="form-label">Time Finish<small class="text-muted">(Format 24 jam)</small></label>
                             <input type="time" id="timeFinish" class="form-control" required>
                         </div>
                         <div class="col-md-4">
@@ -422,7 +426,37 @@ date_default_timezone_set('Asia/Jakarta');
             fetch("/connectify-web/update_activity.php");
         }, 60000);
     </script>
+        <script>
 
+    </script>
+    <script>
+        const today = new Date();
+        const fromPicker = flatpickr("#date", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
+
+        flatpickr("#timeStart", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            allowInput: true,
+            minuteIncrement: 1
+        });
+
+        flatpickr("#timeFinish", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            allowInput: true,
+            minuteIncrement: 1
+        });
+    </script>
     <script>
         function showSuccessToast(message) {
             Swal.fire({

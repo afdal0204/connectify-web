@@ -39,14 +39,21 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
+    <link rel="stylesheet" href="/connectify-web/assets/css/flatpickr.min.css">
+    <script src="/connectify-web/assets/js/flatpickr.min.js"></script>
 
     <style>
         #dailyTargetReportTable td,
         #dailyTargetReportTable th {
             white-space: normal !important;
         }
+
         .remark-text {
             white-space: pre-line;
+        }
+
+        .flatpickr-input {
+            background-color: #fff !important;
         }
     </style>
 
@@ -90,7 +97,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     <div class="d-md-none d-flex align-items-center">
                         <ahref="javascript:void(0)" class="page-header-right-open-toggle">
                             <i class="feather-align-right fs-20"></i>
-                        </ahref=>
+                            </ahref=>
                     </div>
                 </div>
             </div>
@@ -105,7 +112,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         <div class="card stretch stretch-full">
                             <div class="card-header">
                                 <h5 class="card-title">Daily Target Reports</h5>
-                                
+
                                 <div class="card-header-action">
                                     <div id="exportButtonsContainer"></div>
                                     <div class="card-header-btn">
@@ -150,7 +157,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         ?>
     </main>
 
-     <!-- Modal Filter -->
+    <!-- Modal Filter -->
     <div class="modal fade" id="dailyFilterModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -158,51 +165,51 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     <h5 class="modal-title">Manage Filter</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                  <div class="modal-body pt-3">
-                <div class="container-fluid">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Department</label>
-                            <select id="filterDept" class="form-select">
-                                <option value="">All</option>
-                                <?php $deptRes->data_seek(0);
-                                while ($row = $deptRes->fetch_assoc()): ?>
-                                    <option value="<?= $row['id'] ?>">
-                                        <?= $row['department_name'] ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-semibold">Model</label>
-                            <select id="filterModel" class="form-select">
-                                <option value="">All</option>
-                                <?php $modelRes->data_seek(0);
-                                while ($row = $modelRes->fetch_assoc()): ?>
-                                    <option value="<?= $row['id'] ?>">
-                                        <?= $row['model_name'] ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Start Date</label>
-                            <input type="date"
-                                   id="filterDateFrom"
-                                   class="form-control"
-                                   max="<?= date('Y-m-d') ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">End Date</label>
-                            <input type="date"
-                                   id="filterDateTo"
-                                   class="form-control"
-                                   max="<?= date('Y-m-d') ?>">
-                        </div>
+                <div class="modal-body pt-3">
+                    <div class="container-fluid">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Department</label>
+                                <select id="filterDept" class="form-select">
+                                    <option value="">All</option>
+                                    <?php $deptRes->data_seek(0);
+                                    while ($row = $deptRes->fetch_assoc()): ?>
+                                        <option value="<?= $row['id'] ?>">
+                                            <?= $row['department_name'] ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Model</label>
+                                <select id="filterModel" class="form-select">
+                                    <option value="">All</option>
+                                    <?php $modelRes->data_seek(0);
+                                    while ($row = $modelRes->fetch_assoc()): ?>
+                                        <option value="<?= $row['id'] ?>">
+                                            <?= $row['model_name'] ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Start Date</label>
+                                <input type="date"
+                                    id="filterDateFrom"
+                                    class="form-control"
+                                    max="<?= date('Y-m-d') ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">End Date</label>
+                                <input type="date"
+                                    id="filterDateTo"
+                                    class="form-control"
+                                    max="<?= date('Y-m-d') ?>">
+                            </div>
 
+                        </div>
                     </div>
                 </div>
-            </div>
 
                 <div class="modal-footer">
                     <button id="btnClearFilter" class="btn btn-light" data-bs-dismiss="modal">Clear</button>
@@ -359,7 +366,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             </div>
         </div>
     </div>
-                                    
+
     <div class="modal fade" id="deleteModalTargetReport1" tabindex="-1" aria-labelledby="deleteModalTargetReportLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -378,9 +385,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         </div>
     </div>
 
-     <script src="/connectify-web/assets/js/apps-storage-init.min.js"></script>
+    <script src="/connectify-web/assets/js/apps-storage-init.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
-     <!-- vendors.min.js {always must need to be top} -->
+    <!-- vendors.min.js {always must need to be top} -->
     <script src="/connectify-web/assets/vendors/js/dataTables.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/dataTables.bs5.min.js"></script>
     <script src="/connectify-web/assets/js/leads-init.min.js"></script>
@@ -390,7 +397,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script src="/connectify-web/assets/vendors/js/select2-active.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/jquery.time-to.min.js "></script>
     <script src="/connectify-web/assets/js/common-init.min.js"></script>
-     <script src="assets/js/projects-init.min.js"></script>
+    <script src="assets/js/projects-init.min.js"></script>
     <script src="/connectify-web/assets/js/widgets-tables-init.min.js"></script>
     <script src="/connectify-web/assets/js/theme-customizer-init.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/dataTables.buttons.min.js"></script>
@@ -409,7 +416,17 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             fetch("/connectify-web/update_activity.php");
         }, 60000);
     </script>
-        <!-- filter data -->
+    <script>
+        const today = new Date();
+        const fromPicker = flatpickr("#date", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
+    </script>
+    <!-- filter data -->
     <script>
         $('#filterDept').change(function() {
             const dept_id = $(this).val();
@@ -431,7 +448,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         });
     </script>
     <script>
-         function showSuccessToast(message) {
+        function showSuccessToast(message) {
             Swal.fire({
                 title: "Success!",
                 text: message,
@@ -456,7 +473,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 buttonsStyling: false
             });
         }
-        
+
         $(document).ready(function() {
             const dailytargetTable = $('#dailyTargetReportTable').DataTable({
                 // dom: 'Brtip',
@@ -467,7 +484,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     title: 'Daily Target Report',
                     className: 'btn btn-xs btn-primary rounded',
                     // className: 'btn btn-success btn-xs',
-                    
+
                     exportOptions: {
                         // columns: ':visible',
                         columns: ':visible:not(.no-export)',
@@ -477,14 +494,14 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             page: 'all'
                         }
                     },
-            
-                    filename: function(){
+
+                    filename: function() {
                         const now = new Date();
-                        const pad = n => n.toString().padStart(2,'0');
+                        const pad = n => n.toString().padStart(2, '0');
                         const formattedDate = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
                         return `Daily Target Report_${formattedDate}`;
                     },
-                    
+
                     // export to excel
                     customize: function(xlsx) {
                         const sheet = xlsx.xl.worksheets['sheet1.xml'];
@@ -504,7 +521,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                 </c>
                             </row>
                         `);
-                        
+
                         borders.append(`
                         <border>
                             <left style="thin"><color auto="1"/></left>
@@ -532,7 +549,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         $('row:first c', sheet).attr('s', headerStyleIndex);
                     },
                 }],
-                
+
                 ajax: {
                     url: '/connectify-web/controllers/DailyTargetReportController.php',
                     type: 'GET',
@@ -547,7 +564,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         d.model_id = $('#modelSelect').val();
                         d.station_id = $('#stationSelect').val();
                         d.date = $('#date').val();
-                        d.filter_dept = $('#filterDept').val();  
+                        d.filter_dept = $('#filterDept').val();
                         d.filter_model = $('#filterModel').val();
                         d.filter_date_from = $('#filterDateFrom').val();
                         d.filter_date_to = $('#filterDateTo').val();
@@ -557,7 +574,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         return json.success ? json.data : [];
                     }
                 },
-                
+
                 // searching: false,
                 columns: [{
                         data: null,
@@ -640,7 +657,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     {
                         data: 'remark',
                         className: '',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             if (!data) return '';
                             return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
                         }
@@ -658,7 +675,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             const isOwner = parseInt(row.user_id) === parseInt(LOGGED_USER_ID);
 
                             if (!isAdmin && !isOwner) {
-                                return ''; 
+                                return '';
                             }
 
                             return `
@@ -676,7 +693,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     data-bs-toggle="modal"
                                     data-bs-target="#editTargetReportModal">
                                     <i class="feather-edit"></i></a>
-                                    
+
                                 <a href="#" class="btn btn-sm btn-danger btn-delete-target-report" data-id="${row.id}">
                                     <i class="feather-trash"></i>
                                 </a>
@@ -690,7 +707,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 columnDefs: [{
                     targets: 11,
                     orderable: false,
-                    className: 'no-export' 
+                    className: 'no-export'
                 }],
                 autoWidth: false,
                 pageLength: 10,
@@ -715,7 +732,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
 
             $('#btnApplyFilter').click(function() {
                 dailytargetTable.ajax.reload();
-                 $('#dailyFilterModal').modal('hide');
+                $('#dailyFilterModal').modal('hide');
             });
             $('#btnClearFilter').click(function() {
                 $('#filterDept').val('');
@@ -732,7 +749,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 dailytargetTable.ajax.reload();
             });
 
-            $(document).on('click', '.btn-delete-target-report', function (e) {
+            $(document).on('click', '.btn-delete-target-report', function(e) {
                 e.preventDefault();
 
                 const reportId = $(this).data('id');
@@ -759,12 +776,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         $.ajax({
                             url: '/connectify-web/controllers/DailyTargetReportController.php',
                             type: 'DELETE',
-                            data: JSON.stringify({ 
+                            data: JSON.stringify({
                                 id: reportId
-                             }),
+                            }),
                             contentType: 'application/json',
-                            dataType: 'json', 
-                            success: function (response) {
+                            dataType: 'json',
+                            success: function(response) {
                                 if (response.success) {
                                     swalWithBootstrapButtons.fire(
                                         "Deleted!",
@@ -785,7 +802,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     );
                                 }
                             },
-                            error: function (xhr) {
+                            error: function(xhr) {
                                 swalWithBootstrapButtons.fire(
                                     "Error!",
                                     "Something went wrong!",
@@ -994,7 +1011,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 document.getElementById('editgapInput').value = gap;
             }
         }
-        // Edit save 
+        // Edit save
         $('#saveEditTargetReport').on('click', function(e) {
             e.preventDefault();
             var modal = $('#editTargetReportModal');

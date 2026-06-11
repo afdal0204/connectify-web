@@ -19,10 +19,12 @@ class DailyTargetReportController
             case 'GET':
                 if (isset($_GET['type']) && $_GET['type'] === 'total') {
                     $this->getTotalTargetReports();
-                }
-                else if (isset($_GET['type']) && $_GET['type'] === 'target-report-chart') {
+                } else if (isset($_GET['type']) && $_GET['type'] === 'target-report-chart') {
                     $this->getTargetReport();
-                } else {
+                } else if (isset($_GET['type']) && $_GET['type'] === 'get-models'){
+                    $this->getModels();
+                }
+                else {
                     $this->getAllReports();
                 }
                 break;
@@ -54,8 +56,8 @@ class DailyTargetReportController
         $filter_date_to    = $_GET['filter_date_to'] ?? '';
 
         $sql = "SELECT dtr.id, dtr.date, dtr.remark, dtr.target, dtr.output, dtr.gap,
-                                            dtr.user_id, m.model_name, m.line_area, 
-                                            us.uph_status_name, 
+                                            dtr.user_id, m.model_name, m.line_area,
+                                            us.uph_status_name,
                                             u.name AS report_user,
                                             u_owner.name AS owner_name,
                                             d.department_name,
@@ -70,7 +72,9 @@ class DailyTargetReportController
                                         WHERE 1 = 1";
 
         // --- APPLY FILTER DEPARTMENT ---
-        if (!empty($filter_dept)) { $sql .= " AND d.id = " . intval($filter_dept); }
+        if (!empty($filter_dept)) {
+            $sql .= " AND d.id = " . intval($filter_dept);
+        }
 
         // --- APPLY FILTER MODEL ---
         if (!empty($filter_model)) {
@@ -113,34 +117,91 @@ class DailyTargetReportController
         ]);
         exit();
     }
-      
-    // target report chart
-    private function getTargetReport(){
-        $result = $this->conn->query("SELECT 
-                                            dtr.date,
-                                            m.model_name,
-                                            us.uph_status_name
-                                        FROM daily_target_report dtr
-                                        LEFT JOIN models m ON dtr.model_id = m.id
-                                        LEFT JOIN uph_status us ON dtr.uph_status_id = us.id
-                                        GROUP BY 
-                                            dtr.date,
-                                            m.model_name,
-                                            us.uph_status_name
-                                        ORDER BY dtr.date ASC, m.model_name ASC");
-        $dailytarget = [];
+
+    private function getModels()
+    {
+        $result = $this->conn->query("
+            SELECT id, model_name
+            FROM models
+            ORDER BY id ASC, model_name DESC
+        ");
+
+        $models = [];
 
         while ($row = $result->fetch_assoc()) {
-            $dailytarget[] = $row;
+            $models[] = $row['model_name'];
         }
+
         echo json_encode([
             "success" => true,
-            "data" => $dailytarget
+            "data" => $models
+        ]);
+        exit();
+    }
+    // target report chart
+    private function getTargetReport()
+    {
+        $fromDate = $_GET['fromDate'] ?? date('Y-m-d', strtotime('-6 days'));
+        $toDate   = $_GET['toDate'] ?? date('Y-m-d');
+
+        $sql = "
+            SELECT
+                dtr.date,
+                m.model_name,
+                us.uph_status_name
+            FROM daily_target_report dtr
+            LEFT JOIN models m ON dtr.model_id = m.id
+            LEFT JOIN uph_status us ON dtr.uph_status_id = us.id
+            WHERE dtr.date BETWEEN ? AND ?
+            ORDER BY dtr.date ASC, m.model_name ASC
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss", $fromDate, $toDate);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        $data = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+
+        echo json_encode([
+            "success" => true,
+            "data" => $data
         ]);
         exit();
     }
 
-    public function addTargetReports() {
+    // private function getTargetReport(){
+    //     $result = $this->conn->query("SELECT
+    //                                         dtr.date,
+    //                                         m.model_name,
+    //                                         us.uph_status_name
+    //                                     FROM daily_target_report dtr
+    //                                     LEFT JOIN models m ON dtr.model_id = m.id
+    //                                     LEFT JOIN uph_status us ON dtr.uph_status_id = us.id
+    //                                     GROUP BY
+    //                                         dtr.date,
+    //                                         m.model_name,
+    //                                         us.uph_status_name
+    //                                     ORDER BY dtr.date ASC, m.model_name ASC");
+    //     $dailytarget = [];
+
+    //     while ($row = $result->fetch_assoc()) {
+    //         $dailytarget[] = $row;
+    //     }
+    //     echo json_encode([
+    //         "success" => true,
+    //         "data" => $dailytarget
+    //     ]);
+    //     exit();
+    // }
+
+    public function addTargetReports()
+    {
         $data = json_decode(file_get_contents("php://input"), true);
 
         $date = isset($data['date']) ? date('Y-m-d', strtotime($data['date'])) : "";
@@ -152,7 +213,7 @@ class DailyTargetReportController
         $user_id = isset($data['user_id']) ? (int)$data['user_id'] : null;
         $remark = isset($data['remark']) ? ucfirst(strtolower(trim($data['remark']))) : null;
 
-        if (!$date || !$model_id || !$uph_status_id|| $user_id === null) {
+        if (!$date || !$model_id || !$uph_status_id || $user_id === null) {
             http_response_code(400);
             echo json_encode(["message" => "All fields are required"]);
             exit();
@@ -169,36 +230,37 @@ class DailyTargetReportController
         $model_name = $model['model_name'] ?? 'Unknown Model';
 
         $checkStmt = $this->conn->prepare("
-                SELECT id FROM daily_target_report 
+                SELECT id FROM daily_target_report
                 WHERE date = ? AND model_id = ?
             ");
-            $checkStmt->bind_param("si", $date, $model_id);
-            $checkStmt->execute();
-            $result = $checkStmt->get_result();
+        $checkStmt->bind_param("si", $date, $model_id);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
 
-            if ($result->num_rows > 0) {
-                http_response_code(400);
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Report already exists for this model on that date. Try a different date"
-                ]);
-                exit();
+        if ($result->num_rows > 0) {
+            http_response_code(400);
+            echo json_encode([
+                "success" => false,
+                "message" => "Report already exists for this model on that date. Try a different date"
+            ]);
+            exit();
         }
 
         $stmt = $this->conn->prepare("INSERT INTO daily_target_report (date, model_id, uph_status_id, target, output, gap, user_id, remark)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param('siiiisis',
-                $date,
-                $model_id,
-                $uph_status_id,
-                $target,
-                $output,
-                $gap, 
-                $user_id,
-                $remark
-            );
-            
+        $stmt->bind_param(
+            'siiiisis',
+            $date,
+            $model_id,
+            $uph_status_id,
+            $target,
+            $output,
+            $gap,
+            $user_id,
+            $remark
+        );
+
         if ($stmt->execute()) {
             echo json_encode(["success" => true, "message" => "New report added successfully"]);
             exit();
@@ -228,10 +290,12 @@ class DailyTargetReportController
         // $user_id = isset($data['user_id']) ? (int)$data['user_id'] : null;
         $remark = isset($data['remark']) ? ucfirst(strtolower(trim($data['remark']))) : null;
 
-        if (!$id
+        if (
+            !$id
             || !$date
             || $uph_status_id === null
-            || $uph_status_id <= 0) {
+            || $uph_status_id <= 0
+        ) {
             http_response_code(400);
             echo json_encode(["message" => "All fields are required"]);
             exit();
@@ -254,18 +318,19 @@ class DailyTargetReportController
         $row = $result->fetch_assoc();
         $id = $row['id'];
 
-        $editReport = $this->conn->prepare("UPDATE daily_target_report SET date = ?, uph_status_id = ?, 
+        $editReport = $this->conn->prepare("UPDATE daily_target_report SET date = ?, uph_status_id = ?,
                                             target = ?, output = ?, gap = ?, remark = ? WHERE id = ?");
 
-        $editReport->bind_param('siiissi',
-                $date,
-                $uph_status_id,
-                $target,
-                $output,
-                $gap, 
-                $remark,
-                $id
-            );
+        $editReport->bind_param(
+            'siiissi',
+            $date,
+            $uph_status_id,
+            $target,
+            $output,
+            $gap,
+            $remark,
+            $id
+        );
 
         if ($editReport->execute()) {
             echo json_encode(["success" => true, "message" => "Report edited successfully"]);
@@ -306,7 +371,7 @@ class DailyTargetReportController
         $deleteReport->bind_param('i', $id);
 
         if ($deleteReport->execute()) {
-            echo json_encode(["success"=>true, "message" => "Report deleted successfully"]);
+            echo json_encode(["success" => true, "message" => "Report deleted successfully"]);
         } else {
             http_response_code(500);
             echo json_encode(["success" => false, "message" => "Failed to delete report", "error" => $deleteReport->error]);

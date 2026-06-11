@@ -38,6 +38,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css" />
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css" />
     <link href="/connectify-web/assets/public/vendor/DataTables/datatables.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/connectify-web/assets/css/flatpickr.min.css">
+    <script src="/connectify-web/assets/js/flatpickr.min.js"></script>
 </head>
 
 <body>
@@ -53,6 +56,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         body {
             display: flex;
             flex-direction: column;
+        }
+
+        .flatpickr-input {
+            background-color: #fff !important;
         }
     </style>
     <?php
@@ -89,7 +96,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             <div class="main-content">
                 <div class="row">
                     <!-- Chart -->
-                     <div class="col-xxl-12">
+                    <div class="col-xxl-12">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
                                 <h5 class="card-title">Total reports by Users</h5>
@@ -145,7 +152,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </div>
                         </div>
                     </div>
-        
+
                     <div class="col-xxl-6">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
@@ -195,12 +202,44 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     </main>
 
     <!-- Modal Filter -->
+    <!-- Modal Filter -->
     <div class="modal fade" id="filterModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Manage Filter</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">From Date</label>
+                            <input type="date"
+                                id="fromDate"
+                                class="form-control form-control-sm"
+                                max="<?= date('Y-m-d') ?>">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">To Date</label>
+                            <input type="date"
+                                id="toDate"
+                                class="form-control form-control-sm"
+                                max="<?= date('Y-m-d') ?>">
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold mb-2">
+                            Select Model
+                        </label>
+
+                        <div id="modelDropdown"
+                            class="border rounded p-3 d-flex flex-wrap gap-3"
+                            style="max-height:180px; overflow-y:auto;">
+                        </div>
+                    </div>
                 </div>
                 <!-- <div class="row mb-3 p-4">
                     <div class="col-6">
@@ -213,16 +252,16 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         <input type="date" id="toDate" class="form-control form-control-sm"
                             max="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
                     </div>
-                </div> -->
+                </div>
                 <div class="modal-body">
                     <label class="form-label fw-semibold">Select Model</label>
 
                     <div id="modelDropdown"
                         class="border rounded p-3 d-flex flex-wrap gap-3"
                         style="max-height: 180px; overflow-y: auto;">
-                        <!-- checkbox via JS -->
+                        checkbox via JS
                     </div>
-                </div>
+                </div> -->
 
                 <div class="modal-footer">
                     <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
@@ -258,174 +297,295 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             window.location.href = "/connectify-web/logout.php";
         }, 7200 * 1000);
     </script>
+
     <script>
-        let chart;
-        let allSeries = [];
-        let allModels = [];
-        let rawDataGlobal = [];
-
-        $.ajax({
-            url: '/connectify-web/controllers/DailyTargetReportController.php?type=target-report-chart',
-            type: 'GET',
-            dataType: 'json',
-            success: function(res) {
-                if (!res.success) return;
-
-                const rawData = res.data;
-
-                const categories = [...new Set(rawData.map(item => item.date))].sort();
-                const isoDates = categories.map(d => new Date(d).toISOString());
-
-                allModels = [...new Set(rawData.map(item => item.model_name))].sort();
-
-                const statusMap = {
-                    "not target": 1,
-                    "target": 2,
-                    "not running": 0
-                };
-
-                const reverseStatusMap = {
-                    1: "Not Target",
-                    2: "Target",
-                    0: "Not Running"
-                };
-
-                allSeries = allModels.map(model => {
-                    const data = isoDates.map((iso, idx) => {
-                        const date = categories[idx];
-                        const found = rawData.find(item =>
-                            item.model_name === model &&
-                            item.date === date
-                        );
-                        return found ? statusMap[found.uph_status_name.toLowerCase()] : 0;
-                    });
-
-                    return {
-                        name: model,
-                        data
-                    };
-                });
-
-                // 🔹 DEFAULT: hanya 3 garis pertama
-                const defaultSeries = allSeries.slice(0, 3);
-
-                var options = {
-                    series: defaultSeries,
-                    chart: {
-                        type: 'area',
-                        height: 350,
-                        toolbar: {
-                            show: true
-                        }
-                    },
-                    stroke: {
-                        width: 3,
-                        curve: 'smooth'
-                    },
-                    markers: {
-                        size: 5
-                    },
-                    xaxis: {
-                        title: {
-                            text: 'Date'
-                        },
-                        type: 'datetime',
-                        categories: isoDates,
-                        labels: {
-                            formatter: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-GB', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                });
-                            }
-                        }
-                    },
-                    yaxis: {
-                        tickAmount: 2,
-                        labels: {
-                            formatter: val => reverseStatusMap[val] || val
-                        },
-                        title: {
-                            text: '......'
-                        }
-                    },
-                    tooltip: {
-                        y: {
-                            formatter: val => reverseStatusMap[val] || '-'
-                        }
-                    }
-                };
-
-                chart = new ApexCharts(
-                    document.querySelector("#targetReportsChart"),
-                    options
-                );
-                chart.render();
-
-                initDefaultDate();
-                initModelFilter();
-
+        const today = new Date();
+        const fromPicker = flatpickr("#fromDate", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
             }
         });
 
+        const toPicker = flatpickr("#toDate", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                fromPicker.set("maxDate", dateStr);
+            }
+        });
+    </script>
+
+    <script>
+        let chart = null;
+        let allModels = [];
+
+        const statusMap = {
+            "not target": 1,
+            "target": 2,
+            "not running": 0
+        };
+
+        const reverseStatusMap = {
+            0: "Not Running",
+            1: "Not Target",
+            2: "Target"
+        };
+
+        function getDefaultDateRange() {
+
+            const today = new Date();
+
+            const lastWeek = new Date();
+            lastWeek.setDate(today.getDate() - 6);
+
+            return {
+                fromDate: lastWeek.toISOString().split('T')[0],
+                toDate: today.toISOString().split('T')[0]
+            };
+        }
+
+        function loadModels() {
+
+            $.ajax({
+                url: '/connectify-web/controllers/DailyTargetReportController.php',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    type: 'get-models'
+                },
+                success: function(res) {
+
+                    if (!res.success) return;
+
+                    allModels = res.data;
+
+                    initModelFilter();
+                }
+            });
+        }
+
         function initModelFilter() {
+
             const container = $('#modelDropdown');
+
             container.empty();
 
             allModels.forEach((model, idx) => {
+
                 container.append(`
-                    <div class="form-check">
-                        <input class="form-check-input model-checkbox"
-                            type="checkbox"
-                            value="${model}"
-                            id="model_${idx}">
-                        <label class="form-check-label" for="model_${idx}">
-                            ${model}
-                        </label>
-                    </div>
-                `);
+            <div class="form-check">
+                <input
+                    class="form-check-input model-checkbox"
+                    type="checkbox"
+                    value="${model}"
+                    id="model_${idx}"
+                >
+                <label
+                    class="form-check-label"
+                    for="model_${idx}">
+                    ${model}
+                </label>
+            </div>
+        `);
+
             });
 
-            // default check 3 pertama
-            $('.model-checkbox').slice(0, 3).prop('checked', true);
+            $('.model-checkbox')
+                .slice(0, 3)
+                .prop('checked', true);
         }
 
-        function initDefaultDate() {
-            const today = new Date();
-            const lastMonth = new Date();
-            lastMonth.setMonth(today.getMonth() - 1);
+        function loadChart(fromDate, toDate, selectedModels = []) {
 
-            $('#toDate').val(today.toISOString().split('T')[0]);
-            $('#fromDate').val(lastMonth.toISOString().split('T')[0]);
+            $.ajax({
+                url: '/connectify-web/controllers/DailyTargetReportController.php',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    type: 'target-report-chart',
+                    fromDate: fromDate,
+                    toDate: toDate
+                },
+                success: function(res) {
+
+                    if (!res.success) return;
+
+                    const rawData = res.data;
+
+                    const categories = [...new Set(
+                        rawData.map(item => item.date)
+                    )].sort();
+
+                    const modelsToShow =
+                        selectedModels.length ?
+                        selectedModels :
+                        allModels.slice(0, 3);
+
+                    const series = modelsToShow.map(model => {
+
+                        const data = categories.map(date => {
+
+                            const found = rawData.find(item =>
+                                item.model_name === model &&
+                                item.date === date
+                            );
+
+                            return found ?
+                                statusMap[
+                                    found.uph_status_name.toLowerCase()
+                                ] :
+                                0;
+                        });
+
+                        return {
+                            name: model,
+                            data: data
+                        };
+                    });
+
+                    const options = {
+
+                        series: series,
+
+                        chart: {
+                            type: 'area',
+                            height: 400,
+                            toolbar: {
+                                show: true
+                            }
+                        },
+
+                        stroke: {
+                            width: 3,
+                            curve: 'smooth'
+                        },
+
+                        markers: {
+                            size: 5
+                        },
+
+                        xaxis: {
+                            categories: categories,
+                            title: {
+                                text: 'Date'
+                            }
+                        },
+
+                        yaxis: {
+                            min: 0,
+                            max: 2,
+                            tickAmount: 2,
+                            title: {
+                                text: 'Status'
+                            },
+                            labels: {
+                                formatter: function(val) {
+                                    return reverseStatusMap[val] || val;
+                                }
+                            }
+                        },
+
+                        tooltip: {
+                            y: {
+                                formatter: function(val) {
+                                    return reverseStatusMap[val] || '-';
+                                }
+                            }
+                        }
+                    };
+
+                    if (!chart) {
+
+                        chart = new ApexCharts(
+                            document.querySelector("#targetReportsChart"),
+                            options
+                        );
+
+                        chart.render();
+
+                    } else {
+
+                        chart.updateOptions({
+                            xaxis: {
+                                categories: categories
+                            }
+                        });
+
+                        chart.updateSeries(series);
+                    }
+                }
+            });
         }
+
+        $(document).ready(function() {
+
+            const range = getDefaultDateRange();
+
+            $('#fromDate').val(range.fromDate);
+            $('#toDate').val(range.toDate);
+
+            loadModels();
+
+            setTimeout(() => {
+
+                loadChart(
+                    range.fromDate,
+                    range.toDate
+                );
+
+            }, 300);
+
+        });
+
         $('#applyFilter').on('click', function() {
-            const selected = $('.model-checkbox:checked')
+
+            const selectedModels = $('.model-checkbox:checked')
                 .map(function() {
                     return this.value;
-                }).get();
+                })
+                .get();
 
-            chart.updateSeries(
-                selected.length ?
-                allSeries.filter(s => selected.includes(s.name)) :
-                allSeries.slice(0, 3)
+            loadChart(
+                $('#fromDate').val(),
+                $('#toDate').val(),
+                selectedModels
             );
 
             $('#filterModal').modal('hide');
         });
 
         $(document).on('click', '[data-bs-toggle="refresh"]', function() {
+
+            const range = getDefaultDateRange();
+
+            $('#fromDate').val(range.fromDate);
+            $('#toDate').val(range.toDate);
+
             $('.model-checkbox').prop('checked', false);
-            $('.model-checkbox').slice(0, 3).prop('checked', true);
-            chart.updateSeries(allSeries.slice(0, 3));
 
-            initDefaultDate();
+            $('.model-checkbox')
+                .slice(0, 3)
+                .prop('checked', true);
 
-            $('#filterModal').modal('hide');
+            loadChart(
+                range.fromDate,
+                range.toDate
+            );
+        });
+
+        $('#fromDate, #toDate').on('change', function() {
+            const from = new Date($('#fromDate').val());
+            const to = new Date($('#toDate').val());
+
+            if (to < from) {
+                alert("To Date can't be earlier than the From Date");
+                $('#toDate').val($('#fromDate').val());
+            }
         });
     </script>
-   
+
     <script>
         $.ajax({
             url: '/connectify-web/controllers/ReportController.php?type=total-by-model',
@@ -452,7 +612,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             categories: labels,
                             title: {
                                 text: 'Model Name'
-                            }     
+                            }
                         },
                         yaxis: {
                             title: {
@@ -484,7 +644,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             }
         });
 
-       $.ajax({
+        $.ajax({
             url: '/connectify-web/controllers/LineReportController.php?type=total-by-model',
             type: 'GET',
             data: {
@@ -537,7 +697,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         dataLabels: {
                             enabled: true,
                             // formatter: function (val) {
-                            //     return parseInt(val); 
+                            //     return parseInt(val);
                             // }
                         },
                         title: {
@@ -547,8 +707,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         tooltip: {
                             enabled: true,
                             y: {
-                                formatter: function (val) {
-                                    return parseInt(val); 
+                                formatter: function(val) {
+                                    return parseInt(val);
                                 }
                             }
                         }
@@ -564,8 +724,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 console.error("Error fetching data:", error);
             }
         });
-        
-         $.ajax({
+
+        $.ajax({
             url: '/connectify-web/controllers/ReportController.php?type=total-report-department',
             type: 'GET',
             dataType: 'json',

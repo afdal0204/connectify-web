@@ -44,7 +44,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
     <
-</head>
+        </head>
 
 <body>
     <style>
@@ -60,7 +60,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             display: flex;
             flex-direction: column;
         }
-
+        #activityTimeline {
+            min-height: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
         .flatpickr-input {
             background-color: #fff !important;
         }
@@ -101,9 +105,20 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             <!-- Main Content-->
             <div class="main-content">
                 <div class="col-xxl-12 col-md-6">
-                    <!-- <h4 class="h3 mb-8 text-gray-800">Hi, <?= htmlspecialchars($_SESSION['name'] ?? 'Guest') ?></h4> -->
+                    <div class="card-body">
+                        <h3 class="fw-bold mb-1">
+                            👋 Welcome back,
+                            <span class="text-primary">
+                                <?= htmlspecialchars($_SESSION['name'] ?? 'Guest') ?>
+                            </span>
+                        </h3>
+                        <p class="text-muted mb-0">
+                            Here's what's happening in Connectify today.
+                        </p>
+                    </div>
+                    <!-- <h4 class="h3 mb-8 text-gray-800">Hi, <?= htmlspecialchars($_SESSION['name'] ?? 'Guest') ?></h4>
                     <h3 class="h3 ">Welcome to Connectify</h3>
-                    <p>This is used for reporting and monitoring data</p>
+                    <p>This is used for reporting and monitoring data</p> -->
                     <hr class="my-12">
                 </div>
                 <div class="row">
@@ -188,7 +203,49 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             </div>
                         </div>
                     </div>
-                    <div class="col-xxl-12">
+                    <div class="row">
+                        <!-- Chart -->
+                        <div class="col-lg-9">
+                            <div class="card stretch stretch-full h-60">
+                                <div class="card-header">
+                                    <h5 class="card-title">Daily Target Report</h5>
+
+                                    <div class="card-header-action d-flex gap-2">
+                                        <a class="btn btn-light-brand"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#filterModal">
+                                            <i class="feather-filter me-2"></i>
+                                            <span>Filter</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="card-body p-0">
+                                    <div id="targetReportsChart"></div>
+                                    <div id="chartTooltip"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recent Activity -->
+                        <div class="col-lg-3">
+                            <div class="card stretch stretch-full h-60">
+                                <div class="card-header">
+                                    <h5 class="card-title">
+                                        <i class="feather-bell text-warning me-2"></i>
+                                        Recent Activity
+                                    </h5>
+                                </div>
+
+                                <div class="card-body p-0">
+                                    <div id="activityTimeline"
+                                        style="max-height:500px;overflow-y:auto">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="col-xxl-12">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
                                 <h5 class="card-title">Daily Target Report</h5>
@@ -209,7 +266,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                 <div id="chartTooltip"></div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -324,6 +381,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             getTotalLineReports()
             getTotalTargetReports();
             getTotalErrorCode();
+            loadNotifications();
         });
 
         function getTotalUsers() {
@@ -414,6 +472,48 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     $('#totalTargetReports').text('-');
                 }
             });
+        }
+
+        function loadNotifications() {
+            fetch("/connectify-web/controllers/NotificationController.php?type=notification")
+                .then(res => res.json())
+                .then(data => {
+
+                    const timeline = document.getElementById("activityTimeline");
+
+                    timeline.innerHTML = "";
+
+                    if (!data.success || data.data.length === 0) {
+                        timeline.innerHTML = `
+                            <div class="text-center text-muted py-4">
+                                No recent activity
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    data.data.slice(0, 10).forEach(n => {
+                        timeline.innerHTML += `
+                            <div class="d-flex p-3 border-bottom">
+                                <div class="me-3">
+                                    <div class="avatar-text bg-primary text-white rounded-circle">
+                                        <i class="feather-bell"></i>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="fw-semibold">
+                                        ${n.message}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        ${timeAgo(n.created_at)}
+                                    </small>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
         }
     </script>
 
@@ -729,7 +829,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         xaxis: {
                             categories: categories,
                             title: {
-                                text: 'Date'
+                                text: ''
                             }
                         },
 
@@ -738,12 +838,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             max: 2,
                             tickAmount: 2,
                             title: {
-                                text: 'Status'
+                                text: '......'
                             },
                             labels: {
                                 formatter: function(val) {
                                     return reverseStatusMap[val] || val;
-                                }
+                                },
                             }
                         },
 
@@ -845,7 +945,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         // }
         // $('#fromDate, #toDate').on('change', updateSelectedRange);
 
-        $('#fromDate, #toDate').on('change', function () {
+        $('#fromDate, #toDate').on('change', function() {
             const from = new Date($('#fromDate').val());
             const to = new Date($('#toDate').val());
 

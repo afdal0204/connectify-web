@@ -241,28 +241,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         </div>
                     </div>
                 </div>
-                <!-- <div class="row mb-3 p-4">
-                    <div class="col-6">
-                        <label class="form-label fw-semibold">From Date</label>
-                        <input type="date" id="fromDate" class="form-control form-control-sm"
-                            max="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label fw-semibold">To Date</label>
-                        <input type="date" id="toDate" class="form-control form-control-sm"
-                            max="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <label class="form-label fw-semibold">Select Model</label>
-
-                    <div id="modelDropdown"
-                        class="border rounded p-3 d-flex flex-wrap gap-3"
-                        style="max-height: 180px; overflow-y: auto;">
-                        checkbox via JS
-                    </div>
-                </div> -->
-
                 <div class="modal-footer">
                     <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                     <button class="btn btn-success" id="applyFilter">Apply</button>
@@ -469,7 +447,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         xaxis: {
                             categories: categories,
                             title: {
-                                text: 'Date'
+                                text: ''
                             }
                         },
 
@@ -478,7 +456,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             max: 2,
                             tickAmount: 2,
                             title: {
-                                text: 'Status'
+                                text: '......'
                             },
                             labels: {
                                 formatter: function(val) {

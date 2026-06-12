@@ -425,6 +425,30 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 toPicker.set("minDate", dateStr);
             }
         });
+
+        const fromPickerEdit = flatpickr("#editdate", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
+
+        const fromPicker1 = flatpickr("#filterDateFrom", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
+
+        const toPicker = flatpickr("#filterDateTo", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                fromPicker1.set("maxDate", dateStr);
+            }
+        });
     </script>
     <!-- filter data -->
     <script>

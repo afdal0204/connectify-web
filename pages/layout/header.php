@@ -1,9 +1,9 @@
 <style>
 #notifList {
-    max-height: 300px;  
-    overflow-y: auto;   
-    padding-right: 10px; 
-    padding-bottom: 10px; 
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+    padding-bottom: 10px;
 }
 .notifications-footer {
     margin-top: 10px;
@@ -60,14 +60,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="nxl-h-item d-none d-sm-flex">
-                    <div class="full-screen-switcher">
-                        <a href="javascript:void(0);" class="nxl-head-link me-0" onclick="$('body').fullScreenHelper('toggle');">
-                            <i class="feather-maximize maximize"></i>
-                            <i class="feather-minimize minimize"></i>
-                        </a>
-                    </div>
-                </div> -->
                 <div class="nxl-h-item dark-light-theme">
                     <a href="javascript:void(0);" class="nxl-head-link me-0 dark-button">
                         <i class="feather-moon"></i>
@@ -100,7 +92,7 @@
                         <div class="dropdown-header">
                             <div class="d-flex align-items-center">
                                 <img src="/connectify-web/assets/images/avatar/auth-user.png" alt="user-image" class="img-fluid user-avtar" />
-                                
+
                                 <div>
                                     <h6 class="text-dark mb-1"><span><?= htmlspecialchars($_SESSION['name'] ?? 'Guest') ?></span></h6>
                                     <p class="fs-12 fw-small text-muted"><?= htmlspecialchars($_SESSION['department_name']) ?></p>
@@ -250,9 +242,11 @@
                 data.data.forEach(n => {
                     notifList.innerHTML += `
                             <div class="notifications-item">
-                                <img src="/connectify-web/assets/images/icons/4.png"
-                                    class="rounded me-3 border" width="40" height="40">
-
+                                <div class="me-3">
+                                    <div class="avatar-text bg-primary text-white rounded-circle">
+                                        <i class="feather-bell"></i>
+                                    </div>
+                                </div>
                                 <div class="notifications-desc">
                                     <a href="#" class="font-body text-truncate-6-line">
                                         ${n.message}

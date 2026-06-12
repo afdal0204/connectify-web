@@ -5,15 +5,15 @@ session_start();
 // include '../auth_check.php';
 
 // $modelResModal = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
-$modelResModal = $conn->query("SELECT m.id, m.model_name 
-                            FROM models m 
+$modelResModal = $conn->query("SELECT m.id, m.model_name
+                            FROM models m
                             LEFT JOIN users u_owner ON m.owner_id = u_owner.id
                             LEFT JOIN department d ON u_owner.department_id = d.id
                             WHERE d.id = 1
                             ORDER BY model_name ASC");
 
-$modelRes = $conn->query("SELECT m.id, m.model_name 
-                            FROM models m 
+$modelRes = $conn->query("SELECT m.id, m.model_name
+                            FROM models m
                             LEFT JOIN users u_owner ON m.owner_id = u_owner.id
                             LEFT JOIN department d ON u_owner.department_id = d.id
                             WHERE d.id = 1
@@ -41,18 +41,24 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
+    <link rel="stylesheet" href="/connectify-web/assets/css/flatpickr.min.css">
+    <script src="/connectify-web/assets/js/flatpickr.min.js"></script>
     <style>
         #lineReportTable td,
         #lineReportTable th {
-            white-space: normal !important;   
+            white-space: normal !important;
             /* word-wrap: break-word !important;  */
             /* word-break: break-word !important; */
-             /* padding: 8px 12px; */
+            /* padding: 8px 12px; */
         }
+
         .remark-text {
             white-space: pre-line;
         }
 
+        .flatpickr-input {
+            background-color: #fff !important;
+        }
     </style>
 </head>
 
@@ -158,39 +164,39 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     <h5 class="modal-title">Manage Filter</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                  <div class="modal-body pt-3">
-                <div class="container-fluid">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Model</label>
-                            <select id="filterModel" class="form-select">
-                                <option value="">All</option>
-                                <?php $modelRes->data_seek(0);
-                                while ($row = $modelRes->fetch_assoc()): ?>
-                                    <option value="<?= $row['id'] ?>">
-                                        <?= $row['model_name'] ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Start Date</label>
-                            <input type="date"
-                                   id="filterDateFrom"
-                                   class="form-control"
-                                   max="<?= date('Y-m-d') ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">End Date</label>
-                            <input type="date"
-                                   id="filterDateTo"
-                                   class="form-control"
-                                   max="<?= date('Y-m-d') ?>">
-                        </div>
+                <div class="modal-body pt-3">
+                    <div class="container-fluid">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Model</label>
+                                <select id="filterModel" class="form-select">
+                                    <option value="">All</option>
+                                    <?php $modelRes->data_seek(0);
+                                    while ($row = $modelRes->fetch_assoc()): ?>
+                                        <option value="<?= $row['id'] ?>">
+                                            <?= $row['model_name'] ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Start Date</label>
+                                <input type="date"
+                                    id="filterDateFrom"
+                                    class="form-control"
+                                    max="<?= date('Y-m-d') ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">End Date</label>
+                                <input type="date"
+                                    id="filterDateTo"
+                                    class="form-control"
+                                    max="<?= date('Y-m-d') ?>">
+                            </div>
 
+                        </div>
                     </div>
                 </div>
-            </div>
 
                 <div class="modal-footer">
                     <button id="btnClearFilter" class="btn btn-light" data-bs-dismiss="modal">Clear</button>
@@ -232,7 +238,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                             <input type="date" id="date" class="form-control" required
                                 max="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
                         </div>
-                         <div class="col-md-6">
+                        <div class="col-md-6">
                             <label class="form-label">Shift</label>
                             <select id="shift" class="form-select" required>
                                 <option value="">-----</option>
@@ -275,7 +281,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     </div>
 
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
-     <!-- vendors.min.js {always must need to be top} -->
+    <!-- vendors.min.js {always must need to be top} -->
     <script src="/connectify-web/assets/vendors/js/dataTables.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/dataTables.bs5.min.js"></script>
     <script src="/connectify-web/assets/js/leads-init.min.js"></script>
@@ -285,7 +291,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <script src="/connectify-web/assets/vendors/js/select2-active.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/jquery.time-to.min.js "></script>
     <script src="/connectify-web/assets/js/common-init.min.js"></script>
-     <script src="assets/js/projects-init.min.js"></script>
+    <script src="assets/js/projects-init.min.js"></script>
     <script src="/connectify-web/assets/js/widgets-tables-init.min.js"></script>
     <script src="/connectify-web/assets/js/theme-customizer-init.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/dataTables.buttons.min.js"></script>
@@ -293,7 +299,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
 
     <script src="/connectify-web/pages/js/dashboard.js"></script>
-     <script>
+    <script>
         const LOGGED_USER_ID = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
         const LOGGED_USER_ROLE = <?= json_encode($_SESSION['role_id'] ?? null) ?>;
     </script>
@@ -301,6 +307,32 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
         setInterval(() => {
             fetch("/connectify-web/update_activity.php");
         }, 60000);
+    </script>
+    <script>
+        const today = new Date();
+        const fromPicker = flatpickr("#date", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
+
+        const fromPicker1 = flatpickr("#filterDateFrom", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
+
+        const toPicker = flatpickr("#filterDateTo", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                fromPicker1.set("maxDate", dateStr);
+            }
+        });
     </script>
     <script>
         function showSuccessToast(message) {
@@ -337,10 +369,10 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     text: '<i class="feather-download me-2"></i> Generate Report',
                     title: 'Line Report Sec 1',
                     className: 'btn btn-xs btn-primary rounded',
-                    
+
                     exportOptions: {
                         // columns: ':visible',
-                        columns: ':visible:not(.no-export)',    
+                        columns: ':visible:not(.no-export)',
                         modifier: {
                             search: 'applied',
                             order: 'applied',
@@ -398,7 +430,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 ajax: {
                     url: '/connectify-web/controllers/LineReportController.php?type=sec1',
                     type: 'GET',
-                    data: function(d){
+                    data: function(d) {
                         d.filter_model = $('#filterModel').val();
                         d.filter_date_from = $('#filterDateFrom').val();
                         d.filter_date_to = $('#filterDateTo').val();
@@ -415,7 +447,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     },
                     {
                         data: 'department_name',
-                         render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return data;
                         }
                     },
@@ -424,44 +456,44 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     },
                     {
                         data: 'shift',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return data;
                         }
                     },
                     {
                         data: 'model_name',
-                         render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return data;
                         }
                     },
                     {
                         data: 'line_area',
-                         render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return data;
                         }
                     },
                     {
                         data: 'remark',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             if (!data) return '';
                             return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
                     {
                         data: 'report_user',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return data;
                         }
                     },
                     {
                         data: null,
-                         className: 'text-center',
+                        className: 'text-center',
                         render: function(data, type, row) {
                             const isAdmin = [1, 2].includes(parseInt(LOGGED_USER_ROLE));
                             const isOwner = parseInt(row.user_id) === parseInt(LOGGED_USER_ID);
 
                             if (!isAdmin && !isOwner) {
-                                return ''; 
+                                return '';
                             }
                             return `
                             <div class="d-flex justify-content-center align-items-center gap-1">
@@ -504,9 +536,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
 
             $('#btnApplyFilter').click(function() {
                 lineReportTable.ajax.reload();
-                 $('#sec1FilterModal').modal('hide');
+                $('#sec1FilterModal').modal('hide');
             });
-            
+
             $('#btnClearFilter').click(function() {
                 $('#filterModel').val('');
                 $('#filterDateFrom').val('');
@@ -525,7 +557,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                 lineReportTable.search(this.value).draw();
             });
 
-            $(document).on('click', '.btn-delete-report', function (e) {
+            $(document).on('click', '.btn-delete-report', function(e) {
                 e.preventDefault();
 
                 const reportId = $(this).data('id');
@@ -552,12 +584,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                         $.ajax({
                             url: '/connectify-web/controllers/LineReportController.php',
                             type: 'DELETE',
-                            data: JSON.stringify({ 
+                            data: JSON.stringify({
                                 id: reportId
-                             }),
+                            }),
                             contentType: 'application/json',
-                            dataType: 'json', 
-                            success: function (response) {
+                            dataType: 'json',
+                            success: function(response) {
                                 if (response.success) {
                                     swalWithBootstrapButtons.fire(
                                         "Deleted!",
@@ -578,7 +610,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                                     );
                                 }
                             },
-                            error: function (xhr) {
+                            error: function(xhr) {
                                 swalWithBootstrapButtons.fire(
                                     "Error!",
                                     "Something went wrong!",
@@ -651,7 +683,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
             });
         });
 
-         // save data
+        // save data
         $('#saveLineReport').click(function() {
             const payload = {
                 shift: $('#shift').val(),

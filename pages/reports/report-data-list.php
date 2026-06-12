@@ -101,38 +101,6 @@ date_default_timezone_set('Asia/Jakarta');
             </div>
             <div class="main-content">
                 <div class="row g-3 px-0 mb-2 align-items-end">
-                    <!-- <div class="col-md-2">
-                        <label class="form-label fw-bold">Model</label>
-                        <select id="filterModel" class="form-select">
-                            <option value="">All</option>
-                            <?php $modelRes->data_seek(0);
-                            while ($row = $modelRes->fetch_assoc()): ?>
-                                <option value="<?= $row['id'] ?>"><?= $row['model_name'] ?></option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-bold">Start Date</label>
-                        <input type="date" id="filterDateFrom" class="form-control"
-                            max="<?= date('Y-m-d') ?>">
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-bold">End Date</label>
-                        <input type="date" id="filterDateTo" class="form-control"
-                            max="<?= date('Y-m-d') ?>">
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end justify-content-start gap-2">
-                        <button class="btn btn-primary" id="btnApplyFilter">
-                            <i class="fas fa-filter"></i> Apply
-                        </button>
-                        <button class="btn btn-secondary" id="btnClearFilter">
-                            <i class="fas fa-times"></i> Clear
-                        </button>
-                        <div id="exportButtonsContainer"></div>
-                    </div> -->
                     <div class="col-md-12 d-flex align-items-end justify-content-end">
                         <input type="search" id="customSearchBox" class="form-control" placeholder="Search..." style="max-width: 250px;">
                     </div>
@@ -436,6 +404,22 @@ date_default_timezone_set('Asia/Jakarta');
             maxDate: today,
             onChange: function(selectedDates, dateStr, instance) {
                 toPicker.set("minDate", dateStr);
+            }
+        });
+
+        const fromPicker1 = flatpickr("#filterDateFrom", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
+
+        const toPicker = flatpickr("#filterDateTo", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                fromPicker1.set("maxDate", dateStr);
             }
         });
 

@@ -60,11 +60,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             display: flex;
             flex-direction: column;
         }
-        #activityTimeline {
-            min-height: 350px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
+
         .flatpickr-input {
             background-color: #fff !important;
         }
@@ -209,7 +205,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                             <div class="card stretch stretch-full h-60">
                                 <div class="card-header">
                                     <h5 class="card-title">Daily Target Report</h5>
-
                                     <div class="card-header-action d-flex gap-2">
                                         <a class="btn btn-light-brand"
                                             data-bs-toggle="modal"
@@ -219,7 +214,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                         </a>
                                     </div>
                                 </div>
-
                                 <div class="card-body p-0">
                                     <div id="targetReportsChart"></div>
                                     <div id="chartTooltip"></div>

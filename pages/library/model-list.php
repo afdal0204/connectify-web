@@ -52,51 +52,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
-    <!-- <link rel="shortcut icon" type="image/x-icon" href="/connectify-web/assets/images/logo.png" />
-    <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/jquery.time-to.min.css">
-    <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
-    <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
-    <link href="/connectify-web/assets/public/vendor/DataTables/datatables.min.css" rel="stylesheet"> -->
-
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
     <style>
-        /* Station & Device → boleh wrap */
-        /* #modelTable td.col-station {
-            white-space: normal !important;
-            word-break: break-word;
-        } */
-
-        /* Owner & Members → TIDAK BOLEH melebar */
-        /* #modelTable td.col-owner,
-        #modelTable td.col-members {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        } */
-
-        /* Membuat semua cell di #modelTable wrap */
         #modelTable td,
         #modelTable th {
             white-space: normal !important;
-            /* membolehkan teks ke baris berikutnya */
-            /* word-wrap: break-word !important; 
-            word-break: break-word !important;
-             padding: 8px 12px; */
         }
-
-        /* Opsional: batasi lebar kolom tertentu supaya wrap lebih cepat */
-        /* #modelTable td:nth-child(4),
-        #modelTable th:nth-child(4) {
-            max-width: 200px;
-        }
-
-        #modelTable td:nth-child(6),
-        #modelTable th:nth-child(6) {
-            max-width: 220px;
-        } */
     </style>
 </head>
 
@@ -371,7 +332,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         </div>
     </div>
 
-    
+
 
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
     <!-- vendors.min.js {always must need to be top} -->
@@ -392,6 +353,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
     <!-- <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script> -->
     <script src="/connectify-web/pages/js/dashboard.js"></script>
+    <script src="../js/index.js"></script>
     <script>
         setInterval(() => {
             fetch("/connectify-web/update_activity.php");
@@ -525,8 +487,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 //     { targets: -1, orderable: false },
                 //     { targets: 1, width: "10%"},
                 //     { targets: 3, width: "35%" },
-                //     { targets: 4, width: "15%" }, 
-                //     { targets: 5, width: "15%" }  
+                //     { targets: 4, width: "15%" },
+                //     { targets: 5, width: "15%" }
                 // ],
                 pageLength: 5,
                 lengthMenu: [5, 10, 25, 50, 100],
@@ -670,7 +632,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const memberContainer = $('#EditSelectedMembersContainer');
                 memberContainer.empty();
                 selectedMembers.clear();
-                
+
                 members.forEach(name => {
                     const trimmed = name.trim();
                     selectedMembers.set(trimmed, trimmed);
@@ -843,7 +805,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                     .map(v => parseInt(v, 10))
                     .filter(v => !isNaN(v));
 
-                console.log(membersArray); 
+                console.log(membersArray);
                 const payload = {
                     id,
                     line_area,
@@ -891,7 +853,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                 const model_id = $('#edit-id').val().trim();
                 const line_area = $('#editDeviceLineArea').val().trim();
                 const owner_id = $('#editUserOwner').val().trim();
-                
+
                 const payload = {
                     id: model_id,
                     owner_id: owner_id,
@@ -900,7 +862,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         station_id: d.station_id,
                         device_name: d.device_name
                     }))
-                }; 
+                };
                 $.ajax({
                     url: '/connectify-web/controllers/ModelController.php?action=update',
                     method: 'POST',
@@ -935,8 +897,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
             });
         });
     </script>
-    
-  
+
+
 </body>
 
 </html>

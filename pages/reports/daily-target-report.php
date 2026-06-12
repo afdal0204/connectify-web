@@ -2,7 +2,7 @@
 include './../../config.php';
 session_start();
 
-$deptRes = $conn->query("SELECT id, department_name FROM department ORDER BY department_name ASC");
+$deptRes = $conn->query("SELECT id, department_name, remark FROM department ORDER BY department_name ASC");
 $modelRes = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $modelResModal = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 
@@ -41,6 +41,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
     <link rel="stylesheet" href="/connectify-web/assets/css/flatpickr.min.css">
     <script src="/connectify-web/assets/js/flatpickr.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
 
     <style>
         #dailyTargetReportTable td,
@@ -175,7 +176,9 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                                     <?php $deptRes->data_seek(0);
                                     while ($row = $deptRes->fetch_assoc()): ?>
                                         <option value="<?= $row['id'] ?>">
-                                            <?= $row['department_name'] ?>
+                                            <!-- <?= $row['department_name'] ?> -->
+                                            <?= htmlspecialchars($row['department_name']) ?>
+                                            <?= !empty($row['remark']) ? '(' . htmlspecialchars($row['remark']) . ')' : '' ?>
                                         </option>
                                     <?php endwhile; ?>
                                 </select>
@@ -275,13 +278,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         <div class="col-md-12">
                             <label class="form-label">Remarks</label>
                             <textarea id="remark" class="form-control" rows="2"></textarea>
-
-                            <!-- <label class="form-label">Upload Image <small class="text-muted">(Optional)</small></label>
-                            <input type="file"
-                                name="remark_image"
-                                id="remarkImage"
-                                class="form-control"
-                                accept="image/*"> -->
                         </div>
 
                         <input type="hidden" id="user_id" value="<?= htmlspecialchars($_SESSION['user_id'] ?? '') ?>">
@@ -405,6 +401,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
 
     <script src="/connectify-web/pages/js/dashboard.js"></script>
+    <script src="../js/index.js"></script>
 
     <script>
         const LOGGED_USER_ID = <?= json_encode($_SESSION['user_id'] ?? null) ?>;

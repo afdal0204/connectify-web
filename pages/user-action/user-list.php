@@ -51,6 +51,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
 </head>
 
 <body>
@@ -264,25 +265,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
         </div>
     </div>
 
-    <!-- delete user -->
-    <!-- <div class="modal fade" id="deleteModalUser" tabindex="-1" aria-labelledby="deleteModalUserLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteModalUserLabel">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this user?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="btnConfirmDeleteUser">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
     <!-- view user -->
     <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -326,6 +308,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
 
     <script src="/connectify-web/pages/js/dashboard.js"></script>
+    <script src="../js/index.js"></script>
     <script>
         setInterval(() => {
             fetch("/connectify-web/update_activity.php");

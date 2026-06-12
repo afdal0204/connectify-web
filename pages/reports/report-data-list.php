@@ -3,7 +3,7 @@ include './../../config.php';
 
 session_start();
 
-$deptRes = $conn->query("SELECT id, department_name FROM department ORDER BY department_name ASC");
+$deptRes = $conn->query("SELECT id, department_name, remark FROM department ORDER BY department_name ASC");
 $modelRes = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $modelResModal = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $errorRes = $conn->query("SELECT id, error_code, symptom FROM error_code ORDER BY error_code ASC");
@@ -35,9 +35,9 @@ date_default_timezone_set('Asia/Jakarta');
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
-    <!-- <link href="/connectify-web/assets/public/vendor/DataTables/datatables.min.css" rel="stylesheet">  -->
     <link rel="stylesheet" href="/connectify-web/assets/css/flatpickr.min.css">
     <script src="/connectify-web/assets/js/flatpickr.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
     <style>
         #reportTable td,
         #reportTable th {
@@ -49,10 +49,31 @@ date_default_timezone_set('Asia/Jakarta');
         .root-cause-text {
             white-space: pre-line;
         }
+        /* .select2-container--default .select2-selection--single {
+            height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
 
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: normal !important;
+            padding-left: 6px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100% !important;
+            top: 0 !important;
+            display: flex;
+            align-items: center;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
         .flatpickr-input {
             background-color: #fff !important;
-        }
+        } */
     </style>
 </head>
 
@@ -178,7 +199,8 @@ date_default_timezone_set('Asia/Jakarta');
                                     <?php $deptRes->data_seek(0);
                                     while ($row = $deptRes->fetch_assoc()): ?>
                                         <option value="<?= $row['id'] ?>">
-                                            <?= $row['department_name'] ?>
+                                            <?= htmlspecialchars($row['department_name']) ?>
+                                            <?= !empty($row['remark']) ? '(' . htmlspecialchars($row['remark']) . ')' : '' ?>
                                         </option>
                                     <?php endwhile; ?>
                                 </select>
@@ -293,12 +315,10 @@ date_default_timezone_set('Asia/Jakarta');
                             <label class="form-label">Date</label>
                             <input type="date" id="date" class="form-control" required
                                 max="<?= date('Y-m-d') ?>">
-                            <!-- <small class="text-muted">Bulan/Hari/Tahun</small> -->
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Time Start<small class="text-muted">(Format 24 jam)</small></label>
                             <input type="time" id="timeStart" class="form-control" required>
-                            <!-- <small class="text-muted">AM => Siang(00.00-11.59) <br> PM => Malam(12.00-23.59)</small> -->
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Time Finish<small class="text-muted">(Format 24 jam)</small></label>
@@ -383,12 +403,26 @@ date_default_timezone_set('Asia/Jakarta');
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
 
     <script src="/connectify-web/pages/js/dashboard.js"></script>
-    <!-- <script src="/connectify-web/assets/public/vendor/DataTables/datatables.min.js"></script> -->
+    <script src="../js/index.js"></script>
     <script>
         const LOGGED_USER_ID = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
         const LOGGED_USER_ROLE = <?= json_encode($_SESSION['role_id'] ?? null) ?>;
     </script>
-
+    <script>
+        // $('#createReportModal').on('shown.bs.modal', function () {
+        //     $('#modelSelect, #stationSelect, #deviceSelect, #shift, #errorCodeSelect').select2({
+        //         dropdownParent: $('#createReportModal'),
+        //         width: '100%'
+        //     });
+        // });
+        // $(document).ready(function() {
+        //     $('#errorCodeSelect').select2({
+        //         placeholder: 'Select Model',
+        //         allowClear: true,
+        //         width: '100%'
+        //     });
+        // });
+    </script>
     <script>
         setInterval(() => {
             fetch("/connectify-web/update_activity.php");

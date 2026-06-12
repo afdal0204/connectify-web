@@ -36,7 +36,8 @@
                         <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/dashboard.php">Main Dashboard</a></li>
                     </ul>
                     <ul class="nxl-submenu">
-                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics <span class="badge bg-soft-success text-success">NEW</span></a></li>
+                        <!-- <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics <span class="badge bg-soft-success text-success">NEW</span></a></li> -->
+                        <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/analytics.php">Analytics</a></li>
                     </ul>
                 </li>
                 <li class="nxl-item nxl-hasmenu">
@@ -49,8 +50,8 @@
                         <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/daily-target-report.php">Daily Target Report</a></li>
                         <li class="nxl-item nxl-hasmenu">
                                 <a href="javascript:void(0);" class="nxl-link">
-                                    <!-- <span class="nxl-micon"><i class="feather-file-text"></i></span> -->
-                                    Line Report (Shift)<span class="badge bg-soft-success text-success ms-2">NEW</span>
+                                    <!-- Line Report (Shift)<span class="badge bg-soft-success text-success ms-2">NEW</span> -->
+                                    Line Report (Shift)
                                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                                 </a>
 

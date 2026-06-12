@@ -41,6 +41,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/vendors/css/select2-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
 </head>
 
 <body>
@@ -242,7 +243,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     </div>
 
     <script src="/connectify-web/assets/vendors/js/vendors.min.js"></script>
-     <!-- vendors.min.js {always must need to be top} -->
+
     <script src="/connectify-web/assets/vendors/js/dataTables.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/dataTables.bs5.min.js"></script>
     <script src="/connectify-web/assets/js/leads-init.min.js"></script>
@@ -252,7 +253,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <script src="/connectify-web/assets/vendors/js/select2-active.min.js"></script>
     <script src="/connectify-web/assets/vendors/js/jquery.time-to.min.js "></script>
     <script src="/connectify-web/assets/js/common-init.min.js"></script>
-     <script src="assets/js/projects-init.min.js"></script>
+    <script src="assets/js/projects-init.min.js"></script>
     <script src="/connectify-web/assets/js/widgets-tables-init.min.js"></script>
     <script src="/connectify-web/assets/js/theme-customizer-init.min.js"></script>
     <script src="/connectify-web/assets/bootstrap-5/DataTables/dataTables.buttons.min.js"></script>
@@ -260,6 +261,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
 
     <script src="/connectify-web/pages/js/dashboard.js"></script>
+    <script src="../js/index.js"></script>
     <script>
         setInterval(() => {
             fetch("/connectify-web/update_activity.php");

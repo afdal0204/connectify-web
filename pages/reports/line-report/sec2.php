@@ -38,6 +38,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/theme.min.css">
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/footer.css">
     <link rel="stylesheet" href="/connectify-web/assets/css/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="../../css/style.css">
     <script src="/connectify-web/assets/js/flatpickr.min.js"></script>
     <style>
         #lineReportTable td,
@@ -292,6 +293,8 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
     <script src="/connectify-web/assets/bootstrap-5/DataTables/buttons.html5.min.js"></script>
 
     <script src="/connectify-web/pages/js/dashboard.js"></script>
+    <script src="../../js/index.js"></script>
+
     <script>
         const LOGGED_USER_ID = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
         const LOGGED_USER_ROLE = <?= json_encode($_SESSION['role_id'] ?? null) ?>;
@@ -703,30 +706,6 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                     } else {
                         showErrorToast(response.message);
                     }
-                    // if (response.success) {
-                    //     $('#alertLineReportSec2').html(
-                    //         `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                    //         ${response.message}
-                    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    // </div>`
-                    //     );
-
-                    //     setTimeout(() => {
-                    //         $('.alert').alert('close');
-                    //         $('#createSec2Modal').modal('hide');
-                    //     }, 1500);
-
-                    //     $('#lineReportSec2')[0].reset();
-                    //     $('#lineReportTable').DataTable().ajax.reload(null, false);
-
-
-                    // } else {
-                    //     $('#message-container').html(`
-                    //     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    //         ${response.message}
-                    //         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    //     </div>`);
-                    // }
                 },
                 error: function(xhr) {
                     let msg = "Unexpected error";

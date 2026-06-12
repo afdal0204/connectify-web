@@ -2,7 +2,7 @@
 include '../../config.php';
 session_start();
 
-$role_id = $_SESSION['role_id'] ?? 'Guest'; 
+$role_id = $_SESSION['role_id'] ?? 'Guest';
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +30,7 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
         #errorCodeTable th {
             white-space: normal !important;
             /* membolehkan teks ke baris berikutnya */
-            /* word-wrap: break-word !important; 
+            /* word-wrap: break-word !important;
             word-break: break-word !important;
              padding: 8px 12px; */
         }
@@ -262,12 +262,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         data: null,
                         className: 'text-center',
                         render: function(data, type, row) {
-                            
+
                             const isAdmin = [1, 2].includes(parseInt(LOGGED_USER_ROLE));
                             const isOwner = parseInt(row.user_id) === parseInt(LOGGED_USER_ID);
 
                             if (!isAdmin && !isOwner) {
-                                return ''; 
+                                return '';
                             }
 
                             return `
@@ -340,11 +340,11 @@ $role_id = $_SESSION['role_id'] ?? 'Guest';
                         $.ajax({
                             url: '/connectify-web/controllers/ErrorCodeController.php',
                             type: 'DELETE',
-                            data: JSON.stringify({ 
+                            data: JSON.stringify({
                                 id: errorCodeId
                              }),
                             contentType: 'application/json',
-                            dataType: 'json', 
+                            dataType: 'json',
                             success: function (response) {
                                 if (response.success) {
                                     swalWithBootstrapButtons.fire(

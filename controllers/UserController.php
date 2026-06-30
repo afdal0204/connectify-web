@@ -66,7 +66,8 @@ class UserController
     private function getAllUsers()
     {
         $sql = "SELECT u.id, u.name, u.department_id, u.work_id,
-                d.department_name AS department, u.role_id, ur.role_name, u.last_activity,
+                d.department_name AS department, d.remark as deptRemark,
+                u.role_id, ur.role_name, u.last_activity,
 
                 IF(
                     u.is_online = 1 AND TIMESTAMPDIFF(MINUTE, u.last_activity, NOW()) < 2, 1, 0
@@ -74,7 +75,7 @@ class UserController
 
                 (
                     SELECT GROUP_CONCAT(model_name SEPARATOR ', ')
-                    FROM models 
+                    FROM models
                     WHERE owner_id = u.id
                 ) AS owned_models,
 
@@ -266,7 +267,7 @@ class UserController
         $deleteRelations = $this->conn->prepare("DELETE FROM model_members WHERE member_id = ?");
         $deleteRelations->bind_param('i', $user_id);
         $deleteRelations->execute();
-        
+
         $deleteUser = $this->conn->prepare("DELETE FROM users WHERE work_id = ?");
         $deleteUser->bind_param('s', $work_id);
 

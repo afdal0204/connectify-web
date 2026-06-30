@@ -211,7 +211,7 @@ class DailyTargetReportController
         $output = isset($data['output']) ? (int)$data['output'] : null;
         $gap = isset($data['gap']) ? $data['gap'] : null;
         $user_id = isset($data['user_id']) ? (int)$data['user_id'] : null;
-        $remark = isset($data['remark']) ? ucfirst(strtolower(trim($data['remark']))) : null;
+        $remark = isset($data['remark']) ? $data['remark'] : null;
 
         if (!$date || !$model_id || !$uph_status_id || $user_id === null) {
             http_response_code(400);
@@ -288,7 +288,7 @@ class DailyTargetReportController
         $output = isset($data['output']) ? (int)$data['output'] : null;
         $gap = isset($data['gap']) ? $data['gap'] : null;
         // $user_id = isset($data['user_id']) ? (int)$data['user_id'] : null;
-        $remark = isset($data['remark']) ? ucfirst(strtolower(trim($data['remark']))) : null;
+        $remark = isset($data['remark']) ? $data['remark'] : null;
 
         if (
             !$id

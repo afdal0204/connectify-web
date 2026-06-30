@@ -16,16 +16,16 @@ class NotificationController
     public function handle($method)
     {
         switch ($method) {
-            case 'GET':            
+            case 'GET':
                 if (isset($_GET['type']) && $_GET['type'] === 'notification'){
                     $this->getNotifications();
-                }              
+                }
                 else if (isset($_GET['type']) && $_GET['type'] === 'all-notification'){
                     $this->getAllNotifications();
-                } 
+                }
                 else if (isset($_GET['type']) && $_GET['type'] === 'activity-log'){
                     $this->getNotificationsByUserId();
-                } 
+                }
                 break;
             default:
                 http_response_code(405);
@@ -40,7 +40,7 @@ class NotificationController
     public function getNotifications()
     {
         $result = $this->conn->query("
-            SELECT * FROM notifications 
+            SELECT * FROM notifications
             WHERE created_at >= NOW() - INTERVAL 2 DAY
             ORDER BY created_at DESC
             LIMIT 20
@@ -60,7 +60,7 @@ class NotificationController
     public function getAllNotifications()
     {
         $result = $this->conn->query("
-            SELECT * FROM notifications 
+            SELECT * FROM notifications
             ORDER BY created_at DESC
             LIMIT 20
         ");
@@ -79,10 +79,10 @@ class NotificationController
     public function getNotificationsByUserId()
     {
         session_start();
-        $user_id = $_SESSION['user_id']; 
+        $user_id = $_SESSION['user_id'];
 
         $stmt = $this->conn->prepare("
-            SELECT * FROM notifications 
+            SELECT * FROM notifications
             WHERE user_id = ?
             ORDER BY created_at DESC
             LIMIT 7

@@ -26,7 +26,7 @@ date_default_timezone_set('Asia/Jakarta');
     <meta name="description" content="">
     <meta name="keyword" content="">
     <meta name="author" content="theme_ocean">
-    <title>Connectify | Abnormal Report</title>
+    <title>Connectify | QA Report</title>
 
     <link rel="shortcut icon" type="image/x-icon" href="/connectify-web/assets/images/logo.png" />
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/bootstrap.min.css">
@@ -51,31 +51,6 @@ date_default_timezone_set('Asia/Jakarta');
         .root-cause-text {
             white-space: pre-line;
         }
-        /* .select2-container--default .select2-selection--single {
-            height: 38px !important;
-            display: flex !important;
-            align-items: center !important;
-            border: 1px solid #ced4da;
-            border-radius: 0.375rem;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: normal !important;
-            padding-left: 6px;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 100% !important;
-            top: 0 !important;
-            display: flex;
-            align-items: center;
-        }
-        .select2-container {
-            width: 100% !important;
-        }
-        .flatpickr-input {
-            background-color: #fff !important;
-        } */
     </style>
 </head>
 
@@ -91,7 +66,7 @@ date_default_timezone_set('Asia/Jakarta');
                 <div class="page-header-left d-flex align-items-center">
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/connectify-web/pages/dashboard.php">Home</a></li>
-                        <li class="breadcrumb-item">Abnormal Reports</li>
+                        <li class="breadcrumb-item">QA Reports</li>
                     </ul>
                 </div>
                 <div class="page-header-right ms-auto">
@@ -103,12 +78,12 @@ date_default_timezone_set('Asia/Jakarta');
                             </a>
                         </div>
                         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                            <div class="dropdown filter-dropdown">
+                            <!-- <div class="dropdown filter-dropdown">
                                 <a class="btn btn-md btn-light-brand" data-bs-toggle="modal" data-bs-target="#abnormalFilterModal" data-bs-offset="0, 10" data-bs-auto-close="outside">
                                     <i class="feather-filter me-2"></i>
                                     <span>Filter</span>
                                 </a>
-                            </div>
+                            </div> -->
                             <a href="javascript:void(0);" class="btn btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createReportModal">
                                 <i class="feather-plus me-2"></i>
                                 <span>Add Report</span>
@@ -132,7 +107,7 @@ date_default_timezone_set('Asia/Jakarta');
                     <div class="col-xxl-12">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
-                                <h5 class="card-title">Abnormal Reports</h5>
+                                <h5 class="card-title">QA Reports</h5>
 
                                 <div class="card-header-action">
                                     <div id="exportButtonsContainer"></div>
@@ -150,21 +125,25 @@ date_default_timezone_set('Asia/Jakarta');
                                         <thead>
                                             <tr class="border-b">
                                                 <th>No</th>
-                                                <th>Department</th>
+                                                <th>Department Code</th>
+                                                <th>Line Area</th>
                                                 <th>Model</th>
                                                 <th>Station</th>
                                                 <th>Device ID</th>
-                                                <th>Shift</th>
                                                 <th>Date</th>
-                                                <th>Time Start</th>
-                                                <th>Time Finish</th>
                                                 <th>Error Code</th>
                                                 <th>Symptom</th>
-                                                <th>Root Cause</th>
-                                                <th>Action Taken</th>
-                                                <!-- <th>Work ID</th> -->
-                                                <th>Remark</th>
+                                                <th>Failure Photo</th>
+                                                <th>Input QTY</th>
+                                                <th>Defect QTY</th>
+                                                <th>Failure Rate</th>
+                                                <th>Root Cause Analysis</th>
+                                                <th>Short term solution</th>
+                                                <th>Long term solution</th>
                                                 <th>Created by</th>
+                                                <th>Responsible Person</th>
+                                                <th>Status(Open/Close)</th>
+                                                <th>Remark</th>
                                                 <th>Delete</th>
                                             </tr>
                                         </thead>
@@ -304,7 +283,7 @@ date_default_timezone_set('Asia/Jakarta');
                                 <option value="">-----</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label class="form-label">Shift</label>
                             <select id="shift" class="form-select" required>
                                 <option value="">-----</option>
@@ -313,20 +292,12 @@ date_default_timezone_set('Asia/Jakarta');
                                 <option value="Night Shift">Night Shift</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label class="form-label">Date</label>
                             <input type="date" id="date" class="form-control" required
                                 max="<?= date('Y-m-d') ?>">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Time Start<small class="text-muted">(Format 24 jam)</small></label>
-                            <input type="time" id="timeStart" class="form-control" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Time Finish<small class="text-muted">(Format 24 jam)</small></label>
-                            <input type="time" id="timeFinish" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
                             <label class="form-label">Error Code</label>
                             <select id="errorCodeSelect" class="form-select" required>
                                 <option value="">-----</option>
@@ -335,17 +306,49 @@ date_default_timezone_set('Asia/Jakarta');
                                 <?php endwhile; ?>
                             </select>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-5">
                             <label class="form-label">Symptom</label>
                             <input type="text" id="symptomInput" class="form-control" readonly>
                         </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Failure Photo</label>
+                            <input type="file" id="failurePhoto" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Input QTY</label>
+                            <input type="number" id="inputQty" class="form-control" min="0" step="1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Defect QTY</label>
+                            <input type="number" id="defectQty" class="form-control" min="0" step="1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Failure Rate</label>
+                            <input type="text" id="failureRate" class="form-control" min="0" max="100" step="0.01">
+                        </div>
                         <div class="col-md-12">
-                            <label class="form-label">Root Cause</label>
+                            <label class="form-label">Root Cause Analysis</label>
                             <textarea id="rootCause" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Action Taken</label>
-                            <textarea id="actionTaken" class="form-control" rows="2"></textarea>
+                            <label class="form-label">Sort Term Solution</label>
+                            <textarea id="shortTermSolution" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Long Term Solution</label>
+                            <textarea id="longTermSolution" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status<small class="text-muted">(Open/Close)</small></label>
+                            <select id="status" class="form-select" required>
+                                <option value="">-----</option>
+                                <option value="Open">Open</option>
+                                <option value="Close">Close</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Responsible Person</label>
+                            <input type="text" id="responsiblePerson" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Remark</label>
@@ -362,25 +365,6 @@ date_default_timezone_set('Asia/Jakarta');
                     <button type="button" class="btn btn-success" id="save">Save</button>
                 </div>
 
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Delete -->
-    <div class="modal fade" id="deleteModalReport" tabindex="-1" aria-labelledby="deleteModalReportLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteModalReportLabel">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this report?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="btnConfirmDeleteReport">Delete</button>
-                </div>
             </div>
         </div>
     </div>
@@ -409,21 +393,6 @@ date_default_timezone_set('Asia/Jakarta');
     <script>
         const LOGGED_USER_ID = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
         const LOGGED_USER_ROLE = <?= json_encode($_SESSION['role_id'] ?? null) ?>;
-    </script>
-    <script>
-        // $('#createReportModal').on('shown.bs.modal', function () {
-        //     $('#modelSelect, #stationSelect, #deviceSelect, #shift, #errorCodeSelect').select2({
-        //         dropdownParent: $('#createReportModal'),
-        //         width: '100%'
-        //     });
-        // });
-        // $(document).ready(function() {
-        //     $('#errorCodeSelect').select2({
-        //         placeholder: 'Select Model',
-        //         allowClear: true,
-        //         width: '100%'
-        //     });
-        // });
     </script>
     <script>
         setInterval(() => {
@@ -457,24 +426,6 @@ date_default_timezone_set('Asia/Jakarta');
             onChange: function(selectedDates, dateStr, instance) {
                 fromPicker1.set("maxDate", dateStr);
             }
-        });
-
-        flatpickr("#timeStart", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            time_24hr: true,
-            allowInput: true,
-            minuteIncrement: 1
-        });
-
-        flatpickr("#timeFinish", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            time_24hr: true,
-            allowInput: true,
-            minuteIncrement: 1
         });
     </script>
     <script>
@@ -512,7 +463,7 @@ date_default_timezone_set('Asia/Jakarta');
                 buttons: [{
                     extend: 'excelHtml5',
                     text: '<i class="feather-download me-2"></i> Generate Report',
-                    title: 'Abnormal Report',
+                    title: 'QA Report',
                     className: 'btn btn-xs btn-primary rounded',
 
                     exportOptions: {
@@ -538,7 +489,7 @@ date_default_timezone_set('Asia/Jakarta');
                             <row r="1">
                                 <c t="inlineStr" r="A1">
                                     <is>
-                                        <t>Abnormal Report</t>
+                                        <t>QA Report</t>
                                     </is>
                                 </c>
                             </row>
@@ -573,7 +524,7 @@ date_default_timezone_set('Asia/Jakarta');
                 }],
 
                 ajax: {
-                    url: '/connectify-web/controllers/ReportController.php',
+                    url: '/connectify-web/controllers/MultiDeptReportController.php?type=QA-report',
                     type: 'GET',
                     data: function(d) {
                         d.model_id = $('#modelSelect').val();
@@ -604,6 +555,9 @@ date_default_timezone_set('Asia/Jakarta');
                             }
                     },
                     {
+                        data: 'line_area'
+                    },
+                    {
                         data: 'model_name'
                     },
                     {
@@ -619,22 +573,38 @@ date_default_timezone_set('Asia/Jakarta');
                         }
                     },
                     {
-                        data: 'shift'
-                    },
-                    {
                         data: 'date'
-                    },
-                    {
-                        data: 'time_start'
-                    },
-                    {
-                        data: 'time_finish'
                     },
                     {
                         data: 'error_code'
                     },
                     {
                         data: 'symptom'
+                    },
+                    {
+                        data: 'failure_photo',
+                            render: function (data) {
+                                if (!data) return '-';
+
+                                const imageUrl = `/connectify-web/${data}`;
+
+                                return `
+                                    <a href="${imageUrl}" target="_blank">
+                                        <img src="${imageUrl}"
+                                            alt="Failure Photo"
+                                            style="width:60px;height:60px;object-fit:cover;border-radius:4px;">
+                                    </a>
+                                `;
+                            }
+                    },
+                    {
+                        data: 'input_quantity'
+                    },
+                    {
+                        data: 'defect_quantity'
+                    },
+                    {
+                        data: 'failure_rate'
                     },
                     {
                         data: 'root_cause',
@@ -644,14 +614,14 @@ date_default_timezone_set('Asia/Jakarta');
                         }
                     },
                     {
-                        data: 'action_taken',
+                        data: 'short_term_solution',
                         render: function(data, type, row) {
                             if (!data) return '';
                             return `<div class="action-taken-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
                     {
-                        data: 'remark',
+                        data: 'long_term_solution',
                         render: function(data, type, row) {
                             if (!data) return '';
                             return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
@@ -660,9 +630,19 @@ date_default_timezone_set('Asia/Jakarta');
                     {
                         data: 'name'
                     },
-                    // {
-                    //     data: 'work_id'
-                    // },
+                    {
+                        data: 'responsible_person'
+                    },
+                    {
+                        data: 'status'
+                    },
+                    {
+                        data: 'remark',
+                        render: function(data, type, row) {
+                            if (!data) return '';
+                            return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
+                        }
+                    },
                     {
                         data: null,
                         className: 'no-export',
@@ -708,9 +688,6 @@ date_default_timezone_set('Asia/Jakarta');
                     // { targets: 5, width: "15%" }
                 ],
                 responsive: true,
-                // <a href="#" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                // <a href="#" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                // ordering: false,
                 pageLength: 5,
                 lengthMenu: [5, 10, 25, 50, 100],
                 language: {
@@ -755,12 +732,11 @@ date_default_timezone_set('Asia/Jakarta');
                 reportTable.ajax.reload();
             });
 
-
+            // Delete report
             $(document).on('click', '.btn-delete-report', function(e) {
                 e.preventDefault();
 
                 const reportId = $(this).data('id');
-                console.log(reportId)
 
                 const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
@@ -781,7 +757,7 @@ date_default_timezone_set('Asia/Jakarta');
                 }).then((result) => {
                     if (result.isConfirmed || result.value === true) {
                         $.ajax({
-                            url: '/connectify-web/controllers/ReportController.php',
+                            url: '/connectify-web/controllers/MultiDeptReportController.php',
                             type: 'DELETE',
                             data: JSON.stringify({
                                 id: reportId
@@ -944,26 +920,6 @@ date_default_timezone_set('Asia/Jakarta');
 
         });
     </script>
-    <!-- <script>
-        $('#filterDept').change(function() {
-            const dept_id = $(this).val();
-            $.ajax({
-                url: '/connectify-web/pages/reports/get-data.php',
-                type: 'POST',
-                data: {
-                    action: 'getModels',
-                    dept_id: dept_id
-                },
-                dataType: 'json',
-                success: function(data) {
-                    $('#filterModel').prop('disabled', false).html('<option value="">All</option>');
-                    data.forEach(obj => {
-                        $('#filterModel').append(`<option value="${obj.id}">${obj.model_name}</option>`);
-                    });
-                }
-            });
-        });
-    </script> -->
 
     <!-- add report -->
     <script>
@@ -1056,52 +1012,77 @@ date_default_timezone_set('Asia/Jakarta');
                 this.value = today;
             }
         });
-        $('#save').click(function() {
-            const payload = {
-                model_id: $('#modelSelect').val(),
-                station_id: $('#stationSelect').val(),
-                device_id: $('#deviceSelect').val(),
-                shift: $('#shift').val(),
-                date: $('#date').val(),
-                time_start: $('#timeStart').val(),
-                time_finish: $('#timeFinish').val(),
-                error_code_id: $('#errorCodeSelect').val(),
-                root_cause: $('#rootCause').val(),
-                action_taken: $('#actionTaken').val(),
-                user_id: $('#user_id').val(),
-                remark: $('#remark').val()
-            };
+
+        $('#save').click(function (e) {
+            e.preventDefault();
+
+            let formData = new FormData();
+
+            formData.append('type', 'QA-report');
+            formData.append('model_id', $('#modelSelect').val());
+            formData.append('station_id', $('#stationSelect').val());
+            formData.append('device_id', $('#deviceSelect').val());
+            formData.append('shift', $('#shift').val());
+            formData.append('date', $('#date').val());
+
+            formData.append('error_code_id', $('#errorCodeSelect').val());
+
+            // 🔥 FILE UPLOAD INI YANG BENAR
+            let file = $('#failurePhoto')[0].files[0];
+            if (file) {
+                formData.append('failure_photo', file);
+            }
+
+            formData.append('input_quantity', $('#inputQty').val());
+            formData.append('defect_quantity', $('#defectQty').val());
+            formData.append('failure_rate', $('#failureRate').val());
+
+            formData.append('root_cause', $('#rootCause').val());
+            formData.append('short_term_solution', $('#shortTermSolution').val());
+            formData.append('long_term_solution', $('#longTermSolution').val());
+
+            formData.append('responsible_person', $('#responsiblePerson').val());
+            formData.append('status', $('#status').val());
+
+            formData.append('remark', $('#remark').val());
+            formData.append('user_id', $('#user_id').val());
 
             $.ajax({
-                url: '/connectify-web/controllers/ReportController.php',
+                url: '/connectify-web/controllers/MultiDeptReportController.php',
                 type: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json; charset=UTF-8',
-                dataType: 'json',
-                success: function(response) {
-                    // $('#message-container').html('');
-                    $('#createReportModal').modal('hide');
-                    if (response.success) {
+                data: formData,
 
+                processData: false,
+                contentType: false,
+
+                success: function (response) {
+
+                    $('#createReportModal').modal('hide');
+
+                    if (response.success) {
                         showSuccessToast(response.message);
 
                         $('#reportForm')[0].reset();
                         $('#reportTable').DataTable().ajax.reload(null, false);
-
                     } else {
                         showErrorToast(response.message);
                     }
                 },
-                error: function(xhr) {
+
+                error: function (xhr) {
                     let msg = "Unexpected error";
+
                     try {
                         let res = JSON.parse(xhr.responseText);
                         if (res.message) msg = res.message;
                     } catch {}
+
                     $('#message-container').html(`
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        ${msg}
-                    </div>`);
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            ${msg}
+                        </div>
+                    `);
+
                     setTimeout(() => {
                         $('.alert').alert('close');
                     }, 1500);

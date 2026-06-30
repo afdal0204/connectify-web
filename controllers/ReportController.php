@@ -284,10 +284,10 @@ class ReportController
         $time_start     = trim($data['time_start']) ?? "";
         $time_finish    = trim($data['time_finish']) ?? "";
         $error_code_id  = (int)$data['error_code_id'] ?? "";
-        $root_cause     = ucfirst(strtolower(trim($data['root_cause']))) ?? "";
-        $action_taken   = ucfirst(strtolower(trim($data['action_taken']))) ?? "";
+        $root_cause     = $data['root_cause'] ?? "";
+        $action_taken   = $data['action_taken'] ?? "";
         $user_id        = (int)$data['user_id'] ?? "";
-        $remark         = ucfirst(strtolower(trim($data['remark']))) ?? "";
+        $remark         = $data['remark'] ?? "";
 
 
         if (
@@ -371,9 +371,9 @@ class ReportController
         $time_start     = trim($data['time_start']) ?? "";
         $time_finish    = trim($data['time_finish']) ?? "";
         $error_code_id  = (int)$data['error_code_id'] ?? "";
-        $root_cause     = ucfirst(strtolower(trim($data['root_cause']))) ?? "";
-        $action_taken   = ucfirst(strtolower(trim($data['action_taken']))) ?? "";
-        $remark         = ucfirst(strtolower(trim($data['remark']))) ?? "";
+        $root_cause     = $data['root_cause'] ?? "";
+        $action_taken   = $data['action_taken'] ?? "";
+        $remark         = $data['remark'] ?? "";
 
         if (
             !$model_id || !$station_id || !$shift || !$date || !$time_start || !$time_finish

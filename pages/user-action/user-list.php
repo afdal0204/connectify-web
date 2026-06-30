@@ -29,6 +29,8 @@ if ($roleResult->num_rows > 0) {
 }
 
 $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
+$department_id = $_SESSION['department_id'];
+$deptRemark = $_SESSION['deptRemark'];
 ?>
 
 <!DOCTYPE html>
@@ -364,7 +366,12 @@ $role_id = $_SESSION['role_id'] ?? 'Guest'; // trigger access menu
                         data: 'work_id'
                     },
                     {
-                        data: 'department'
+                        data: 'department',
+                            render: function(data, type, row) {
+                                return row.deptRemark
+                                    ? `${data} (${row.deptRemark})`
+                                    : data;
+                            }
                     },
                     {
                         data: 'role_name'

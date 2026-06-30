@@ -20,7 +20,7 @@ class LoginController {
             default:
                 http_response_code(405);
                 echo json_encode([
-                    "status" => "error", 
+                    "status" => "error",
                     "message" => "Method not allowed"
                 ]);
                 exit();
@@ -36,7 +36,7 @@ class LoginController {
         if (!$work_id || !$password) {
             http_response_code(400);
             echo json_encode([
-                "status" => "error", 
+                "status" => "error",
                 "message" => "Work ID and password are required"
             ]);
             exit;
@@ -44,6 +44,7 @@ class LoginController {
 
         $stmt = $this->conn->prepare("SELECT u.id, u.name, u.work_id, u.department_id,
                                                 d.department_name AS department,
+                                                d.remark AS deptRemark,
                                                 u.role_id,
                                                 ur.role_name AS role,
                                                 u.password
@@ -58,20 +59,20 @@ class LoginController {
         $result = $stmt->get_result();
 
         if ($user = $result->fetch_assoc()) {
-            if (password_verify($password, $user['password'])) {              
+            if (password_verify($password, $user['password'])) {
 
                 $_SESSION['work_id'] = $user['work_id']; // trigger unauthorized
 
                 unset($user['password']);
                 echo json_encode([
                     "status" => "success",
-                    "message" => "Login successfully", 
+                    "message" => "Login successfully",
                     "user" => $user
                 ]);
             } else {
                 http_response_code(401);
                 echo json_encode([
-                    "status" => "error", 
+                    "status" => "error",
                     "message" => "Incorrect password"
                 ]);
             }

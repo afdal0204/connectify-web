@@ -30,6 +30,8 @@ if ($stationResult->num_rows > 0) {
 }
 
 $role_id = $_SESSION['role_id'] ?? 'Guest';
+$department_id = $_SESSION['department_id'];
+$deptRemark = $_SESSION['deptRemark'];
 ?>
 
 <!DOCTYPE html>

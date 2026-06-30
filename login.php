@@ -17,8 +17,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 
-    $stmt = $conn->prepare("SELECT u.id, u.work_id, u.name, u.password, 
-                                u.department_id, d.department_name, u.role_id, ur.role_name 
+    $stmt = $conn->prepare("SELECT u.id, u.work_id, u.name, u.password,
+                                u.department_id, d.department_name,
+                                d.remark as deptRemark,
+                                u.role_id,
+                                ur.role_name
                                 FROM users u
                                 LEFT JOIN department d ON u.department_id = d.id
                                 LEFT JOIN user_role ur ON u.role_id = ur.id
@@ -47,6 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['name'] = $user['name'];
             $_SESSION['department_id'] = $user['department_id'];
             $_SESSION['department_name'] = $user['department_name'];
+            $_SESSION['deptRemark'] = $user['deptRemark'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['role_id'] = $user['role_id'];
             $_SESSION['role_name'] = $user['role_name'];

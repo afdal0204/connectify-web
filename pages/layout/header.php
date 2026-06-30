@@ -95,7 +95,7 @@
 
                                 <div>
                                     <h6 class="text-dark mb-1"><span><?= htmlspecialchars($_SESSION['name'] ?? 'Guest') ?></span></h6>
-                                    <p class="fs-12 fw-small text-muted"><?= htmlspecialchars($_SESSION['department_name']) ?></p>
+                                    <p class="fs-12 fw-small text-muted"><?= htmlspecialchars($_SESSION['work_id']) ?> | <?= htmlspecialchars($_SESSION['deptRemark']) ?></p>
                                 </div>
                             </div>
                         </div>

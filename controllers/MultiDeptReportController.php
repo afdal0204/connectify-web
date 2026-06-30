@@ -96,6 +96,17 @@ class ReportController
                 }
                 break;
 
+            case 'PUT':
+                $data = json_decode(file_get_contents("php://input"), true);
+
+                switch($data['type'] ?? ''){
+
+                    case 'update-status':
+                        $this->updateStatus($data);
+                        break;
+                }
+                break;
+
             case 'DELETE':
                 $this->deleteReports();
                 break;
@@ -1105,6 +1116,121 @@ class ReportController
             ]);
         }
     }
+
+    public function updateStatus($data)
+{
+    $id = (int)($data['id'] ?? 0);
+    $status = trim($data['status'] ?? '');
+
+    if (!$id || !$status) {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid data"
+        ]);
+        exit();
+    }
+
+    // Ambil status saat ini
+    $checkStmt = $this->conn->prepare("
+        SELECT status
+        FROM multi_dept_reports
+        WHERE id = ?
+    ");
+    $checkStmt->bind_param("i", $id);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+
+    if ($result->num_rows === 0) {
+        http_response_code(404);
+        echo json_encode([
+            "success" => false,
+            "message" => "Report not found"
+        ]);
+        exit();
+    }
+
+    $current = $result->fetch_assoc();
+
+    // Jika sudah Close, tidak boleh diubah lagi
+    if ($current['status'] === 'Close') {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Status is already Close and cannot be changed."
+        ]);
+        exit();
+    }
+
+    // Validasi status yang diperbolehkan
+    $allowedStatus = ['Open', 'Close'];
+
+    if (!in_array($status, $allowedStatus, true)) {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid status"
+        ]);
+        exit();
+    }
+
+    $stmt = $this->conn->prepare("
+        UPDATE multi_dept_reports
+        SET status = ?
+        WHERE id = ?
+    ");
+
+    $stmt->bind_param("si", $status, $id);
+
+    if ($stmt->execute()) {
+        echo json_encode([
+            "success" => true,
+            "message" => "Status updated successfully."
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode([
+            "success" => false,
+            "message" => "Failed to update status",
+            "error" => $stmt->error
+        ]);
+    }
+}
+    // public function updateStatus($data)
+    // {
+    //     $id = (int)($data['id'] ?? 0);
+    //     $status = $data['status'] ?? '';
+
+    //     if (!$id || !$status) {
+    //         http_response_code(400);
+    //         echo json_encode([
+    //             "success" => false,
+    //             "message" => "Invalid data"
+    //         ]);
+    //         exit();
+    //     }
+
+    //     $stmt = $this->conn->prepare("
+    //         UPDATE multi_dept_reports
+    //         SET status = ?
+    //         WHERE id = ?
+    //     ");
+
+    //     $stmt->bind_param("si", $status, $id);
+
+    //     if ($stmt->execute()) {
+    //         echo json_encode([
+    //             "success" => true,
+    //             "message" => "Status updated"
+    //         ]);
+    //     } else {
+    //         http_response_code(500);
+    //         echo json_encode([
+    //             "success" => false,
+    //             "message" => $stmt->error
+    //         ]);
+    //     }
+    // }
 
     public function deleteReports()
     {

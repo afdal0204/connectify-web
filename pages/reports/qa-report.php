@@ -634,7 +634,27 @@ date_default_timezone_set('Asia/Jakarta');
                         data: 'responsible_person'
                     },
                     {
-                        data: 'status'
+                        data: 'status',
+                            className: 'text-center',
+                            render: function(data, type, row) {
+
+                                if (data === 'Close') {
+                                    return `
+                                        <span class="badge bg-success px-3 py-2">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Close
+                                        </span>
+                                    `;
+                                }
+
+                                return `
+                                    <select class="form-select form-select-sm status-select"
+                                            data-id="${row.id}"
+                                            style="width:120px;">
+                                        <option value="Open" selected>🟠 Open</option>
+                                        <option value="Close">🟢 Close</option>
+                                    </select>
+                                `;
+                            }
                     },
                     {
                         data: 'remark',
@@ -730,6 +750,35 @@ date_default_timezone_set('Asia/Jakarta');
                 $('#filterDateFrom').val('');
                 $('#filterDateTo').val('');
                 reportTable.ajax.reload();
+            });
+
+            // edit report
+            $(document).on('change', '.status-select', function () {
+
+                const id = $(this).data('id');
+                const status = $(this).val();
+
+                $.ajax({
+                    url: '/connectify-web/controllers/MultiDeptReportController.php',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        type: 'update-status',
+                        id: id,
+                        status: status
+                    }),
+                    success: function(res) {
+                        if(res.success){
+                            showSuccessToast("Status updated");
+                        }else{
+                            showErrorToast(res.message);
+                        }
+                    },
+                    error:function(){
+                        showErrorToast("Failed to update status");
+                    }
+                });
+
             });
 
             // Delete report

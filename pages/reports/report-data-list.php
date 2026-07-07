@@ -3,7 +3,7 @@ include './../../config.php';
 
 session_start();
 
-$deptRes = $conn->query("SELECT id, department_name, remark FROM department ORDER BY department_name ASC");
+$deptRes = $conn->query("SELECT id, department_name, remark FROM department WHERE remark = 'PE' ORDER BY department_name ASC");
 $modelRes = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $modelResModal = $conn->query("SELECT id, model_name FROM models ORDER BY model_name ASC");
 $errorRes = $conn->query("SELECT id, error_code, symptom FROM error_code ORDER BY error_code ASC");
@@ -516,8 +516,8 @@ date_default_timezone_set('Asia/Jakarta');
                     className: 'btn btn-xs btn-primary rounded',
 
                     exportOptions: {
-                        // columns: ':visible',
-                        columns: ':visible:not(.no-export)',
+                        columns: ':not(.no-export)',
+                        orthogonal: 'export',
                         modifier: {
                             search: 'applied',
                             order: 'applied',
@@ -530,45 +530,98 @@ date_default_timezone_set('Asia/Jakarta');
                         const sheet = xlsx.xl.worksheets['sheet1.xml'];
                         const styles = xlsx.xl['styles.xml'];
 
+                        const fonts = $('fonts', styles);
+                        const titleFontIndex = fonts.children().length;
+                        fonts.append(`
+                            <font>
+                                <b/>
+                                <sz val="16"/>
+                                <color auto="1"/>
+                            </font>
+                        `);
+
                         const borders = $('borders', styles);
-                        const borderIndex = borders.children().length - 1;
+                        const borderIndex = borders.children().length;
+                        borders.append(`
+                            <border>
+                                <left style="thin"><color auto="1"/></left>
+                                <right style="thin"><color auto="1"/></right>
+                                <top style="thin"><color auto="1"/></top>
+                                <bottom style="thin"><color auto="1"/></bottom>
+                            </border>
+                        `);
+
+                        const cellXfs = $('cellXfs', styles);
+
+                        cellXfs.append(`
+                            <xf xfId="0" fontId="${titleFontIndex}" applyFont="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center"/>
+                            </xf>
+                        `);
+                        const titleStyleIndex = cellXfs.children().length - 1;
+
+                        cellXfs.append(`
+                            <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center" wrapText="1"/>
+                            </xf>
+                        `);
+
+                        cellXfs.append(`
+                            <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center" wrapText="1"/>
+                            </xf>
+                        `);
+                        const bodyStyleIndex = cellXfs.children().length - 2;
+                        const headerStyleIndex = cellXfs.children().length - 1;
+
+                        const totalCols = $('row:eq(1) c', sheet).length;
+                        const lastColLetter = String.fromCharCode(64 + totalCols);
+
                         const sheetData = $('sheetData', sheet);
-                        // Tambahkan row baru di paling atas
                         sheetData.prepend(`
                             <row r="1">
-                                <c t="inlineStr" r="A1">
+                                <c t="inlineStr" r="A1" s="${titleStyleIndex}">
                                     <is>
-                                        <t>Abnormal Report</t>
+                                        <t>Report Data List</t>
                                     </is>
                                 </c>
                             </row>
                         `);
 
-                        borders.append(`
-                        <border>
-                            <left style="thin"><color auto="1"/></left>
-                            <right style="thin"><color auto="1"/></right>
-                            <top style="thin"><color auto="1"/></top>
-                            <bottom style="thin"><color auto="1"/></bottom>
-                        </border>
-                    `);
-
-                        const cellXfs = $('cellXfs', styles);
-                        cellXfs.append(`
-                        <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
-                            <alignment horizontal="center" vertical="center" wrapText="1"/>
-                        </xf>
-                    `);
-                        cellXfs.append(`
-                        <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
-                            <alignment horizontal="center" vertical="center" wrapText="1"/>
-                        </xf>
-                    `);
-                        const bodyStyleIndex = cellXfs.children().length - 2;
-                        const headerStyleIndex = cellXfs.children().length - 1;
+                        const mergeTags = $('mergeCells', sheet);
+                        if (mergeTags.length === 0) {
+                            sheet.children().last().after(`<mergeCells count="1"><mergeCell ref="A1:${lastColLetter}1"/></mergeCells>`);
+                        } else {
+                            mergeTags.append(`<mergeCell ref="A1:${lastColLetter}1"/>`);
+                            mergeTags.attr('count', mergeTags.children().length);
+                        }
 
                         $('row c', sheet).attr('s', bodyStyleIndex);
-                        $('row:first c', sheet).attr('s', headerStyleIndex);
+                        $('row:eq(1) c', sheet).attr('s', headerStyleIndex);
+                        $('row:eq(0) c[r="A1"]', sheet).attr('s', titleStyleIndex);
+
+                        // Clean up HTML in cells: strip tags, decode entities, extract plain text
+                        $('row c', sheet).each(function() {
+                            const cell = $(this);
+                            const tEl = cell.find('t');
+                            if (tEl.length && tEl.text()) {
+                                let text = tEl.text();
+                                if (/<[a-z][\s\S]*>/i.test(text)) {
+                                    text = text.replace(/<[^>]*>/g, '').trim();
+                                    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+                                    tEl.text(text);
+                                }
+                            }
+                            const isEl = cell.find('is > t');
+                            if (isEl.length && isEl.text()) {
+                                let text = isEl.text();
+                                if (/<[a-z][\s\S]*>/i.test(text)) {
+                                    text = text.replace(/<[^>]*>/g, '').trim();
+                                    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+                                    isEl.text(text);
+                                }
+                            }
+                        });
                     }
                 }],
 
@@ -640,6 +693,7 @@ date_default_timezone_set('Asia/Jakarta');
                         data: 'root_cause',
                         render: function(data, type, row) {
                             if (!data) return '';
+                            if (type === 'export') return data;
                             return `<div class="root-cause-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
@@ -647,6 +701,7 @@ date_default_timezone_set('Asia/Jakarta');
                         data: 'action_taken',
                         render: function(data, type, row) {
                             if (!data) return '';
+                            if (type === 'export') return data;
                             return `<div class="action-taken-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
@@ -654,6 +709,7 @@ date_default_timezone_set('Asia/Jakarta');
                         data: 'remark',
                         render: function(data, type, row) {
                             if (!data) return '';
+                            if (type === 'export') return data;
                             return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },

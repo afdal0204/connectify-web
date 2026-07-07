@@ -26,7 +26,7 @@ date_default_timezone_set('Asia/Jakarta');
     <meta name="description" content="">
     <meta name="keyword" content="">
     <meta name="author" content="theme_ocean">
-    <title>Connectify | FME Report</title>
+    <title>Connectify | FE/FME Report</title>
 
     <link rel="shortcut icon" type="image/x-icon" href="/connectify-web/assets/images/logo.png" />
     <link rel="stylesheet" type="text/css" href="/connectify-web/assets/css/bootstrap.min.css">
@@ -66,7 +66,7 @@ date_default_timezone_set('Asia/Jakarta');
                 <div class="page-header-left d-flex align-items-center">
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/connectify-web/pages/dashboard.php">Home</a></li>
-                        <li class="breadcrumb-item">FME Reports</li>
+                        <li class="breadcrumb-item">FE/FME Reports</li>
                     </ul>
                 </div>
                 <div class="page-header-right ms-auto">
@@ -78,12 +78,12 @@ date_default_timezone_set('Asia/Jakarta');
                             </a>
                         </div>
                         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                            <!-- <div class="dropdown filter-dropdown">
+                            <div class="dropdown filter-dropdown">
                                 <a class="btn btn-md btn-light-brand" data-bs-toggle="modal" data-bs-target="#abnormalFilterModal" data-bs-offset="0, 10" data-bs-auto-close="outside">
                                     <i class="feather-filter me-2"></i>
                                     <span>Filter</span>
                                 </a>
-                            </div> -->
+                            </div>
                             <a href="javascript:void(0);" class="btn btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createReportModal">
                                 <i class="feather-plus me-2"></i>
                                 <span>Add Report</span>
@@ -107,7 +107,7 @@ date_default_timezone_set('Asia/Jakarta');
                     <div class="col-xxl-12">
                         <div class="card stretch stretch-full">
                             <div class="card-header">
-                                <h5 class="card-title">FME Reports</h5>
+                                <h5 class="card-title">FE/FME Reports</h5>
 
                                 <div class="card-header-action">
                                     <div id="exportButtonsContainer"></div>
@@ -125,7 +125,8 @@ date_default_timezone_set('Asia/Jakarta');
                                         <thead>
                                             <tr class="border-b">
                                                 <th>No</th>
-                                                <th>Department</th>
+                                                <th>Department Code</th>
+                                                <th>Line Area</th>
                                                 <th>Model</th>
                                                 <th>Station</th>
                                                 <th>Device ID</th>
@@ -135,8 +136,12 @@ date_default_timezone_set('Asia/Jakarta');
                                                 <th>Time Finish</th>
                                                 <th>Error Code</th>
                                                 <th>Symptom</th>
+                                                <th>NG Photo</th>
                                                 <th>Root Cause</th>
                                                 <th>Action Taken</th>
+                                                <th>Preventive action</th>
+                                                <th>Improvement Photo</th>
+                                                <th>Responsible Person</th>
                                                 <th>Remark</th>
                                                 <th>Created by</th>
                                                 <th>Delete</th>
@@ -168,20 +173,7 @@ date_default_timezone_set('Asia/Jakarta');
                 <div class="modal-body pt-3">
                     <div class="container-fluid">
                         <div class="row g-3">
-                            <div class="col-6">
-                                <label class="form-label fw-semibold">Department</label>
-                                <select id="filterDept" class="form-select">
-                                    <option value="">All</option>
-                                    <?php $deptRes->data_seek(0);
-                                    while ($row = $deptRes->fetch_assoc()): ?>
-                                        <option value="<?= $row['id'] ?>">
-                                            <?= htmlspecialchars($row['department_name']) ?>
-                                            <?= !empty($row['remark']) ? '(' . htmlspecialchars($row['remark']) . ')' : '' ?>
-                                        </option>
-                                    <?php endwhile; ?>
-                                </select>
-                            </div>
-                            <div class="col-6">
+                            <div class="col-12">
                                 <label class="form-label fw-semibold">Model</label>
                                 <select id="filterModel" class="form-select">
                                     <option value="">All</option>
@@ -313,7 +305,11 @@ date_default_timezone_set('Asia/Jakarta');
                             <label class="form-label">Symptom</label>
                             <input type="text" id="symptomInput" class="form-control" readonly>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-4">
+                            <label class="form-label">NG Photo</label>
+                            <input type="file" id="failurePhoto" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-8">
                             <label class="form-label">Root Cause</label>
                             <textarea id="rootCause" class="form-control" rows="2"></textarea>
                         </div>
@@ -322,6 +318,18 @@ date_default_timezone_set('Asia/Jakarta');
                             <textarea id="actionTaken" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Preventive Action</label>
+                            <textarea id="preventiveAction" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Improvement Photo</label>
+                            <input type="file" id="improvementPhoto" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Responsible Person</label>
+                            <input id="responsiblePerson" class="form-control" rows="2"></input>
+                        </div>
+                        <div class="col-md-5">
                             <label class="form-label">Remark</label>
                             <textarea id="remark" class="form-control" rows="2"></textarea>
                         </div>
@@ -452,12 +460,12 @@ date_default_timezone_set('Asia/Jakarta');
                 buttons: [{
                     extend: 'excelHtml5',
                     text: '<i class="feather-download me-2"></i> Generate Report',
-                    title: 'FME Report',
+                    title: 'FE_FME Report',
                     className: 'btn btn-xs btn-primary rounded',
 
                     exportOptions: {
-                        // columns: ':visible',
-                        columns: ':visible:not(.no-export)',
+                        columns: ':not(.no-export)',
+                        orthogonal: 'export',
                         modifier: {
                             search: 'applied',
                             order: 'applied',
@@ -470,50 +478,103 @@ date_default_timezone_set('Asia/Jakarta');
                         const sheet = xlsx.xl.worksheets['sheet1.xml'];
                         const styles = xlsx.xl['styles.xml'];
 
+                        const fonts = $('fonts', styles);
+                        const titleFontIndex = fonts.children().length;
+                        fonts.append(`
+                            <font>
+                                <b/>
+                                <sz val="16"/>
+                                <color auto="1"/>
+                            </font>
+                        `);
+
                         const borders = $('borders', styles);
-                        const borderIndex = borders.children().length - 1;
+                        const borderIndex = borders.children().length;
+                        borders.append(`
+                            <border>
+                                <left style="thin"><color auto="1"/></left>
+                                <right style="thin"><color auto="1"/></right>
+                                <top style="thin"><color auto="1"/></top>
+                                <bottom style="thin"><color auto="1"/></bottom>
+                            </border>
+                        `);
+
+                        const cellXfs = $('cellXfs', styles);
+
+                        cellXfs.append(`
+                            <xf xfId="0" fontId="${titleFontIndex}" applyFont="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center"/>
+                            </xf>
+                        `);
+                        const titleStyleIndex = cellXfs.children().length - 1;
+
+                        cellXfs.append(`
+                            <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center" wrapText="1"/>
+                            </xf>
+                        `);
+
+                        cellXfs.append(`
+                            <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center" wrapText="1"/>
+                            </xf>
+                        `);
+                        const bodyStyleIndex = cellXfs.children().length - 2;
+                        const headerStyleIndex = cellXfs.children().length - 1;
+
+                        const totalCols = $('row:eq(1) c', sheet).length;
+                        const lastColLetter = String.fromCharCode(64 + totalCols);
+
                         const sheetData = $('sheetData', sheet);
-                        // Tambahkan row baru di paling atas
                         sheetData.prepend(`
                             <row r="1">
-                                <c t="inlineStr" r="A1">
+                                <c t="inlineStr" r="A1" s="${titleStyleIndex}">
                                     <is>
-                                        <t>Abnormal Report</t>
+                                        <t>FE_FME Report</t>
                                     </is>
                                 </c>
                             </row>
                         `);
 
-                        borders.append(`
-                        <border>
-                            <left style="thin"><color auto="1"/></left>
-                            <right style="thin"><color auto="1"/></right>
-                            <top style="thin"><color auto="1"/></top>
-                            <bottom style="thin"><color auto="1"/></bottom>
-                        </border>
-                    `);
-
-                        const cellXfs = $('cellXfs', styles);
-                        cellXfs.append(`
-                        <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
-                            <alignment horizontal="center" vertical="center" wrapText="1"/>
-                        </xf>
-                    `);
-                        cellXfs.append(`
-                        <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
-                            <alignment horizontal="center" vertical="center" wrapText="1"/>
-                        </xf>
-                    `);
-                        const bodyStyleIndex = cellXfs.children().length - 2;
-                        const headerStyleIndex = cellXfs.children().length - 1;
+                        const mergeTags = $('mergeCells', sheet);
+                        if (mergeTags.length === 0) {
+                            sheet.children().last().after(`<mergeCells count="1"><mergeCell ref="A1:${lastColLetter}1"/></mergeCells>`);
+                        } else {
+                            mergeTags.append(`<mergeCell ref="A1:${lastColLetter}1"/>`);
+                            mergeTags.attr('count', mergeTags.children().length);
+                        }
 
                         $('row c', sheet).attr('s', bodyStyleIndex);
-                        $('row:first c', sheet).attr('s', headerStyleIndex);
+                        $('row:eq(1) c', sheet).attr('s', headerStyleIndex);
+                        $('row:eq(0) c[r="A1"]', sheet).attr('s', titleStyleIndex);
+
+                        // Clean up HTML in cells: strip tags, decode entities, extract plain text
+                        $('row c', sheet).each(function() {
+                            const cell = $(this);
+                            const tEl = cell.find('t');
+                            if (tEl.length && tEl.text()) {
+                                let text = tEl.text();
+                                if (/<[a-z][\s\S]*>/i.test(text)) {
+                                    text = text.replace(/<[^>]*>/g, '').trim();
+                                    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+                                    tEl.text(text);
+                                }
+                            }
+                            const isEl = cell.find('is > t');
+                            if (isEl.length && isEl.text()) {
+                                let text = isEl.text();
+                                if (/<[a-z][\s\S]*>/i.test(text)) {
+                                    text = text.replace(/<[^>]*>/g, '').trim();
+                                    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+                                    isEl.text(text);
+                                }
+                            }
+                        });
                     }
                 }],
 
                 ajax: {
-                    url: '/connectify-web/controllers/MultiDeptReportController.php?type=FME-report',
+                    url: '/connectify-web/controllers/MultiDeptReportController.php?type=FE-report',
                     type: 'GET',
                     data: function(d) {
                         d.model_id = $('#modelSelect').val();
@@ -542,6 +603,9 @@ date_default_timezone_set('Asia/Jakarta');
                                     ? `${data} (${row.dept_remark})`
                                     : data;
                             }
+                    },
+                    {
+                        data: 'line_area'
                     },
                     {
                         data: 'model_name'
@@ -577,9 +641,28 @@ date_default_timezone_set('Asia/Jakarta');
                         data: 'symptom'
                     },
                     {
+                        data: 'failure_photo',
+                        className: 'all',
+                            render: function (data, type) {
+                                if (!data) return '-';
+                                if (type === 'export') return data;
+
+                                const imageUrl = `/connectify-web/${data}`;
+
+                                return `
+                                    <a href="${imageUrl}" target="_blank">
+                                        <img src="${imageUrl}"
+                                            alt="Failure Photo"
+                                            style="width:60px;height:60px;object-fit:cover;border-radius:4px;">
+                                    </a>
+                                `;
+                            }
+                    },
+                    {
                         data: 'root_cause',
                         render: function(data, type, row) {
                             if (!data) return '';
+                            if (type === 'export') return data;
                             return `<div class="root-cause-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
@@ -587,13 +670,39 @@ date_default_timezone_set('Asia/Jakarta');
                         data: 'action_taken',
                         render: function(data, type, row) {
                             if (!data) return '';
+                            if (type === 'export') return data;
                             return `<div class="action-taken-text">${$('<div>').text(data).html()}</div>`;
                         }
+                    },
+                    {
+                        data: 'preventive_action'
+                    },
+                    {
+                        data: 'improvement_photo',
+                        className: 'all',
+                        render: function (data, type) {
+                                if (!data) return '-';
+                                if (type === 'export') return data;
+
+                                const imageUrl = `/connectify-web/${data}`;
+
+                                return `
+                                    <a href="${imageUrl}" target="_blank">
+                                        <img src="${imageUrl}"
+                                            alt="Improvement Photo"
+                                            style="width:60px;height:60px;object-fit:cover;border-radius:4px;">
+                                    </a>
+                                `;
+                        }
+                    },
+                    {
+                        data: 'responsible_person'
                     },
                     {
                         data: 'remark',
                         render: function(data, type, row) {
                             if (!data) return '';
+                            if (type === 'export') return data;
                             return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
@@ -970,53 +1079,79 @@ date_default_timezone_set('Asia/Jakarta');
                 this.value = today;
             }
         });
-        $('#save').click(function() {
-            const payload = {
-                type: 'FME-report',
-                model_id: $('#modelSelect').val(),
-                station_id: $('#stationSelect').val(),
-                device_id: $('#deviceSelect').val(),
-                shift: $('#shift').val(),
-                date: $('#date').val(),
-                time_start: $('#timeStart').val(),
-                time_finish: $('#timeFinish').val(),
-                error_code_id: $('#errorCodeSelect').val(),
-                root_cause: $('#rootCause').val(),
-                action_taken: $('#actionTaken').val(),
-                user_id: $('#user_id').val(),
-                remark: $('#remark').val()
-            };
+
+        $('#save').click(function (e) {
+            e.preventDefault();
+
+            let formData = new FormData();
+
+            formData.append('type', 'FE-report');
+            formData.append('model_id', $('#modelSelect').val());
+            formData.append('station_id', $('#stationSelect').val());
+            formData.append('device_id', $('#deviceSelect').val());
+            formData.append('shift', $('#shift').val());
+            formData.append('date', $('#date').val());
+            formData.append('time_start', $('#timeStart').val());
+            formData.append('time_finish', $('#timeFinish').val());
+
+            formData.append('error_code_id', $('#errorCodeSelect').val());
+
+            // 🔥 FILE UPLOAD INI YANG BENAR
+            let file = $('#failurePhoto')[0].files[0];
+            if (file) {
+                formData.append('failure_photo', file);
+            }
+
+            formData.append('root_cause', $('#rootCause').val());
+            formData.append('action_taken', $('#actionTaken').val());
+            formData.append('preventive_action', $('#preventiveAction').val());
+
+            let file1 = $('#improvementPhoto')[0].files[0];
+            if (file1) {
+                formData.append('improvement_photo', file1);
+            }
+
+            formData.append('responsible_person', $('#responsiblePerson').val());
+
+            formData.append('remark', $('#remark').val());
+            formData.append('user_id', $('#user_id').val());
 
             $.ajax({
                 url: '/connectify-web/controllers/MultiDeptReportController.php',
                 type: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json; charset=UTF-8',
-                dataType: 'json',
-                success: function(response) {
-                    // $('#message-container').html('');
-                    $('#createReportModal').modal('hide');
-                    if (response.success) {
+                data: formData,
 
+                processData: false,
+                contentType: false,
+
+                success: function (response) {
+
+                    $('#createReportModal').modal('hide');
+
+                    if (response.success) {
                         showSuccessToast(response.message);
 
                         $('#reportForm')[0].reset();
                         $('#reportTable').DataTable().ajax.reload(null, false);
-
                     } else {
                         showErrorToast(response.message);
                     }
                 },
-                error: function(xhr) {
+
+                error: function (xhr) {
                     let msg = "Unexpected error";
+
                     try {
                         let res = JSON.parse(xhr.responseText);
                         if (res.message) msg = res.message;
                     } catch {}
+
                     $('#message-container').html(`
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        ${msg}
-                    </div>`);
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            ${msg}
+                        </div>
+                    `);
+
                     setTimeout(() => {
                         $('.alert').alert('close');
                     }, 1500);

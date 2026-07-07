@@ -50,20 +50,20 @@
                         <?php if ($role_id == 1 || $deptRemark == 'PE' || $deptRemark == 'Management') : ?>
                             <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/report-data-list.php">PE Abnormal Reports</a></li>
                         <?php endif; ?>
-                        <?php if ($role_id == 1 || $deptRemark == 'QA' || $deptRemark == 'Management') : ?>
+                        <?php if ($role_id == 1 || $deptRemark == 'QA' || $deptRemark == 'SQE' || $deptRemark == 'Management') : ?>
                             <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/qa-report.php">QA Reports</a></li>
                         <?php endif; ?>
-                        <?php if ($role_id == 1 || $deptRemark == 'SQE' || $deptRemark == 'Management') : ?>
+                        <?php if ($role_id == 1 || $deptRemark == 'SQE' || $deptRemark == 'QA' || $deptRemark == 'Management') : ?>
                             <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/sqe-report.php">SQE Reports</a></li>
                         <?php endif; ?>
                         <?php if ($role_id == 1 || $deptRemark == 'PD' || $deptRemark == 'Management') : ?>
                             <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/pd-report.php">PD Production Data</a></li>
                         <?php endif; ?>
-                        <?php if ($role_id == 1 || $deptRemark == 'FE' || $deptRemark == 'Management') : ?>
+                        <!-- <?php if ($role_id == 1 || $deptRemark == 'FE' || $deptRemark == 'Management') : ?>
                             <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/fe-report.php">FE Fixture Reports</a></li>
-                        <?php endif; ?>
-                        <?php if ($role_id == 1 || $deptRemark == 'FME' || $deptRemark == 'Management') : ?>
-                            <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/fme-report.php">FME Reports</a></li>
+                        <?php endif; ?> -->
+                        <?php if ($role_id == 1 || $deptRemark == 'FME' || $deptRemark == 'FE' || $deptRemark == 'Management') : ?>
+                            <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/fme-report.php">FE/FME Reports</a></li>
                         <?php endif; ?>
                         <li class="nxl-item"><a class="nxl-link" href="/connectify-web/pages/reports/daily-target-report.php">Daily Target Report</a></li>
                     </ul>

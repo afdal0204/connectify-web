@@ -78,12 +78,12 @@ date_default_timezone_set('Asia/Jakarta');
                             </a>
                         </div>
                         <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                            <!-- <div class="dropdown filter-dropdown">
+                            <div class="dropdown filter-dropdown">
                                 <a class="btn btn-md btn-light-brand" data-bs-toggle="modal" data-bs-target="#abnormalFilterModal" data-bs-offset="0, 10" data-bs-auto-close="outside">
                                     <i class="feather-filter me-2"></i>
                                     <span>Filter</span>
                                 </a>
-                            </div> -->
+                            </div>
                             <a href="javascript:void(0);" class="btn btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#createReportModal">
                                 <i class="feather-plus me-2"></i>
                                 <span>Add Report</span>
@@ -125,20 +125,31 @@ date_default_timezone_set('Asia/Jakarta');
                                         <thead>
                                             <tr class="border-b">
                                                 <th>No</th>
-                                                <th>Department</th>
+                                                <th>Department Code</th>
+                                                <th>Status(Open/Close)</th>
+                                                <th>Issue Date</th>
+                                                <th>Item</th>
+                                                <th>Highlight From</th>
+                                                <th>Customer</th>
+                                                <th>Line Area</th>
                                                 <th>Model</th>
-                                                <th>Station</th>
-                                                <th>Device ID</th>
-                                                <th>Shift</th>
-                                                <th>Date</th>
-                                                <th>Time Start</th>
-                                                <th>Time Finish</th>
-                                                <th>Error Code</th>
-                                                <th>Symptom</th>
+                                                <th>P/N</th>
+                                                <th>Supplier</th>
+                                                <th>Issue</th>
+                                                <th>Issue Description</th>
+                                                <th>Responsible</th>
+                                                <th>F/R</th>
+                                                <th>Stock</th>
+                                                <th>Immediately action</th>
+                                                <th>Sorting/Rework</th>
                                                 <th>Root Cause</th>
-                                                <th>Action Taken</th>
-                                                <th>Remark</th>
-                                                <th>Created by</th>
+                                                <th>Short term solution</th>
+                                                <th>Long term solution</th>
+                                                <th>8D report received day</th>
+                                                <th>Action Lot</th>
+                                                <th>SQE Owner(Created By)</th>
+                                                <th>Remark/ E-Car/ QIT No.</th>
+                                                <th>BTC No.</th>
                                                 <th>Delete</th>
                                             </tr>
                                         </thead>
@@ -168,20 +179,7 @@ date_default_timezone_set('Asia/Jakarta');
                 <div class="modal-body pt-3">
                     <div class="container-fluid">
                         <div class="row g-3">
-                            <div class="col-6">
-                                <label class="form-label fw-semibold">Department</label>
-                                <select id="filterDept" class="form-select">
-                                    <option value="">All</option>
-                                    <?php $deptRes->data_seek(0);
-                                    while ($row = $deptRes->fetch_assoc()): ?>
-                                        <option value="<?= $row['id'] ?>">
-                                            <?= htmlspecialchars($row['department_name']) ?>
-                                            <?= !empty($row['remark']) ? '(' . htmlspecialchars($row['remark']) . ')' : '' ?>
-                                        </option>
-                                    <?php endwhile; ?>
-                                </select>
-                            </div>
-                            <div class="col-6">
+                            <div class="col-12">
                                 <label class="form-label fw-semibold">Model</label>
                                 <select id="filterModel" class="form-select">
                                     <option value="">All</option>
@@ -258,6 +256,31 @@ date_default_timezone_set('Asia/Jakarta');
                     <div id="message-container"></div>
                     <form id="reportForm" class="row g-3">
                         <div class="col-md-4">
+                            <label class="form-label">Status<small class="text-muted">(Open/Close)</small></label>
+                            <select id="status" class="form-select" required>
+                                <option value="">-----</option>
+                                <option value="Open">Open</option>
+                                <option value="Close">Close</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Date</label>
+                            <input type="date" id="date" class="form-control" required
+                                max="<?= date('Y-m-d') ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Item</label>
+                            <input type="text" id="item" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Highlight From</label>
+                            <input type="text" id="highlightFrom" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Customer</label>
+                            <input type="text" id="customer" class="form-control">
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label">Model</label>
                             <select id="modelSelect" class="form-select" required>
                                 <option value="">----</option>
@@ -266,63 +289,70 @@ date_default_timezone_set('Asia/Jakarta');
                                 <?php endwhile; ?>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Station</label>
-                            <select id="stationSelect" class="form-select" required disabled>
-                                <option value="">-----</option>
-                            </select>
+                        <div class="col-md-6">
+                            <label class="form-label">P/N (Product Number)</label>
+                            <input type="text" id="productNumber" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Supplier</label>
+                            <input type="text" id="supplier" class="form-control">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Issue</label>
+                            <textarea id="issue" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-7">
+                            <label class="form-label">Issue Description</label>
+                            <textarea id="issueDescription" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Device ID</label>
-                            <select id="deviceSelect" class="form-select" required disabled>
-                                <option value="">-----</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Shift</label>
-                            <select id="shift" class="form-select" required>
-                                <option value="">-----</option>
-                                <option value="Day Shift">Day Shift</option>
-                                <option value="Second Shift">Second Shift</option>
-                                <option value="Night Shift">Night Shift</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Date</label>
-                            <input type="date" id="date" class="form-control" required
-                                max="<?= date('Y-m-d') ?>">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Time Start<small class="text-muted">(Format 24 jam)</small></label>
-                            <input type="time" id="timeStart" class="form-control" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Time Finish<small class="text-muted">(Format 24 jam)</small></label>
-                            <input type="time" id="timeFinish" class="form-control" required>
+                            <label class="form-label">Responsible</label>
+                            <input type="text" id="responsiblePerson" class="form-control">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Error Code</label>
-                            <select id="errorCodeSelect" class="form-select" required>
-                                <option value="">-----</option>
-                                <?php while ($row = $errorRes->fetch_assoc()): ?>
-                                    <option value="<?= $row['id'] ?>"><?= htmlspecialchars($row['error_code']) ?></option>
-                                <?php endwhile; ?>
-                            </select>
+                            <label class="form-label">Failure Rate (F/R)</label>
+                            <input type="text" id="failureRate" class="form-control" min="0" max="100" step="0.01">
                         </div>
-                        <div class="col-md-8">
-                            <label class="form-label">Symptom</label>
-                            <input type="text" id="symptomInput" class="form-control" readonly>
+                        <div class="col-md-4">
+                            <label class="form-label">Stock</label>
+                            <input type="text" id="stock" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Immediately Action</label>
+                            <textarea id="immediatelyAction" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Sorting/Rework</label>
+                            <textarea id="sortingRework" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label">Root Cause</label>
+                            <label class="form-label">Root Cause Analysis</label>
                             <textarea id="rootCause" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Action Taken</label>
-                            <textarea id="actionTaken" class="form-control" rows="2"></textarea>
+                            <label class="form-label">Short Term Solution</label>
+                            <textarea id="shortTermSolution" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Remark</label>
+                            <label class="form-label">Long Term Solution</label>
+                            <textarea id="longTermSolution" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">8D Report Received Day</label>
+                            <input type="date" id="reportReceivedDay" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Action Lot</label>
+                            <input type="text" id="actionLot" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">BTC No.</label>
+                            <input type="text" id="btcNo" class="form-control">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Remark/ E-Car/ QIT No.</label>
                             <textarea id="remark" class="form-control" rows="2"></textarea>
                         </div>
 
@@ -382,6 +412,13 @@ date_default_timezone_set('Asia/Jakarta');
                 toPicker.set("minDate", dateStr);
             }
         });
+        const fromPicker3 = flatpickr("#reportReceivedDay", {
+            dateFormat: "Y-m-d",
+            maxDate: today,
+            onChange: function(selectedDates, dateStr, instance) {
+                toPicker.set("minDate", dateStr);
+            }
+        });
 
         const fromPicker1 = flatpickr("#filterDateFrom", {
             dateFormat: "Y-m-d",
@@ -397,24 +434,6 @@ date_default_timezone_set('Asia/Jakarta');
             onChange: function(selectedDates, dateStr, instance) {
                 fromPicker1.set("maxDate", dateStr);
             }
-        });
-
-        flatpickr("#timeStart", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            time_24hr: true,
-            allowInput: true,
-            minuteIncrement: 1
-        });
-
-        flatpickr("#timeFinish", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            time_24hr: true,
-            allowInput: true,
-            minuteIncrement: 1
         });
     </script>
     <script>
@@ -457,7 +476,7 @@ date_default_timezone_set('Asia/Jakarta');
 
                     exportOptions: {
                         // columns: ':visible',
-                        columns: ':visible:not(.no-export)',
+                        columns: ':not(.no-export)',
                         modifier: {
                             search: 'applied',
                             order: 'applied',
@@ -470,45 +489,86 @@ date_default_timezone_set('Asia/Jakarta');
                         const sheet = xlsx.xl.worksheets['sheet1.xml'];
                         const styles = xlsx.xl['styles.xml'];
 
+                        // Add a bold+large font for the title
+                        const fonts = $('fonts', styles);
+                        const titleFontIndex = fonts.children().length;
+                        fonts.append(`
+                            <font>
+                                <b/>
+                                <sz val="16"/>
+                                <color auto="1"/>
+                            </font>
+                        `);
+
+                        // Add border
                         const borders = $('borders', styles);
-                        const borderIndex = borders.children().length - 1;
+                        const borderIndex = borders.children().length;
+                        borders.append(`
+                            <border>
+                                <left style="thin"><color auto="1"/></left>
+                                <right style="thin"><color auto="1"/></right>
+                                <top style="thin"><color auto="1"/></top>
+                                <bottom style="thin"><color auto="1"/></bottom>
+                            </border>
+                        `);
+
+                        // Add styles
+                        const cellXfs = $('cellXfs', styles);
+
+                        // Title style: large bold font, no border, center
+                        cellXfs.append(`
+                            <xf xfId="0" fontId="${titleFontIndex}" applyFont="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center"/>
+                            </xf>
+                        `);
+                        const titleStyleIndex = cellXfs.children().length - 1;
+
+                        // Body style: border, center, wrap
+                        cellXfs.append(`
+                            <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center" wrapText="1"/>
+                            </xf>
+                        `);
+
+                        // Header style: bold font, border, center, wrap
+                        cellXfs.append(`
+                            <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
+                                <alignment horizontal="center" vertical="center" wrapText="1"/>
+                            </xf>
+                        `);
+                        const bodyStyleIndex = cellXfs.children().length - 2;
+                        const headerStyleIndex = cellXfs.children().length - 1;
+
+                        // Get total column count
+                        const totalCols = $('row:eq(1) c', sheet).length;
+                        const lastColLetter = String.fromCharCode(64 + totalCols); // e.g. Z=90-64=26
+
+                        // Insert title row at top
                         const sheetData = $('sheetData', sheet);
-                        // Tambahkan row baru di paling atas
                         sheetData.prepend(`
                             <row r="1">
-                                <c t="inlineStr" r="A1">
+                                <c t="inlineStr" r="A1" s="${titleStyleIndex}">
                                     <is>
-                                        <t>Abnormal Report</t>
+                                        <t>SQE Report</t>
                                     </is>
                                 </c>
                             </row>
                         `);
 
-                        borders.append(`
-                        <border>
-                            <left style="thin"><color auto="1"/></left>
-                            <right style="thin"><color auto="1"/></right>
-                            <top style="thin"><color auto="1"/></top>
-                            <bottom style="thin"><color auto="1"/></bottom>
-                        </border>
-                    `);
+                        // Merge title cells A1:{lastCol}1
+                        const mergeTags = $('mergeCells', sheet);
+                        if (mergeTags.length === 0) {
+                            sheet.children().last().after(`<mergeCells count="1"><mergeCell ref="A1:${lastColLetter}1"/></mergeCells>`);
+                        } else {
+                            mergeTags.append(`<mergeCell ref="A1:${lastColLetter}1"/>`);
+                            mergeTags.attr('count', mergeTags.children().length);
+                        }
 
-                        const cellXfs = $('cellXfs', styles);
-                        cellXfs.append(`
-                        <xf xfId="0" borderId="${borderIndex}" applyBorder="1" applyAlignment="1">
-                            <alignment horizontal="center" vertical="center" wrapText="1"/>
-                        </xf>
-                    `);
-                        cellXfs.append(`
-                        <xf xfId="0" fontId="1" borderId="${borderIndex}" applyFont="1" applyBorder="1" applyAlignment="1">
-                            <alignment horizontal="center" vertical="center" wrapText="1"/>
-                        </xf>
-                    `);
-                        const bodyStyleIndex = cellXfs.children().length - 2;
-                        const headerStyleIndex = cellXfs.children().length - 1;
-
+                        // Apply body style to all data rows, header style to row 2 (header after title row)
                         $('row c', sheet).attr('s', bodyStyleIndex);
-                        $('row:first c', sheet).attr('s', headerStyleIndex);
+                        $('row:eq(1) c', sheet).attr('s', headerStyleIndex);
+                        // Keep title style on A1
+                        $('row:eq(0) c[r="A1"]', sheet).attr('s', titleStyleIndex);
                     }
                 }],
 
@@ -516,107 +576,145 @@ date_default_timezone_set('Asia/Jakarta');
                     url: '/connectify-web/controllers/MultiDeptReportController.php?type=SQE-report',
                     type: 'GET',
                     data: function(d) {
-                        d.model_id = $('#modelSelect').val();
-                        d.station_id = $('#stationSelect').val();
-                        d.date = $('#date').val();
                         d.filter_dept = $('#filterDept').val();
                         d.filter_model = $('#filterModel').val();
                         d.filter_station = $('#filterStation').val();
                         d.filter_device = $('#filterDevice').val();
                         d.filter_date_from = $('#filterDateFrom').val();
                         d.filter_date_to = $('#filterDateTo').val();
-
                     },
                     dataSrc: function(json) {
                         return json.success ? json.data : [];
                     }
                 },
-                columns: [{
+                columns: [
+                    {
                         data: null,
-                        render: (data, type, row, meta) => meta.row + 1
-                    },
-                    {
-                        data: 'department_name',
-                            render: function(data, type, row) {
-                                return row.dept_remark
-                                    ? `${data} (${row.dept_remark})`
-                                    : data;
-                            }
-                    },
-                    {
-                        data: 'model_name'
-                    },
-                    {
-                        data: 'station_name'
-                    },
-                    {
-                        data: 'device_name',
-                        render: function(data, type, row) {
-                            if (row.device_id === 0 || !data) {
-                                return "ALL";
-                            }
-                            return data;
+                        render: (data, type, row, meta) => {
+                            const num = meta.row + 1;
+                            if (type === 'export') return num + '.';
+                            return num;
                         }
                     },
                     {
-                        data: 'shift'
-                    },
-                    {
-                        data: 'date'
-                    },
-                    {
-                        data: 'time_start'
-                    },
-                    {
-                        data: 'time_finish'
-                    },
-                    {
-                        data: 'error_code'
-                    },
-                    {
-                        data: 'symptom'
-                    },
-                    {
-                        data: 'root_cause',
+                        data: 'department_name',
                         render: function(data, type, row) {
+                            if (type === 'export') {
+                                return row.dept_remark ? data + ' (' + row.dept_remark + ')' : data;
+                            }
+                            return row.dept_remark
+                                ? `${data} (${row.dept_remark})`
+                                : data;
+                        }
+                    },
+                    {
+                        data: 'status',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            if (type === 'export') {
+                                return data || '';
+                            }
+                            if (data === 'Close') {
+                                return `<span class="badge bg-success px-3 py-2"><i class="bi bi-check-circle-fill me-1"></i> Close</span>`;
+                            }
+                            return `
+                                <select class="form-select form-select-sm status-select" data-id="${row.id}" style="width:120px;">
+                                    <option value="Open" selected>🟠 Open</option>
+                                    <option value="Close">🟢 Close</option>
+                                </select>
+                            `;
+                        }
+                    },
+                    { data: 'date' },
+                    { data: 'item' },
+                    { data: 'highlight_from' },
+                    { data: 'customer' },
+                    { data: 'line_area' },
+                    { data: 'model_name' },
+                    { data: 'product_number' },
+                    { data: 'supplier' },
+                    {
+                        data: 'issue',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
                             if (!data) return '';
                             return `<div class="root-cause-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
                     {
-                        data: 'action_taken',
-                        render: function(data, type, row) {
+                        data: 'issue_description',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
+                            if (!data) return '';
+                            return `<div class="action-taken-text">${$('<div>').text(data).html()}</div>`;
+                        }
+                    },
+                    { data: 'responsible_person' },
+                    { data: 'failure_rate' },
+                    { data: 'stock' },
+                    {
+                        data: 'immediately_action',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
                             if (!data) return '';
                             return `<div class="action-taken-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
                     {
-                        data: 'remark',
-                        render: function(data, type, row) {
+                        data: 'sorting_rework',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
+                            if (!data) return '';
+                            return data;
+                        }
+                    },
+                    {
+                        data: 'root_cause',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
+                            if (!data) return '';
+                            return `<div class="root-cause-text">${$('<div>').text(data).html()}</div>`;
+                        }
+                    },
+                    {
+                        data: 'short_term_solution',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
+                            if (!data) return '';
+                            return `<div class="action-taken-text">${$('<div>').text(data).html()}</div>`;
+                        }
+                    },
+                    {
+                        data: 'long_term_solution',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
                             if (!data) return '';
                             return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
                         }
                     },
+                    { data: '8d_report_received_day' },
+                    { data: 'action_lot' },
+                    { data: 'sqe_owner' },
                     {
-                        data: 'name'
+                        data: 'remark',
+                        render: function(data, type) {
+                            if (type === 'export') return data || '';
+                            if (!data) return '';
+                            return `<div class="remark-text">${$('<div>').text(data).html()}</div>`;
+                        }
                     },
+                    { data: 'btc_no' },
                     {
                         data: null,
                         className: 'no-export',
                         orderable: false,
                         render: function(data, type, row) {
-
                             const isAdmin = [1, 2].includes(parseInt(LOGGED_USER_ROLE));
                             const isOwner = parseInt(row.user_id) === parseInt(LOGGED_USER_ID);
-
-                            if (!isAdmin && !isOwner) {
-                                return '';
-                            }
-
+                            if (!isAdmin && !isOwner) return '';
                             return `
                                 <div class="d-flex justify-content-center">
-                                    <a href="#" class="btn btn-sm btn-danger btn-delete-report"
-                                    data-id="${row.id}">
+                                    <a href="#" class="btn btn-sm btn-danger btn-delete-report" data-id="${row.id}">
                                         <i class="feather-trash"></i>
                                     </a>
                                 </div>
@@ -624,25 +722,8 @@ date_default_timezone_set('Asia/Jakarta');
                         }
                     }
                 ],
-                columnDefs: [{
-                        targets: [14],
-                        orderable: false
-
-                    },
-                    {
-                        targets: 11,
-                        width: '200px'
-                    }
-                ],
-                autoWidth: false,
-                columnDefs: [{
-                        targets: -1,
-                        orderable: false
-                    },
-                    // { targets: 1, width: "10%"},
-                    // { targets: 3, width: "35%" },
-                    // { targets: 4, width: "15%" },
-                    // { targets: 5, width: "15%" }
+                columnDefs: [
+                    { targets: -1, orderable: false }
                 ],
                 responsive: true,
                 pageLength: 5,
@@ -689,12 +770,40 @@ date_default_timezone_set('Asia/Jakarta');
                 reportTable.ajax.reload();
             });
 
+            // edit report
+            $(document).on('change', '.status-select', function () {
+
+                const id = $(this).data('id');
+                const status = $(this).val();
+
+                $.ajax({
+                    url: '/connectify-web/controllers/MultiDeptReportController.php',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        type: 'update-status',
+                        id: id,
+                        status: status
+                    }),
+                    success: function(res) {
+                        if(res.success){
+                            showSuccessToast("Status updated");
+                        }else{
+                            showErrorToast(res.message);
+                        }
+                    },
+                    error:function(){
+                        showErrorToast("Failed to update status");
+                    }
+                });
+
+            });
+
             // Delete report
             $(document).on('click', '.btn-delete-report', function(e) {
                 e.preventDefault();
 
                 const reportId = $(this).data('id');
-                console.log(reportId)
 
                 const swalWithBootstrapButtons = Swal.mixin({
                     customClass: {
@@ -881,87 +990,6 @@ date_default_timezone_set('Asia/Jakarta');
 
     <!-- add report -->
     <script>
-        $('#modelSelect').change(function() {
-            const model_id = $(this).val();
-            if (!model_id) {
-                $('#stationSelect, #deviceSelect')
-                    .prop('disabled', true)
-                    .html('<option value="">-----</option>');
-                return;
-            }
-
-            $.ajax({
-                url: '/connectify-web/pages/reports/get-data.php',
-                type: 'POST',
-                data: {
-                    action: 'getStations',
-                    model_id
-                },
-                dataType: 'json',
-                success: function(data) {
-                    $('#stationSelect').prop('disabled', false).html('<option value="">-----</option>');
-                    $('#deviceSelect').prop('disabled', true).html('<option value="">-----</option>');
-                    data.forEach(obj => {
-                        $('#stationSelect').append(`<option value="${obj.id}">${obj.station_name}</option>`);
-                    });
-                },
-                error: function(xhr) {
-                    console.error("Error getting stations:", xhr.responseText);
-                }
-            });
-        });
-
-        $('#stationSelect').change(function() {
-            const station_id = $(this).val();
-            if (!station_id) return;
-
-            $.ajax({
-                url: '/connectify-web/pages/reports/get-data.php',
-                type: 'POST',
-                data: {
-                    action: 'getDevices',
-                    station_id
-                },
-                dataType: 'json',
-                success: function(data) {
-                    const $deviceSelect = $('#deviceSelect');
-                    $deviceSelect.prop('disabled', false);
-                    $('#deviceSelect').prop('disabled', false).html('<option value="">-----</option>');
-                    $deviceSelect.append('<option value="0">ALL</option>');
-
-                    data.forEach(obj => {
-                        $deviceSelect.append(`<option value="${obj.id}">${obj.device_name}</option>`);
-                    });
-                },
-                error: function(xhr) {
-                    console.error("Error getting devices:", xhr.responseText);
-                }
-            });
-        });
-
-        $('#errorCodeSelect').change(function() {
-            const error_code = $(this).val();
-            if (!error_code) {
-                $('#symptomInput').val('');
-                return;
-            }
-
-            $.ajax({
-                url: '/connectify-web/pages/reports/get-data.php',
-                type: 'POST',
-                data: {
-                    action: 'getSymptom',
-                    error_code
-                },
-                dataType: 'json',
-                success: function(data) {
-                    $('#symptomInput').val(data.symptom || '');
-                },
-                error: function(xhr) {
-                    console.error("Error getting symptom:", xhr.responseText);
-                }
-            });
-        });
         document.getElementById("date").addEventListener("input", function () {
             let today = new Date().toISOString().split("T")[0];
 
@@ -970,63 +998,85 @@ date_default_timezone_set('Asia/Jakarta');
                 this.value = today;
             }
         });
-        $('#save').click(function() {
-            const payload = {
-                type: 'SQE-report',
-                model_id: $('#modelSelect').val(),
-                station_id: $('#stationSelect').val(),
-                device_id: $('#deviceSelect').val(),
-                shift: $('#shift').val(),
-                date: $('#date').val(),
-                time_start: $('#timeStart').val(),
-                time_finish: $('#timeFinish').val(),
-                error_code_id: $('#errorCodeSelect').val(),
-                root_cause: $('#rootCause').val(),
-                action_taken: $('#actionTaken').val(),
-                user_id: $('#user_id').val(),
-                remark: $('#remark').val()
-            };
+
+        $('#save').click(function (e) {
+            e.preventDefault();
+
+            let formData = new FormData();
+
+            formData.append('type', 'SQE-report');
+            formData.append('model_id', $('#modelSelect').val());
+            formData.append('date', $('#date').val());
+            formData.append('failure_rate', $('#failureRate').val());
+            formData.append('item', $('#item').val());
+
+            // SQE-specific fields
+            formData.append('highlight_from', $('#highlightFrom').val());
+            formData.append('customer', $('#customer').val());
+            formData.append('product_number', $('#productNumber').val());
+            formData.append('supplier', $('#supplier').val());
+            formData.append('issue', $('#issue').val());
+            formData.append('issue_description', $('#issueDescription').val());
+            formData.append('stock', $('#stock').val());
+            formData.append('immediately_action', $('#immediatelyAction').val());
+            formData.append('sorting_rework', $('#sortingRework').val());
+            formData.append('8d_report_received_day', $('#reportReceivedDay').val());
+            formData.append('action_lot', $('#actionLot').val());
+            formData.append('btc_no', $('#btcNo').val());
+
+            formData.append('root_cause', $('#rootCause').val());
+            formData.append('short_term_solution', $('#shortTermSolution').val());
+            formData.append('long_term_solution', $('#longTermSolution').val());
+
+            formData.append('responsible_person', $('#responsiblePerson').val());
+            formData.append('status', $('#status').val());
+
+            formData.append('remark', $('#remark').val());
+            formData.append('user_id', $('#user_id').val());
+
+            // Debug: log all form data being sent
+            console.log('=== SQE Report Form Data ===');
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ': ' + value);
+            }
 
             $.ajax({
                 url: '/connectify-web/controllers/MultiDeptReportController.php',
                 type: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json; charset=UTF-8',
+                data: formData,
+                processData: false,
+                contentType: false,
                 dataType: 'json',
-                success: function(response) {
-                    // $('#message-container').html('');
-                    $('#createReportModal').modal('hide');
+
+                success: function (response) {
+                    // console.log('=== Server Response ===', response);
                     if (response.success) {
-
+                        $('#createReportModal').modal('hide');
                         showSuccessToast(response.message);
-
                         $('#reportForm')[0].reset();
                         $('#reportTable').DataTable().ajax.reload(null, false);
-
                     } else {
-                        showErrorToast(response.message);
+                        showErrorToast(response.message || 'Failed to add report');
                     }
                 },
-                error: function(xhr) {
+
+                error: function (xhr) {
+                    // console.log('=== Server Error ===', xhr.status, xhr.responseText);
                     let msg = "Unexpected error";
+
                     try {
                         let res = JSON.parse(xhr.responseText);
                         if (res.message) msg = res.message;
                     } catch {}
-                    $('#message-container').html(`
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        ${msg}
-                    </div>`);
-                    setTimeout(() => {
-                        $('.alert').alert('close');
-                    }, 1500);
+
+                    showErrorToast(msg);
                 }
             });
         });
 
         $('#clear').click(function() {
             $('#reportForm')[0].reset();
-            createReportModal.hide();
+            $('#createReportModal').modal('hide');
         });
     </script>
 </body>

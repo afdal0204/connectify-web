@@ -103,7 +103,12 @@ if (isset($_SESSION['user_id'])) {
                     <div class="wd-80 bg-white p-2 rounded-circle shadow-lg position-absolute translate-middle top-0 start-50">
                         <img src="assets/images/logo.png" alt="" class="img-fluid">
                     </div>
-                    <div class="card-body p-sm-5">
+                    <div class="text-center mt-5 pt-4">
+                        <span class="text-muted d-block mb-1" style="font-size: 0.8rem;">New Connectify Version, let's try!</span>
+                        <a href="http://10.175.22.15/connectify/login" class="fw-bold text-primary text-decoration-none" style="font-size: 0.875rem;">Connectify &rarr;</a>
+                    </div>
+                    <hr>
+                    <div class="card-body p-sm-4">
                         <h2 class="fs-20 fw-bolder mb-6">Login</h2>
                         <?php if ($error): ?>
                             <div class="alert alert-danger"><?= htmlentities($error) ?></div>
@@ -138,6 +143,7 @@ if (isset($_SESSION['user_id'])) {
                             <span> Don't have an account?</span>
                             <a href="#" class="fw-bold">Please contact your admin</a>
                         </div>
+
                     </div>
                 </div>
             </div>
